@@ -33,5 +33,5 @@ tasks.named('test') {
 }
 
 bootJar {
-	mainClassName = 'com.example.airplanning.TeamprojectAirplanningApplication'
+	enabled = false
 }
