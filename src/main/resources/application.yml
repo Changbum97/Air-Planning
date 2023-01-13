@@ -1,0 +1,9 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      force-response: true
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
