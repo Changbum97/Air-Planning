@@ -26,7 +26,12 @@ public class Planner extends BaseEntity{
     private String description;     // 자기 소개
 
     @Enumerated(EnumType.STRING)
-    private Theme theme;            // 테마 (선택지 중 선택)
+    private Theme theme1;            // 테마 (선택지 중 선택, 3개까지 가능, 최소 1개)
+    @Enumerated(EnumType.STRING)
+    private Theme theme2;
+    @Enumerated(EnumType.STRING)
+    private Theme theme3;
+
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
