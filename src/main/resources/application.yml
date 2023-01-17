@@ -1,14 +1,24 @@
+# 한글 깨지는 현상 방지
 server:
   port: 8081
   servlet:
     encoding:
       force-response: true
 spring:
+  # Swagger 적용
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  # DB 적용
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:8081/likelion-db
+    url: jdbc:mysql://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:3306/air-planning-db
     username: root
-    password: 1234
+    password: 3edc4rfv
+  # Jpa 설정
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    database: mysql
+    hibernate:
+      ddl-auto: update
