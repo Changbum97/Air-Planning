@@ -1,7 +1,7 @@
 package com.example.airplanning.repository;
 
-import com.example.airplanning.domain.entity.Like;
+import com.example.airplanning.domain.entity.Planner;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LikeRepository extends JpaRepository<Like, Long> {
+public interface PlannerRepository extends JpaRepository<Planner, Long> {
 }

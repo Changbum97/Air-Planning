@@ -1,7 +1,7 @@
 package com.example.airplanning.repository;
 
-import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.entity.Alarm;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
+public interface AlarmRepository extends JpaRepository<Alarm, Long> {
 }

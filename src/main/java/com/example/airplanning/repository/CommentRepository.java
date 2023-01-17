@@ -1,7 +1,7 @@
 package com.example.airplanning.repository;
 
-import com.example.airplanning.domain.entity.Alarm;
+import com.example.airplanning.domain.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AlarmRepository extends JpaRepository<Alarm, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 }
