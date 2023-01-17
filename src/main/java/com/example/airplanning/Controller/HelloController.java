@@ -13,7 +13,7 @@ public class HelloController {
     @GetMapping("/hello")
     @ApiOperation(value = "hello")
     public ResponseEntity<String> hello() {
-        return ResponseEntity.ok().body("4조의 air planning api 입니다.");
+        return ResponseEntity.ok().body("4조의 air planning 입니다.");
     }
 
 }
