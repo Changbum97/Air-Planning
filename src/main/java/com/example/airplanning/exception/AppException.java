@@ -11,15 +11,15 @@ public class AppException extends RuntimeException{
     private ErrorCode errorCode;
     private String message;
 
+    public AppException(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+        this.message = errorCode.getMessage();
+    }
+
     @Override
     public String toString() {
 
-        //exception 발생 시 메세지를 입력하지 않으면, ErrorCode.enum의 message를 따른다.
-        if(message.equals("")) {
-            return errorCode.getMessage();
-        }
+        return errorCode.getMessage();
 
-        //메세지를 입력하면, ErrorCode.enum의 message + 입력한 message로 exception message 출력
-        return String.format("%s, %s", errorCode.getMessage(), message);
     }
 }
