@@ -1,34 +1,38 @@
 package com.example.airplanning.domain.entity;
 
-import com.example.airplanning.domain.enum_class.UserRole;
+import com.example.airplanning.domain.enum_class.CommentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Review extends BaseEntity{
+public class Comment extends BaseEntity{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer star;       // 별점
-    private String title;       // 리뷰 제목
-    private String content;     // 리뷰 내용
-    private String image;       // 이미지 URL
+    private String content;     // 댓글 내용
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;          // 리뷰를 작성한 유저
+    private User user;          // 댓글을 작성한 유저
+
+    @Enumerated(EnumType.ORDINAL)
+    private CommentType commentType;    // 댓글 타입 (리뷰 댓글, 게시판 댓글)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "planner_id")
-    private Planner planner;    // 리뷰를 받은 플래너
+    @JoinColumn(name = "review_id")
+    private Review review;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
+
 }

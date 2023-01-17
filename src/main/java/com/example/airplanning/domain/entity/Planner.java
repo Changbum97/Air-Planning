@@ -1,6 +1,6 @@
 package com.example.airplanning.domain.entity;
 
-import com.example.airplanning.domain.enum_class.UserRole;
+import com.example.airplanning.domain.enum_class.Theme;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,23 +14,24 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends BaseEntity{
+public class Planner extends BaseEntity{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;        // 본명
-    private String birth;       // 생년월일 YYYYMMDD
-    private String email;       // 이메일
-    private String userName;    // 로그인에 사용할 ID
-    private String password;    // 비밀번호
-    private String phoneNumber; // 전화번호 01012345678
-    private String image;       // 프로필 이미지 URL
-    private Integer point;      // 포인트
+    private Integer reviewCount;    // 리뷰 개수
+    private Integer starSum;        // 별점 총 합
+    private String country;         // 자신있는 국가
+    private String region;          // 자신있는 지역
+    private String description;     // 자기 소개
 
     @Enumerated(EnumType.STRING)
-    private UserRole role;      // 권한 (USER, ADMIN, BLACKLIST, PLANNER)
+    private Theme theme;            // 테마 (선택지 중 선택)
 
-    @OneToMany(mappedBy = "user")
-    private List<Board> boards;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "planner")
+    private List<Like> likes;
 }

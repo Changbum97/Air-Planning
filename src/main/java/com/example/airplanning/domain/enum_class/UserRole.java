@@ -1,5 +1,5 @@
-package com.example.airplanning.domain;
+package com.example.airplanning.domain.enum_class;
 
 public enum UserRole {
-    USER, ADMIN, BLACKLIST, PLANNER;
+    USER, ADMIN, BLACKLIST, PLANNER
 }

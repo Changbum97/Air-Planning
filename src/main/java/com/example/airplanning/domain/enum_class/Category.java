@@ -1,5 +1,5 @@
-package com.example.airplanning.domain.entity;
+package com.example.airplanning.domain.enum_class;
 
 public enum Category {
-    FREE, RANKUP, PORTFOLIO
+    FREE, RANK_UP, PORTFOLIO
 }

@@ -1,38 +1,31 @@
 package com.example.airplanning.domain.entity;
 
-import com.example.airplanning.domain.enum_class.Category;
+import com.example.airplanning.domain.enum_class.AlarmType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Board extends BaseEntity{
+public class Alarm extends BaseEntity{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;       // 글 제목
-    private String content;     // 글 내용
-    private String image;       // 이미지 URL
+    private String targetUrl;       // 알람 클릭 시 이동할 URL
 
     @Enumerated(EnumType.ORDINAL)
-    private Category category;  // 카테고리 (자유게시판, 등업게시판, 포트폴리오 게시판)
+    private AlarmType alarmType;    // 알람 타입 (플래너가 신청 받았을때, 플래너가 신청을 수락/거절 했을 때, 채팅이 왔을 때, 리뷰가 달렸을 때,
+                                    //          등급이 변경 되었을 때, 등급 변경이 신청되었을 때, 리뷰/게시글에 댓글이 달렸을 때)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "board")
-    private List<Comment> comments;
-
-    @OneToMany(mappedBy = "board")
-    private List<Like> likes;
 }
