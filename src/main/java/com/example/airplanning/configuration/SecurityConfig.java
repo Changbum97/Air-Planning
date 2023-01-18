@@ -57,7 +57,7 @@ public class SecurityConfig {
                             }
                         }
                 )
-                .failureHandler( // 로그인 실패 시 리다이렉트 "http://localhost:8081/api/login" 로 설정
+                .failureHandler(
                         new AuthenticationFailureHandler() {
                             @Override
                             public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
