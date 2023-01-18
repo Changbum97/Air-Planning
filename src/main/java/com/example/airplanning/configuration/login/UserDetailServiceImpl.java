@@ -1,4 +1,4 @@
-package com.example.airplanning.service;
+package com.example.airplanning.configuration.login;
 
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.exception.AppException;
@@ -21,7 +21,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUserName(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-        return user.toDetail();
+                .orElseThrow(() -> new UsernameNotFoundException("유저네임을 찾을 수 없습니다."));
+        return UserDetail.of(user);
     }
 }

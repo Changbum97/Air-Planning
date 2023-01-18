@@ -1,6 +1,10 @@
-package com.example.airplanning.domain.dto;
+package com.example.airplanning.configuration.login;
 
+import com.example.airplanning.domain.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,11 +16,14 @@ import java.util.List;
 
 // 인증 관련 사용자 정보를 담은 Dto
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Builder
 public class UserDetail implements UserDetails {
     private Long id;
-    private String userName;
-    private String password;
-    private String role;
+    private String userName;    // 로그인에 사용할 ID
+    private String password;    // 비밀번호
+    private String role;      // 권한 (USER, ADMIN, BLACKLIST, PLANNER)
 
     // 권한부여
     @Override
@@ -58,5 +65,14 @@ public class UserDetail implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static UserDetail of(User user) {
+        return UserDetail.builder()
+                .id(user.getId())
+                .userName(user.getUserName())
+                .password(user.getPassword())
+                .role(user.getRole().name())
+                .build();
     }
 }

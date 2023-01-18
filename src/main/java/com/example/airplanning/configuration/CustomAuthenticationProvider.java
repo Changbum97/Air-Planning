@@ -2,9 +2,11 @@ package com.example.airplanning.configuration;
 
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
-import com.example.airplanning.service.UserDetailServiceImpl;
+import com.example.airplanning.configuration.login.UserDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -28,7 +30,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         // 아직 비밀번호 복호화 안되서 그냥 비교
         String password = authentication.getCredentials().toString();
         if (!password.equals(user.getPassword())) {
-            throw new AppException(ErrorCode.INVALID_PASSWORD);
+            throw new BadCredentialsException("비밀번호 불일치");
         }
 
         // 회원 가입 시 비밀번호 복호화 하면 적용
