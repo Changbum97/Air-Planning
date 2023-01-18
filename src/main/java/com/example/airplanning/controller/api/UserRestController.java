@@ -1,19 +1,16 @@
 package com.example.airplanning.controller.api;
 
-import com.example.airplanning.configuration.login.UserDetail;
+import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.UserDto;
+import com.example.airplanning.domain.dto.UserJoinRequest;
+import com.example.airplanning.domain.dto.UserJoinResponse;
 import com.example.airplanning.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.Enumeration;
 
 @RestController
 @RequestMapping("/api/")
@@ -35,4 +32,36 @@ public class UserRestController {
         return ResponseEntity.ok().body(request.getAttribute("LoginFailMessage"));
     }
 
+    // 회원가입
+    @PostMapping("/join")
+    public Response<UserJoinResponse> join (@RequestBody UserJoinRequest request) {
+        UserDto userDto = userService.join(request);
+        return Response.success(UserJoinResponse.of(userDto));
+    }
+
+    @PostMapping("/check/username")
+    public String checkUserName(String userName) {
+        if (!userService.checkUserName(userName)) {
+            return "사용 가능한 userName 입니다.";
+        } else {
+            return "중복된 userName 입니다.";
+        }
+    }
+    @PostMapping("/check/email")
+    public String checkEmail(String email) {
+        if (!userService.checkEmail(email)) {
+            return "사용가능한 email 입니다.";
+        } else {
+            return "중복된 email 입니다.";
+        }
+    }
+
+    @PostMapping("/check/phone")
+    public String checkPhoneNumber(String phoneNumber) {
+        if (!userService.checkPhoneNumber(phoneNumber)) {
+            return "사용 가능한 PhoneNumber 입니다.";
+        } else {
+            return "중복된 PhoneNumber 입니다.";
+        }
+    }
 }
