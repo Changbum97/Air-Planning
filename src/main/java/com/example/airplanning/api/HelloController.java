@@ -1,4 +1,4 @@
-package com.example.airplanning.controller;
+package com.example.airplanning.api;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
