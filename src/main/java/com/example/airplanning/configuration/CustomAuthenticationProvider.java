@@ -29,14 +29,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         // 아직 비밀번호 복호화 안되서 그냥 비교
         String password = authentication.getCredentials().toString();
-        if (!password.equals(user.getPassword())) {
-            throw new BadCredentialsException("비밀번호 불일치");
+        if (!encoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException("패스워드가 잘못되었습니다.");
         }
-
-        // 회원 가입 시 비밀번호 복호화 하면 적용
-//        if (!encoder.matches(password, user.getPassword())) {
-//            throw new AppException(ErrorCode.INVALID_PASSWORD);
-//        }
 
         return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
     }
