@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap');
+
+body, head {
+    font-family: "Open Sans", sans-serif;
+}
+
+.navbar-brand {
+    font-family: 'Dancing Script', cursive;
+    font-size: x-large;
+}
+
+.btn1 {
+    border: none;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 10px 35px;
+    background-color: #ffbe33;
+    color: #ffffff;
+    border-radius: 45px;
+    -webkit-transition: all 1s;
+    transition: all 1s;
+    border: none;
+}
