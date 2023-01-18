@@ -33,29 +33,14 @@ public class UserService {
     }
 
     public boolean checkUserName(String userName) {
-        boolean validation = false;
-
-        if (userRepository.findByUserName(userName).isEmpty()) validation = true;
-        else validation = false;
-
-        return validation;
+        return userRepository.existsByUserName(userName);
     }
 
     public boolean checkEmail(String email) {
-        boolean validation = false;
-
-        if (userRepository.findByEmail(email).isEmpty()) validation = true;
-        else validation = false;
-
-        return validation;
+        return userRepository.existsByEmail(email);
     }
 
     public boolean checkPhoneNumber(String phoneNumber) {
-        boolean validation = false;
-
-        if (userRepository.findByPhoneNumber(phoneNumber).isEmpty()) validation = true;
-        else validation = false;
-
-        return validation;
+        return userRepository.existsByPhoneNumber(phoneNumber);
     }
 }

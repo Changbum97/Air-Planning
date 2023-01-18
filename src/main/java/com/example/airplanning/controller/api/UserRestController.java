@@ -41,7 +41,7 @@ public class UserRestController {
 
     @PostMapping("/check/username")
     public String checkUserName(String userName) {
-        if (userService.checkUserName(userName)) {
+        if (!userService.checkUserName(userName)) {
             return "사용 가능한 userName 입니다.";
         } else {
             return "중복된 userName 입니다.";
@@ -49,7 +49,7 @@ public class UserRestController {
     }
     @PostMapping("/check/email")
     public String checkEmail(String email) {
-        if (userService.checkEmail(email)) {
+        if (!userService.checkEmail(email)) {
             return "사용가능한 email 입니다.";
         } else {
             return "중복된 email 입니다.";
@@ -58,7 +58,7 @@ public class UserRestController {
 
     @PostMapping("/check/phone")
     public String checkPhoneNumber(String phoneNumber) {
-        if (userService.checkPhoneNumber(phoneNumber)) {
+        if (!userService.checkPhoneNumber(phoneNumber)) {
             return "사용 가능한 PhoneNumber 입니다.";
         } else {
             return "중복된 PhoneNumber 입니다.";
