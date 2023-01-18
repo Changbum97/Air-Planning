@@ -1,5 +1,6 @@
 package com.example.airplanning.domain.entity;
 
+import com.example.airplanning.domain.dto.UserDetail;
 import com.example.airplanning.domain.enum_class.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,4 +49,8 @@ public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "user")
     private List<Alarm> alarms;
+
+    public UserDetail toDetail(){
+        return new UserDetail(this.id, this.userName, this.password, this.role.name());
+    }
 }

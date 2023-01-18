@@ -32,6 +32,9 @@ dependencies {
 	// Swagger
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 	implementation "io.springfox:springfox-swagger-ui:3.0.0"
+
+	// Security
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.7.5'
 }
 
 tasks.named('test') {
