@@ -1,32 +1,42 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header.html :: head"/>
-<head>
-    <meta charset="UTF-8">
-    <title>login</title>
-    <link rel="stylesheet" href="/css/login.css" />
-</head>
-    <body>
-    <form th:method="post" class="login"> <!--th:action=""-->
-        <!--로고 이미지를 로그인 글씨 대신 넣으면 될 거 같다.-->
-      <h2>로그인</h2>
 
-      <div class="id_text">
-        <input type="text" name="id" class="id" placeholder="아이디" required>
-      </div>
-
-      <div class="password">
-        <input type="password" name="pw" class="pw" placeholder="비밀번호" required>
-      </div>
-      <input type="checkbox" id="saveId" >아이디 저장<br>
-
-      <input type="submit" class="login_btn" value="로그인">
-      <input type="button" class="join_btn" value="회원가입">
-
-      <div class="bottomText">
-        <a href="" >아이디 찾기</a> | <a href= "" >비밀번호 찾기</a>
-      </div>
-
-    </form>
+<body class="color-body">
+<div class="container px-5">
+  <div class="row gx-5 justify-content-center">
+    <div class="col-lg-4 py-5">
+      <form th:method="post" class="login-form form-group"> <!--th:action=""-->
+        <h2 onclick="location.href='/'">로고이미지(홈으로)</h2>
+        <br/><br/>
+        <div>
+          <input type="text" class="w-75 login-input" placeholder="아이디">
+        </div>
+        <br/>
+        <div>
+          <input type="password" class="w-75 login-input" placeholder="비밀번호">
+        </div>
+        <br/>
+        <div>
+          <input type="checkbox"> 아이디 저장<br>
+        </div>
+        <br/>
+        <div>
+          <button type="submit" class="btn btn1">로그인</button>
+          <button type="button" class="btn btn1" onclick="location.href='/users/join'">회원가입</button>
+        </div>
+        <br/>
+        <div class="bottom-text">
+          <a href="/" >아이디 찾기</a> | <a href= "/" >비밀번호 찾기</a>
+        </div>
+        <hr/>
+        <h5>소셜 로그인</h5>
+        <button type="button" class="icon-btn" onclick="location.href='/'"><img src="/assets/images/kakao.png" class="login-img"></button>
+        <button type="button" class="icon-btn" onclick="location.href='/'"><img src="/assets/images/naver.png" class="login-img"></button>
+        <button type="button" class="icon-btn" onclick="location.href='/'"><img src="/assets/images/google.svg" class="login-img"></button>
+      </form>
+    </div>
+  </div>
+</div>
 </body>
 </html>
