@@ -34,9 +34,15 @@ dependencies {
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 	implementation "io.springfox:springfox-swagger-ui:3.0.0"
 
+	// Security
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.7.5'
+
 	// Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
+	// Social Login
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.6.2'
 
 }
 
