@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-6 py-5">
+                <div style="float: right">
+                    <h5 class="px-2">조회수 200</h5>
+                    <h5 class="px-2">좋아요 10개</h5>
+                    <button class="btn icon-btn">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                    <button class="btn icon-btn">
+                        <i class="bi bi-heart-fill"></i>
+                    </button>
+                </div>
+
+                <form class="form-group">
+                    <div>
+                        <label>제목 : </label>
+                        <input type="text" value="제목111" readonly>
+                    </div>
+                    <br/>
+                    <div>
+                        <label>작성자 : </label>
+                        <input type="text" value="작성자111" readonly>
+                    </div>
+                    <div>
+                        <textarea rows="10" class="w-100" readonly>내용111
+                        </textarea>
+                    </div>
+                    <div style="float: left" class="py-3">
+                        <span>작성일 : 2023-01-18 11:30</span>
+                    </div>
+                    <div align="right" class="py-1">
+                        <button class="btn btn1">수정</button>
+                        <button class="btn btn1">삭제</button>
+                    </div>
+                    <br/>
+                </form>
+                <hr/>
+                <form class="form-group">
+                    <div>
+                        <textarea rows="3" class="w-100" placeholder="댓글을 입력해주세요"></textarea>
+                    </div>
+                    <br/>
+                    <div align="right">
+                        <button class="btn btn1">댓글 등록</button>
+                    </div>
+                </form>
+                <hr/>
+                <h5 class="px-2">댓글 10개</h5>
+                <br/>
+                <div align="left">
+                    <form class="form-group w-75">
+                        <textarea rows="3" class="w-100" readonly>댓글111</textarea>
+                        <div align="left">
+                            <a href="/">수정</a>
+                            <a href="/">삭제</a>
+                        </div>
+                    </form>
+                </div>
+                <br/>
+                <div align="right">
+                    <form class="form-group w-75">
+                            <textarea rows="3" class="w-100" readonly>대댓글111</textarea>
+                            <div align="right">
+                                <a href="/">수정</a>
+                                <a href="/">삭제</a>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

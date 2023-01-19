@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-6 py-5">
+                <form class="form-group">
+                    <div>
+                        <label class="form-label">작성자 : </label>
+                        <input type="text" value="유저123" readonly>
+                    </div>
+                    <br/>
+                    <div>
+                        <label class="form-label">제목 : </label>
+                        <input type="text">
+                    </div>
+                    <br/>
+                    <div>
+                        <label>내용 : </label>
+                        <textarea rows="10" class="w-100" placeholder="내용을 입력해주세요"></textarea>
+                    </div>
+                    <br/>
+                    <div>
+                        <label>이미지 추가</label>
+                        <br/>
+                        <input type="file" multiple="multiple" />
+                    </div>
+                    <br/>
+                    <div align="right" class="py-1">
+                        <button class="btn btn1">등록</button>
+                    </div>
+                    <br/>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

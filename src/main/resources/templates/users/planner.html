@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8 py-5">
+                <h1>마이 페이지</h1>
+                <hr/>
+                <div class="img-box">
+                    <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="profile-img">
+                </div>
+                <div class="py-3">
+                    <h3 class="profile-text">아이디 : 111</h3>
+                    <h3 class="profile-text">이름 : 222</h3>
+                    <h3 class="profile-text">생년월일 : 2023/01/18</h3>
+                </div>
+                <br/><br/><br/>
+
+                <h3>리스트?</h3>
+                <hr/>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a id="item1" class="nav-link" onclick="clickItem1()">여행</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="item2" class="nav-link" onclick="clickItem2()">내가 작성한</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="item3" class="nav-link" onclick="clickItem3()">좋아요</a>
+                    </li>
+                </ul>
+                <ul class="nav nav-tabs" id="tab1" hidden>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/1">신청중</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/2">여행 완료</a>
+                    </li>
+                </ul>
+                <ul class="nav nav-tabs" id="tab2" hidden>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/3">게시글</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/4">리뷰</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/5">댓글</a>
+                    </li>
+                </ul>
+                <ul class="nav nav-tabs" id="tab3" hidden>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/6">게시글</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/7">리뷰</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/8">플래너</a>
+                    </li>
+                </ul>
+                <br/>
+                <table class="table list-table table-hover text-center">
+                    <thead>
+                    <tr>
+                        <th>타이틀1</th>
+                        <th>타이틀2</th>
+                        <th>타이틀3</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>내용1-1</td>
+                        <td>내용1-2</td>
+                        <td>내용1-3</td>
+                    </tr>
+                    <tr>
+                        <td>내용2-1</td>
+                        <td>내용2-2</td>
+                        <td>내용2-3</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function clickItem1() {
+            document.getElementById("item1").className="nav-link active"
+            document.getElementById("item2").className="nav-link"
+            document.getElementById("item3").className="nav-link"
+            document.getElementById("tab1").removeAttribute("hidden")
+            document.getElementById("tab2").setAttribute("hidden", "true")
+            document.getElementById("tab3").setAttribute("hidden", "true")
+        }
+        function clickItem2() {
+            document.getElementById("item1").className="nav-link"
+            document.getElementById("item2").className="nav-link active"
+            document.getElementById("item3").className="nav-link"
+            document.getElementById("tab1").setAttribute("hidden", "true")
+            document.getElementById("tab2").removeAttribute("hidden")
+            document.getElementById("tab3").setAttribute("hidden", "true")
+        }
+        function clickItem3() {
+            document.getElementById("item1").className="nav-link"
+            document.getElementById("item2").className="nav-link"
+            document.getElementById("item3").className="nav-link active"
+            document.getElementById("tab1").setAttribute("hidden", "true")
+            document.getElementById("tab2").setAttribute("hidden", "true")
+            document.getElementById("tab3").removeAttribute("hidden")
+        }
+    </script>
+</body>
+</html>
