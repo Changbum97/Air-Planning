@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+<head>
+    <meta charset="UTF-8">
+    <title>Join</title>
+    <link rel="stylesheet" href="/css/join.css" />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+    <body>
+    <h5>로고 이미지가 들어갈 예정입니다</h5>
+            <div class="all">
+                <h2 style="color: #967B55;">JOIN</h2>
+                <form  name="" method="post"><!--th:action=""-->
+                <input type="hidden" name="save">
+
+            <table>
+
+                <!--아이디-->
+                <div class="textForm">
+                    <input name="id" type="text" class="id" placeholder="아이디" id="id" required readonly>
+                </div>
+
+                <!--비밀번호 인증-->
+                <div class="textForm">
+                    <div class = "sText">비밀번호는 ~~로 사용해야 합니다.</div>
+                    <input name="pw" type="password" class="pw" placeholder="비밀번호" id="pw1" required>
+                </div>
+
+                <div class="textForm">
+                    <input name="pwCheck" type="password" class="pw" placeholder="비밀번호 확인" id="pw2" required>
+                    <!--<div class="alert alert-success" id="alert-success"  >비밀번호가 일치합니다.</div>
+                    <div class="alert alert-danger" id="alert-danger"  >비밀번호가 일치하지 않습니다.</div>-->
+                </div>
+
+                <!--이름-->
+                <div class="textForm">
+                    <input name="name" type="text" class="name" placeholder="이름" required>
+                </div>
+
+                <!--생년 월일-->
+                <div class="textForm">
+                    <label for="birthdate" class="birth-text">생년월일 </label>
+                    <input id="birthdate" type="date" name="birthdate" class="birthdate" style="border: 1px solid #96d1cf; border-radius: 5px">
+                </div>
+
+                <!--이메일 인증-->
+                <div>
+                    <input type="text" name="email" class="email" placeholder="email" required>
+                        <input type="button"  id="sendMail" class="emailBtn" th:value="인증" />
+                        <div class="id_ok" >사용 가능한 이메일입니다.</div>
+                        <div class="id_already" >이미 가입한 이메일입니다.</div>
+                </div>
+
+                <div class="compareForm">
+                    <input type="text" placeholder="인증 번호 입력" class="compare-email" name="compare-email" id="compare-email">
+                    <span class="compare-text">불일치</span>
+                </div>
+
+
+                <!--핸드폰 인증-->
+                <div>
+                        <input name="phone" type="text" class="phone" placeholder="전화 번호" required>
+                        <input type="button" id="sendPhone" class="phoneBtn" th:value="인증" />
+                </div>
+
+                <div class="compareForm">
+                    <input type="text" placeholder="인증 번호 입력" class="compare-phone" name="compare-phone" id="compare-phone">
+                    <span class="phone-text">불일치</span>
+                </div>
+
+
+                <div style="text-align: center; padding-top: 5px">
+                    <input type="submit" class="btn" value="회원가입" />
+                    <div class="loginBtn" style="text-align: center">이미 계정이 있으신가요? <a href="login" style="color: grey;">로그인</a></div>
+                </div>
+
+            </table>
+                </form>
+            </div>
+
+
+    <script th:inline="javascript">
+
+        $(function(){
+            sendMail();
+
+        });
+        function sendMail() {
+            var isCertification = false;
+            var key1 = "";
+            $('#sendMail').on('click', function () {// 메일 입력 유효성 검사
+                var email = $(".email").val(); //사용자의 이메일 입력값.
+                console.log(email);
+
+                if (email == "") {
+                    alert("메일 주소가 입력되지 않았습니다.");
+                } else {
+
+                    $.ajax({
+                        type: 'post',
+                        url: '/user/CheckMail',
+                        data: {
+                            email: email
+                        },
+                        success: function (key) {
+                            console.log(key);
+                            key1 = key;
+                            console.log(key1);
+                        }
+                    });
+                    console.log(key1);
+                    alert("이메일을 확인하시기 바랍니다.");
+                    $(".compare-email").css("display", "block");
+                    $(".compare-text").css("display", "block");
+                }
+            });
+        }
+
+        $(function(){
+            sendPhone();
+
+        });
+        function sendPhone() {
+            var isCertification = false;
+            var key1 = "";
+            $('#sendPhone').on('click', function () {// 메일 입력 유효성 검사
+                var phone = $(".phone").val(); //사용자의 이메일 입력값.
+                console.log(phone);
+
+                if (phone == "") {
+                    alert("핸드폰 번호가 입력되지 않았습니다.");
+                } else {
+
+                    $.ajax({
+                        type: 'post',
+                        url: '/user/CheckPhone',
+                        data: {
+                            phone: phone
+                        },
+                        success: function (key) {
+                            console.log(key);
+                            key1 = key;
+                            console.log(key1);
+                        }
+                    });
+                    console.log(key1);
+                    alert("메시지를 확인하시기 바랍니다.");
+                    $(".compare-phone").css("display", "block");
+                    $(".phone-text").css("display", "block");
+                }
+            });
+        }
+
+        </script>
+    </body>
+</html>
