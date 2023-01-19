@@ -8,10 +8,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 
 // 인증 관련 사용자 정보를 담은 Dto
@@ -19,11 +21,16 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Builder
-public class UserDetail implements UserDetails {
+public class UserDetail implements UserDetails, OAuth2User {
     private Long id;
     private String userName;    // 로그인에 사용할 ID
     private String password;    // 비밀번호
     private String role;      // 권한 (USER, ADMIN, BLACKLIST, PLANNER)
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
 
     // 권한부여
     @Override
@@ -74,5 +81,10 @@ public class UserDetail implements UserDetails {
                 .password(user.getPassword())
                 .role(user.getRole().name())
                 .build();
+    }
+
+    @Override
+    public String getName() {
+        return null;
     }
 }

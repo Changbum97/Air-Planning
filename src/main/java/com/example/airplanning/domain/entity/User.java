@@ -30,6 +30,9 @@ public class User extends BaseEntity{
     private String image;       // 프로필 이미지 URL
     private Integer point;      // 포인트
 
+    private String provider;  // 어떤 소셜 로그인 이용했는지 (구글/네이버)
+    private String providerId; // 소셜 로그인에 사용한 id
+
     @Enumerated(EnumType.STRING)
     private UserRole role;      // 권한 (USER, ADMIN, BLACKLIST, PLANNER)
 

@@ -14,4 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/testlogin")
+    public String testLogin() {
+        return "TestLogin";
+    }
 }

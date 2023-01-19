@@ -1,7 +1,7 @@
 package com.example.airplanning.configuration;
 
-import com.example.airplanning.exception.AppException;
-import com.example.airplanning.exception.ErrorCode;
+import com.example.airplanning.configuration.login.CustomOauth2UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +24,11 @@ import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 @Slf4j
 public class SecurityConfig {
+
+    private final CustomOauth2UserService customOauth2UserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -82,12 +85,20 @@ public class SecurityConfig {
                         }
                 )
                 .permitAll()
+                .and()
 
                 // 로그아웃
-                .and()
                 .logout()
                 .invalidateHttpSession(true)
+                .and()
 
+                // OAuth2 소셜 로그인
+                .oauth2Login()
+                .loginPage("/users/testlogin")
+                .defaultSuccessUrl("/api/login")
+                .failureUrl("/users/testlogin")
+                .userInfoEndpoint().userService(customOauth2UserService)
+                .and()
                 .and()
                 .build();
     }
