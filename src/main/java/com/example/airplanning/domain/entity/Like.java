@@ -13,6 +13,7 @@ import javax.persistence.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "\"like\"")
 public class Like extends BaseEntity{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
