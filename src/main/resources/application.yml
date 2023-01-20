@@ -12,7 +12,7 @@ spring:
   # DB 적용
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://ec2-3-35-225-29.ap-northeast-2.compute.amazonaws.com:3306/air-planning-db
+    url: jdbc:mysql://ec2-54-180-115-200.ap-northeast-2.compute.amazonaws.com:3306/air-planning-db
     username: root
     password: 3edc4rfv
   # Jpa 설정
