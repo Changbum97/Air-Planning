@@ -31,13 +31,4 @@ public class PageController {
         return "users/planner";
     }
 
-    @GetMapping("/users/login")
-    public String loginPage() {
-        return "users/login";
-    }
-
-    @GetMapping("/users/join")
-    public String joinPage() {
-        return "users/join";
-    }
 }

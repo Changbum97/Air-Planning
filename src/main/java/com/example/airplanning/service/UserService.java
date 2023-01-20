@@ -28,12 +28,24 @@ public class UserService {
     }
 
     public UserDto join(UserJoinRequest request) {
-        User user = userRepository.save(request.toEntity(encoder.encode(request.getPassword())));
+
+        // userName, nickname 중복 체크
+        if(userRepository.existsByUserName(request.getUserName()) ||
+                userRepository.existsByNickname(request.getNickname())) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+
+        String encodedPassword = encoder.encode(request.getPassword());
+        User user = userRepository.save(request.toEntity(encodedPassword));
         return UserDto.of(user);
     }
 
     public boolean checkUserName(String userName) {
         return userRepository.existsByUserName(userName);
+    }
+
+    public boolean checkNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 
     public boolean checkEmail(String email) {

@@ -14,7 +14,7 @@ body, head {
     width: 100%;
 }
 
-.btn1, .btn1:hover, .btn1:active:focus {
+.btn1, .btn1:hover, .btn1:active, .btn1:focus {
     border: none;
     text-transform: uppercase;
     display: inline-block;
@@ -26,7 +26,7 @@ body, head {
     transition: all 1s;
 }
 
-.btn1:hover, .btn1:active:focus {
+.btn1:hover, .btn1:active, .btn1:focus {
     animation: jelly 0.5s;
 }
 
@@ -40,7 +40,7 @@ body, head {
     border-radius: 45px;
 }
 
-.send-btn, .send-btn:hover, .send-btn:active:focus {
+.send-btn, .send-btn:hover, .send-btn:active, .send-btn:focus {
     border: none;
     text-transform: uppercase;
     display: inline-block;
@@ -52,7 +52,23 @@ body, head {
     transition: all 1s;
 }
 
-.send-btn:hover, .send-btn:active:focus {
+.send-btn:hover, .send-btn:active, .send-btn:focus {
+    animation: jelly 0.5s;
+}
+
+.check-btn, .check-btn:hover, .check-btn:active, .check-btn:focus {
+    border: none;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 10px 19px;
+    background-color: #ffbe33;
+    color: #ffffff;
+    border-radius: 45px;
+    -webkit-transition: all 1s;
+    transition: all 1s;
+}
+
+.check-btn:hover, .check-btn:active, .check-btn:focus {
     animation: jelly 0.5s;
 }
 
@@ -86,7 +102,7 @@ body, head {
 
 .login-img {
     width: 40px;
-    height: 4f0px;
+    height: 40px;
 }
 
 .form-label {
@@ -104,7 +120,7 @@ body, head {
     animation: jelly 0.5s;
 }
 
-.icon-btn:active:focus {
+.icon-btn:active, .icon-btn:focus {
     animation: jelly 0.5s;
 }
 
@@ -234,10 +250,16 @@ body, head {
     right: 0;
 }
 
-#alert-danger {
+.alert-fail {
     color: red;
 }
 
-#alert-success {
+.alert-pass {
     color: green;
+}
+
+.error-div {
+    text-align: left;
+    color: red;
+    margin-top: 5px;
 }

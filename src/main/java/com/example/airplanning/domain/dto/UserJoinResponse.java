@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 public class UserJoinResponse {
-    private String name;        // 본명
-    private String birth;       // 생년월일 YYYYMMDD
+    private String nickname;    // 닉네임
     private String email;       // 이메일
     private String userName;    // 로그인에 사용할 ID
     private String phoneNumber; // 전화번호 01012345678
@@ -20,8 +19,7 @@ public class UserJoinResponse {
 
     public static UserJoinResponse of (UserDto userDto) {
         return UserJoinResponse.builder()
-                .name(userDto.getName())
-                .birth(userDto.getBirth())
+                .nickname(userDto.getNickname())
                 .email(userDto.getEmail())
                 .userName(userDto.getUserName())
                 .phoneNumber(userDto.getPhoneNumber())

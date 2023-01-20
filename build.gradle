@@ -40,6 +40,7 @@ dependencies {
 	// Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// Social Login
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.6.2'
