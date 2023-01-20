@@ -17,8 +17,7 @@ import javax.persistence.Enumerated;
 public class UserDto {
 
     private Long id;
-    private String name;        // 본명
-    private String birth;       // 생년월일 YYYYMMDD
+    private String nickname;    // 닉네임
     private String email;       // 이메일
     private String userName;    // 로그인에 사용할 ID
     private String password;    // 비밀번호
@@ -30,8 +29,7 @@ public class UserDto {
     public static UserDto of(User user) {
         return UserDto.builder()
                 .id(user.getId())
-                .name(user.getName())
-                .birth(user.getBirth())
+                .nickname(user.getNickname())
                 .email(user.getEmail())
                 .userName(user.getUserName())
                 .password(user.getPassword())

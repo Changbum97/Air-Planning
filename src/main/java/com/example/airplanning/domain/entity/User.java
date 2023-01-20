@@ -21,8 +21,7 @@ public class User extends BaseEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;        // 본명
-    private String birth;       // 생년월일 YYYYMMDD
+    private String nickname;    // 닉네임
     private String email;       // 이메일
     private String userName;    // 로그인에 사용할 ID
     private String password;    // 비밀번호
