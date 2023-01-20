@@ -1,61 +1,69 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header.html :: head"/>
-<head>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-</head>
 
 <body class="color-body">
 <div class="container px-5">
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-8 py-5">
-      <form th:method="post" class="join-form form-group"> <!--th:action=""-->
+      <form class="join-form form-group" th:action="@{/users/join}" th:method="post" th:object="${userJoinRequest}" id="userJoinRequest">
         <h2 onclick="location.href='/'">로고이미지(홈으로)</h2>
         <br/>
-        <div>
-          <input type="text" class="w-75 login-input" placeholder="아이디" required>
+        <div align="center">
+          <input th:field="*{userName}" type="text" class="w-75 login-input" placeholder="아이디"
+                 onchange="check_userName()">
+          <div style="margin-top: 5px" class="w-75">
+            <div id="userName-pass" class="alert-pass" hidden>사용 가능한 아이디 입니다</div>
+            <div id="userName-fail" class="alert-fail" hidden>아이디가 중복됩니다</div>
+            <div id="userName-null" class="alert-fail" hidden>공백일 수 없습니다</div>
+          </div>
         </div>
         <br/>
-        <div>
-          <input id="pw" type="password" class="w-75 login-input" placeholder="비밀번호는 ~~로 사용해야 합니다" required>
+        <div align="center">
+          <input th:field="*{password}" type="password" class="w-75 login-input" placeholder="비밀번호는 ~~로 사용해야 합니다">
         </div>
         <br/>
-        <div>
-          <input id="pw2" type="password" class="w-75 login-input" placeholder="비밀번호 확인" onchange="check_pw()" required>
-        </div>
-        <div style="margin-top: 5px">
-          <div id="alert-success" hidden>비밀번호가 일치합니다.</div>
-          <div id="alert-danger" hidden>비밀번호가 일치하지 않습니다.</div>
+        <div align="center">
+          <input id="password-check" type="password" class="w-75 login-input" placeholder="비밀번호 확인" onchange="check_pw()">
+          <div style="margin-top: 5px" class="w-75">
+            <div id="password-check-pass" class="alert-pass" hidden>비밀번호가 일치합니다</div>
+            <div id="password-check-fail" class="alert-fail" hidden>비밀번호가 일치하지 않습니다</div>
+          </div>
         </div>
         <br/>
-        <div>
-          <input type="text" class="w-75 login-input" placeholder="닉네임" required>
+        <div align="center">
+          <input th:field="*{nickname}" type="text" class="w-75 login-input" placeholder="닉네임" onchange="check_nickname()">
+          <div style="margin-top: 5px" class="w-75">
+            <div id="nickname-pass" class="alert-pass" hidden>사용 가능한 닉네임 입니다</div>
+            <div id="nickname-fail" class="alert-fail" hidden>닉네임이 중복됩니다</div>
+            <div id="nickname-null" class="alert-fail" hidden>공백일 수 없습니다</div>
+          </div>
         </div>
         <br/>
         <div align="center">
           <div class="w-75 d-flex">
-            <input type="text" class="join-input" placeholder="email" required>
+            <input type="text" class="join-input" placeholder="email">
             <button type="button" class="btn send-btn" onclick="send_email()">인증번호 전송</button>
           </div>
           <div id="check-email" style="margin-top: 20px" hidden>
-            <input type="text" class="join-input" placeholder="인증번호" required>
+            <input type="text" class="join-input" placeholder="인증번호">
             <button type="button" class="btn btn1">인증</button>
           </div>
         </div>
         <br/>
         <div align="center">
           <div class="w-75 d-flex">
-            <input type="text" class="join-input" placeholder="전화 번호" required>
+            <input type="text" class="join-input" placeholder="전화 번호">
             <button type="button" class="btn send-btn" onclick="send_phone()">인증번호 전송</button>
           </div>
           <div id="check-phone" style="margin-top: 20px" hidden>
-            <input type="text" class="join-input" placeholder="인증번호" required>
+            <input type="text" class="join-input" placeholder="인증번호">
             <button type="button" class="btn btn1">인증</button>
           </div>
         </div>
         <br/>
         <div>
-          <button id="join-btn" type="submit" class="btn btn1" disabled>회원가입</button>
+          <button id="join-btn" type="button" class="btn btn1" onclick="join()" disabled>회원가입</button>
           <br/><br/>
           <div class="bottom-text">이미 계정이 있으신가요?&nbsp;&nbsp;<a href="/users/login">로그인</a></div>
         </div>
@@ -66,29 +74,140 @@
 
 <script th:inline="javascript">
 
+  let userNamePass = false
+  let passwordPass = false
+  let nicknamePass = false
+
+  function check_userName() {
+    let userName = $("#userName").val();
+    userNamePass = false
+    join_btn_disable()
+
+    if(userName == "") {
+      show('userName-null')
+      hide('userName-pass')
+      hide('userName-fail')
+      return
+    }
+
+    $.ajax({
+      type: 'GET',
+      url: '/users/check-userName',
+      data: {
+        userName: userName
+      },
+      success: function (duplicated) {
+        if (duplicated == true) {
+          hide('userName-null')
+          hide('userName-pass')
+          show('userName-fail')
+        } else {
+          hide('userName-null')
+          show('userName-pass')
+          hide('userName-fail')
+          userNamePass = true
+          check_all()
+        }
+      }
+    });
+  }
+
+  function check_nickname() {
+    let nickname = $("#nickname").val();
+    nicknamePass = false
+    join_btn_disable()
+
+    if(nickname == "") {
+      show('nickname-null')
+      hide('nickname-pass')
+      hide('nickname-fail')
+      return
+    }
+
+    $.ajax({
+      type: 'GET',
+      url: '/users/check-nickname',
+      data: {
+        nickname: nickname
+      },
+      success: function (duplicated) {
+        if (duplicated == true) {
+          hide('nickname-null')
+          hide('nickname-pass')
+          show('nickname-fail')
+        } else {
+          hide('nickname-null')
+          show('nickname-pass')
+          hide('nickname-fail')
+          nicknamePass = true
+          check_all()
+        }
+      }
+    });
+  }
+
   function send_email() {
     alert("이메일로 인증번호를 전송했습니다")
     document.getElementById("check-email").removeAttribute("hidden")
     document.getElementById("check-email").className = "w-75 d-flex"
   }
+
   function send_phone() {
     alert("핸드폰으로 인증번호를 전송했습니다")
     document.getElementById("check-phone").removeAttribute("hidden")
     document.getElementById("check-phone").className = "w-75 d-flex"
   }
+
   function check_pw() {
-    if(document.getElementById('pw').value != '' && document.getElementById('pw2').value!= ''){
-      if(document.getElementById('pw').value == document.getElementById('pw2').value){
-        document.getElementById('alert-success').removeAttribute("hidden")
-        document.getElementById('alert-danger').setAttribute("hidden", "true")
-        document.getElementById('join-btn').removeAttribute("disabled")
+    passwordPass = false
+    join_btn_disable()
+
+    let pw = $("#password").val();
+    let pw2 = $("#password-check").val();
+
+    if(pw != '' && pw2 != ''){
+      if(pw == pw2){
+        show('password-check-pass')
+        hide('password-check-fail')
+        passwordPass = true
+        check_all()
       }
       else{
-        document.getElementById('alert-danger').removeAttribute("hidden")
-        document.getElementById('alert-success').setAttribute("hidden", "true")
-        document.getElementById('join-btn').setAttribute("disabled", "true")
+        hide('password-check-pass')
+        show('password-check-fail')
       }
     }
+  }
+
+  function show(id) {
+    if(document.getElementById(id) != null) {
+      document.getElementById(id).removeAttribute("hidden")
+    }
+  }
+  function hide(id) {
+    if(document.getElementById(id) != null) {
+      document.getElementById(id).setAttribute("hidden", "true")
+    }
+  }
+  function check_all() {
+    if(userNamePass == true && passwordPass == true && nicknamePass == true) {
+      document.getElementById('join-btn').removeAttribute("disabled")
+    }
+  }
+  function join_btn_disable() {
+    document.getElementById('join-btn').setAttribute("disabled", "true")
+  }
+
+  function join() {
+    $.ajax({
+      type: 'POST',
+      url: '/users/join/',
+      data: $('#userJoinRequest').serialize(),
+      success: function (message) {
+        alert(message)
+        location.href="/users/login"
+      }
+    });
   }
 
   /* 이메일, 전화번호 인증 => 구현 필요
