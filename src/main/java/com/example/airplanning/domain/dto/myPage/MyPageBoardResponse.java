@@ -2,6 +2,8 @@ package com.example.airplanning.domain.dto.myPage;
 
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Like;
+import com.example.airplanning.domain.entity.Comment;
+import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.domain.enum_class.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

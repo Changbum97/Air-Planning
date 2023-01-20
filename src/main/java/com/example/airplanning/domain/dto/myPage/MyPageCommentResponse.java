@@ -1,11 +1,14 @@
 package com.example.airplanning.domain.dto.myPage;
 
 import com.example.airplanning.domain.entity.Comment;
+import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.domain.enum_class.CommentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.lang.reflect.GenericDeclaration;
 
 @AllArgsConstructor
 @NoArgsConstructor
