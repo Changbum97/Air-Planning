@@ -55,4 +55,31 @@ public class MyPageRestController {
         return ResponseEntity.ok().body(commentDtos);
 
     }
+
+    //마이페이지 내가 좋아요 한 게시글
+    @GetMapping("/like/boards")
+    public ResponseEntity<Page<MyPageBoardResponse>> getLikeBoard(@PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                    @PathVariable Long userId, Principal principal) {
+        Page<MyPageBoardResponse> boardDtos = myPageService.getLikeBoard(pageable, principal.getName());
+        return ResponseEntity.ok().body(boardDtos);
+
+    }
+
+    //마이페이지 내가 좋아요 한 리뷰
+    @GetMapping("/like/reviews")
+    public ResponseEntity<Page<MyPageReviewResponse>> getLikeReview(@PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                  @PathVariable Long userId, Principal principal) {
+        Page<MyPageReviewResponse> reviewDtos = myPageService.getLikeReview(pageable, principal.getName());
+        return ResponseEntity.ok().body(reviewDtos);
+
+    }
+
+    //마이페이지 내가 좋아요 한 플래너
+    @GetMapping("/like/planners")
+    public ResponseEntity<Page<MyPagePlannerResponse>> getLikePlanner(@PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                      @PathVariable Long userId, Principal principal) {
+        Page<MyPagePlannerResponse> boardDtos = myPageService.getLikePlanner(pageable, principal.getName());
+        return ResponseEntity.ok().body(boardDtos);
+
+    }
 }

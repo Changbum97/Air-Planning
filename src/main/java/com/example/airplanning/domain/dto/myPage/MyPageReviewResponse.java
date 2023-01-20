@@ -1,5 +1,6 @@
 package com.example.airplanning.domain.dto.myPage;
 
+import com.example.airplanning.domain.entity.Like;
 import com.example.airplanning.domain.entity.Review;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,4 +23,10 @@ public class MyPageReviewResponse {
                 .build();
     }
 
+    public static MyPageReviewResponse Of(Like like) {
+        return MyPageReviewResponse.builder()
+                .id(like.getReview().getId())
+                .title(like.getReview().getTitle())
+                .build();
+    }
 }

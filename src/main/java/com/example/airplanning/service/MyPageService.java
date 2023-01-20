@@ -1,10 +1,8 @@
 package com.example.airplanning.service;
 
 import com.example.airplanning.domain.dto.myPage.*;
-import com.example.airplanning.domain.entity.Board;
-import com.example.airplanning.domain.entity.Comment;
-import com.example.airplanning.domain.entity.Review;
-import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.entity.*;
+import com.example.airplanning.domain.enum_class.LikeType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.*;
@@ -77,4 +75,50 @@ public class MyPageService {
 
     }
 
+    //마이페이지 내가 좋아요 한 글
+    public Page<MyPageBoardResponse> getLikeBoard(Pageable pageable, String userName) {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        Page<Like> likePages = likeRepository.findAllByUser(user, pageable);
+
+        return new PageImpl<>(likePages.stream()
+                .filter(Like -> Like.getLikeType().equals(LikeType.BOARD_LIKE))
+                .map(Like -> MyPageBoardResponse.Of(Like))
+                .collect(Collectors.toList()));
+
+    }
+
+    //마이페이지 내가 좋아요 한 리뷰
+    public Page<MyPageReviewResponse> getLikeReview(Pageable pageable, String userName) {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        Page<Like> likePages = likeRepository.findAllByUser(user, pageable);
+
+        return new PageImpl<>(likePages.stream()
+                .filter(Like -> Like.getLikeType().equals(LikeType.REVIEW_LIKE))
+                .map(Like -> MyPageReviewResponse.Of(Like))
+                .collect(Collectors.toList()));
+
+    }
+
+    //마이페이지 내가 좋아요 한 플래너
+    public Page<MyPagePlannerResponse> getLikePlanner(Pageable pageable, String userName) {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        Page<Like> likePages = likeRepository.findAllByUser(user, pageable);
+
+        return new PageImpl<>(likePages.stream()
+                .filter(Like -> Like.getLikeType().equals(LikeType.PLANNER_LIKE))
+                .map(Like -> MyPagePlannerResponse.of(Like))
+                .collect(Collectors.toList()));
+
+    }
+
 }
+
