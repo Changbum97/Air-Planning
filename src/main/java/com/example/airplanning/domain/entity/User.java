@@ -52,4 +52,7 @@ public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "user")
     private List<Alarm> alarms;
+
+    @OneToMany(mappedBy = "user")
+    private List<Plan> plans;
 }
