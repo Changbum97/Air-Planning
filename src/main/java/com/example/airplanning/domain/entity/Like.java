@@ -23,7 +23,7 @@ public class Like extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;          // 댓글을 작성한 유저
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private LikeType likeType;    // 좋아요 타입 (리뷰 좋아요, 게시판 좋아요, 플래너 좋아요)
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -24,7 +24,7 @@ public class Comment extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;          // 댓글을 작성한 유저
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private CommentType commentType;    // 댓글 타입 (리뷰 댓글, 게시판 댓글)
 
     @ManyToOne(fetch = FetchType.LAZY)
