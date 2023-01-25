@@ -63,4 +63,9 @@ public class UserService {
         return user.getUserName();
     }
 
+    // 아이디 + 이메일로 비밀번호 찾기
+    public boolean findPassword(String userName, String email) {
+        return userRepository.existsByUserNameAndEmail(userName, email);
+    }
+
 }

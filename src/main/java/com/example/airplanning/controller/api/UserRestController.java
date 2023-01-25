@@ -95,12 +95,29 @@ public class UserRestController {
         }
     }
 
+    // 이메일로 아이디 찾기
     @PostMapping("/find-id")
     public String findIdByEmail(@RequestBody String email) throws Exception {
         email = email.substring(6).replace("%40","@");
         String userName = userService.findIdByEmail(email);
         String message = emailService.sendFoundUserName(email, userName);
         return message;
+    }
+
+    // 아이디 + 이메일로 비밀번호 찾기
+    @PostMapping("/find-password")
+    public String findPassword(@RequestBody String userData) throws Exception {
+        log.info(userData);
+        String userName = userData.split("&")[0].substring(9);
+        String email = userData.split("&")[1];
+        log.info("email: {}", email);
+        log.info("userName : {}", userName);
+        if (userService.findPassword(userName, email.substring(6).replace("%40","@"))) {
+            emailService.sendSimpleMessage(email);
+            return "메일을 확인하세요.";
+        } else {
+            return "해당하는 유저 정보가 없습니다.";
+        }
     }
 
 }
