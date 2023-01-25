@@ -18,6 +18,16 @@
         <button>로그인</button>
     </form>
 
+    <form action="/api/emailcertification" method="post" >
+        <input type="email" name="email">
+        <button>이메일인증번호 보내기</button>
+    </form>
+    <form action="/api/emailcheck" method="post" >
+        <input type="text" name="code">
+        <button>이메일인증하기</button>
+    </form>
+
+
     <a href="/oauth2/authorization/google">구글 로그인</a>
     <a href="/oauth2/authorization/naver">네이버 로그인</a>
     <a href="/oauth2/authorization/kakao">카카오 로그인</a>
