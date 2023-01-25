@@ -23,7 +23,7 @@ public class Board extends BaseEntity{
     private String content;     // 글 내용
     private String image;       // 이미지 URL
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Category category;  // 카테고리 (자유게시판, 등업게시판, 포트폴리오 게시판)
 
     @ManyToOne(fetch = FetchType.LAZY)

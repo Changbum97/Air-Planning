@@ -39,4 +39,7 @@ public class Planner extends BaseEntity{
 
     @OneToMany(mappedBy = "planner")
     private List<Like> likes;
+
+    @OneToMany(mappedBy = "planner")
+    private List<Plan> plans;
 }

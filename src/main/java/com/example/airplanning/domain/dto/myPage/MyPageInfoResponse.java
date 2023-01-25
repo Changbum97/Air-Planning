@@ -12,15 +12,13 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MyPageInfoResponse {
 
-    private String name;        // 본명
-    private String birth;       // 생년월일 YYYYMMDD
+    private String nickname;    // 닉네임
     private String userName;    // 로그인에 사용할 ID
 
     public static MyPageInfoResponse of(User user) {
         return MyPageInfoResponse.builder()
                 .userName(user.getUserName())
-                .birth(user.getBirth())
-                .name(user.getName())
+                .nickname(user.getNickname())
                 .build();
     }
 }
