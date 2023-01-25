@@ -86,11 +86,12 @@ public class EmailService {
             throw new IllegalArgumentException();
         }
         setDataExpire(ePw, to, 60*5L);
-        return ePw;
+        return "인증 메일이 발송되었습니다.";
     }
 
     //redis
     public String getData(String key){
+        key = key.substring(5);
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         return valueOperations.get(key);
     }

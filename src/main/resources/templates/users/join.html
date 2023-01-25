@@ -42,12 +42,21 @@
         <br/>
         <div align="center">
           <div class="w-75 d-flex">
-            <input type="text" class="join-input" placeholder="email">
-            <button type="button" class="btn send-btn" onclick="send_email()">인증번호 전송</button>
+            <input th:field="*{email}" type="text" class="join-input" placeholder="email" onchange="check_email()">
+            <button id="sendEmail-btn" type="button" class="btn btn1" onclick="send_email()" disabled>인증번호 전송</button>
+          </div>
+          <div style="margin-top: 5px" class="w-75">
+            <div id="email-pass" class="alert-pass" hidden>사용 가능한 이메일 입니다</div>
+            <div id="email-fail" class="alert-fail" hidden>이메일이 중복됩니다.</div>
+            <div id="email-null" class="alert-fail" hidden>공백일 수 없습니다</div>
           </div>
           <div id="check-email" style="margin-top: 20px" hidden>
-            <input type="text" class="join-input" placeholder="인증번호">
-            <button type="button" class="btn btn1">인증</button>
+            <input th:field="*{code}" type="text" class="join-input" placeholder="인증번호">
+            <button type="button" class="btn btn1" onclick="auth_email()">인증</button>
+          </div>
+          <div style="margin-top: 5px" class="w-75">
+            <div id="email-check-pass" class="alert-pass" hidden>인증번호가 일치합니다</div>
+            <div id="email-check-fail" class="alert-fail" hidden>인증번호가 일치하지 않습니다</div>
           </div>
         </div>
         <br/>
@@ -77,6 +86,8 @@
   let userNamePass = false
   let passwordPass = false
   let nicknamePass = false
+  let emailAuthPass = false
+
 
   function check_userName() {
     let userName = $("#userName").val();
@@ -146,10 +157,79 @@
     });
   }
 
+  function check_email() {
+    let email = $("#email").val();
+    sendEmail_btn_disable()
+
+    if(email == "") {
+      show('email-null')
+      hide('email-pass')
+      hide('email-fail')
+      return
+    }
+
+    $.ajax({
+      type: 'GET',
+      url: '/users/check-email',
+      data: {
+        email: email
+      },
+      success: function (duplicated) {
+        if (duplicated == true) {
+          hide('email-null')
+          hide('email-pass')
+          show('email-fail')
+        } else {
+          hide('email-null')
+          show('email-pass')
+          hide('email-fail')
+          document.getElementById("sendEmail-btn").removeAttribute("disabled")
+        }
+      }
+    });
+  }
+
+
   function send_email() {
-    alert("이메일로 인증번호를 전송했습니다")
+    let email = $("#email").val();
+    $.ajax({
+      type: 'POST',
+      url: '/users/ecert/send',
+      data: {
+        email: email
+      },
+      success:function (message) {
+        alert(message)
+      }
+    });
+
     document.getElementById("check-email").removeAttribute("hidden")
     document.getElementById("check-email").className = "w-75 d-flex"
+  }
+
+  function auth_email() {
+    let code = $("#code").val();
+    emailAuthPass = false
+    join_btn_disable()
+
+    $.ajax({
+      type: 'POST',
+      url: '/users/ecert/check',
+      data: {
+        code: code
+      },
+      success:function (auth) {
+        if (auth == true) {
+          show('email-check-pass')
+          hide('email-check-fail')
+          emailAuthPass = true
+          check_all()
+        } else {
+          hide('email-check-pass')
+          show('email-check-fail')
+        }
+      }
+    })
   }
 
   function send_phone() {
@@ -190,12 +270,15 @@
     }
   }
   function check_all() {
-    if(userNamePass == true && passwordPass == true && nicknamePass == true) {
+    if(userNamePass == true && passwordPass == true && nicknamePass == true && emailAuthPass == true) {
       document.getElementById('join-btn').removeAttribute("disabled")
     }
   }
   function join_btn_disable() {
     document.getElementById('join-btn').setAttribute("disabled", "true")
+  }
+  function sendEmail_btn_disable() {
+    document.getElementById('sendEmail-btn').setAttribute("disabled", "true")
   }
 
   function join() {

@@ -87,7 +87,7 @@ public class UserRestController {
     @PostMapping("/emailcheck")
     public String emailConfirm2(@RequestBody String code) {
         log.info("email : {} ", code);
-        code = code.substring(5);
+
         if (emailService.getData(code)==null) {
             return "인증실패!";
         } else {

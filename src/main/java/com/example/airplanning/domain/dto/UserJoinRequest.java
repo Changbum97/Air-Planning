@@ -20,6 +20,8 @@ public class UserJoinRequest {
     private String password;    // 비밀번호
     private String phoneNumber; // 전화번호 01012345678
 
+    private String code; //이메일 인증코드
+
     public User toEntity(String encodedPassword){
         return User.builder()
                 .nickname(this.nickname)
