@@ -95,4 +95,12 @@ public class UserRestController {
         }
     }
 
+    @PostMapping("/find-id")
+    public String findIdByEmail(@RequestBody String email) throws Exception {
+        email = email.substring(6).replace("%40","@");
+        String userName = userService.findIdByEmail(email);
+        String message = emailService.sendFoundUserName(email, userName);
+        return message;
+    }
+
 }

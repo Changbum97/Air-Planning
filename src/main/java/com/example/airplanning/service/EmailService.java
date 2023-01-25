@@ -50,6 +50,32 @@ public class EmailService {
         return message;
     }
 
+    private MimeMessage foundMessage(String to, String userName) throws Exception {
+        MimeMessage message = mailSender.createMimeMessage();
+
+        message.addRecipients(Message.RecipientType.TO, to);
+        message.setSubject("Air Planning 아이디 찾기");
+
+        String msgg="";
+        msgg+= "<div style='margin:100px;'>";
+        msgg+= "<h1> 안녕하세요 Air Planning 입니다. </h1>";
+        msgg+= "<br>";
+        msgg+= "<p>아래의 아이디를 확인해주세요<p>";
+        msgg+= "<br>";
+        msgg+= "<p>감사합니다!<p>";
+        msgg+= "<br>";
+        msgg+= "<div align='center' style='border:1px solid black; font-family:verdana';>";
+        msgg+= "<h3 style='color:blue;'>회원님의 Air Planning 아이디 입니다.</h3>";
+        msgg+= "<div style='font-size:130%'>";
+        msgg+= "아이디 : <strong>";
+        msgg+= userName+"</strong><div><br/> ";
+        msgg+= "</div>";
+        message.setText(msgg, "utf-8", "html");//내용
+        message.setFrom(new InternetAddress("skdlfma123@gmail.com","Air Planning"));//보내는 사람
+
+        return message;
+    }
+
     public static String createKey() {
         StringBuffer key = new StringBuffer();
         Random rnd = new Random();
@@ -87,6 +113,17 @@ public class EmailService {
         }
         setDataExpire(ePw, to, 60*5L);
         return "인증 메일이 발송되었습니다.";
+    }
+
+    public String sendFoundUserName(String to, String userName) throws Exception {
+        MimeMessage message = foundMessage(to, userName);
+        try{//예외처리
+            mailSender.send(message);
+        }catch(MailException es){
+            es.printStackTrace();
+            throw new IllegalArgumentException();
+        }
+        return "메일을 확인해 주세요.";
     }
 
     //redis
