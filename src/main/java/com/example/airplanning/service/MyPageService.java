@@ -3,6 +3,7 @@ package com.example.airplanning.service;
 import com.example.airplanning.domain.dto.myPage.*;
 import com.example.airplanning.domain.entity.*;
 import com.example.airplanning.domain.enum_class.LikeType;
+import com.example.airplanning.domain.enum_class.PlanType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.*;
@@ -23,6 +24,7 @@ public class MyPageService {
     private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
     private final ReviewRepository reviewRepository;
+    private final PlanRepository planRepository;
 
     //마이페이지 내정보
     public MyPageInfoResponse getMyPageInfo(String userName) {
@@ -120,5 +122,30 @@ public class MyPageService {
 
     }
 
+    //마이페이지 여행중
+    public Page<MyPagePlanResponse> getProgressPlan(Pageable pageable, String userName) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        Page<Plan> planPages = planRepository.findAllByUser(user, pageable);
+
+        return new PageImpl<>(planPages.stream()
+                .filter(Plan -> Plan.getPlanType().equals(PlanType.WAITING) || Plan.getPlanType().equals(PlanType.ACCEPT) ||
+                        Plan.getPlanType().equals(PlanType.REFUSE))
+                .map(Plan -> MyPagePlanResponse.of(Plan))
+                .collect(Collectors.toList()));
+    }
+
+    public Page<MyPagePlanResponse> getFinishPlan(Pageable pageable, String userName) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        Page<Plan> planPages = planRepository.findAllByUser(user, pageable);
+
+        return new PageImpl<>(planPages.stream()
+                .filter(Plan -> Plan.getPlanType().equals(PlanType.FINISH))
+                .map(Plan -> MyPagePlanResponse.of(Plan))
+                .collect(Collectors.toList()));
+    }
 }
 
