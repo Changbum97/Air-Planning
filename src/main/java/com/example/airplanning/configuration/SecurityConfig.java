@@ -39,6 +39,8 @@ public class SecurityConfig {
 
                 .authorizeRequests()
                 .antMatchers("/api/v1/hello").authenticated()
+                .antMatchers(HttpMethod.GET, "/reviews/write").authenticated()
+                .antMatchers(HttpMethod.POST, "/reviews").authenticated()
                 .anyRequest().permitAll()
                 .and()
 
