@@ -13,7 +13,7 @@ public class BoardCreateRequest {
     private String title;
     private String content;
 
-    public Board of(User user){
+    public Board toEntity(User user){
         return Board.builder()
                 .user(user)
                 .title(this.title)

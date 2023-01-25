@@ -22,13 +22,11 @@ public class BoardService {
     public BoardDto write(BoardCreateRequest boardCreateRequest, String username) {
         User userEntity = userRepository.findByUserName(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED, String.format("%s not founded", username)));
-        System.out.println("Service Test Post1");
-        Board savedBoardEntity = boardRepository.save(boardCreateRequest.of(userEntity));
+        Board savedBoardEntity = boardRepository.save(boardCreateRequest.toEntity(userEntity));
 
         BoardDto boardDto = BoardDto.builder()
                 .id(savedBoardEntity.getId())
                 .build();
-        System.out.println("Service Test Post2");
 
         return boardDto;
     }

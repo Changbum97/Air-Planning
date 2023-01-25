@@ -26,9 +26,7 @@ public class BoardController {
 
     @PostMapping
     public Response<BoardResponse> posts(@RequestBody BoardCreateRequest dto, Authentication authentication){
-        System.out.println("Controller Test Enter");
         BoardDto boardDto = boardService.write(dto, "test");
-        System.out.println("Controller Test");
         return Response.success(new BoardResponse("포스트 등록 완료", boardDto.getId()));
     }
 
