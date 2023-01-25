@@ -45,6 +45,10 @@ dependencies {
 	// Social Login
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.6.2'
 
+	// email 인증
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 tasks.named('test') {

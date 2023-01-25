@@ -63,6 +63,30 @@ spring:
            token-uri: https://kauth.kakao.com/oauth/token
            user-info-uri: https://kapi.kakao.com/v2/user/me
            user-name-attribute: id
+  # Redis 설정
+  redis:
+    host: ec2-52-78-223-101.ap-northeast-2.compute.amazonaws.com
+    port: 6379
+
+# Email 인증
+mail:
+  smtp:
+    auth: true
+    port: 465
+    starttls:
+      required: true
+      enable: true
+    socketFactory:
+      class: javax.net.ssl.SSLSocketFactory
+      fallback: false
+      port: 465
+
+# admin 구글 계정
+AdminMail:
+  id: skdlfma123@gmail.com
+  password: ugwplewriwktlvss
+
+
 
 
 
