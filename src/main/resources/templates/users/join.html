@@ -194,7 +194,7 @@
   function send_email() {
     let email = $("#email").val();
     $.ajax({
-      type: 'POST',
+      type: 'GET',
       url: '/users/ecert/send',
       data: {
         email: email
