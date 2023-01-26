@@ -72,11 +72,11 @@ public class UserController {
         return userService.checkEmail(email);
     }
 
-    // 인증 이메일 보내기
+    // 로그인 시 인증 이메일 보내기
     @ResponseBody
-    @PostMapping("/ecert/send")
-    public String sendAuthEmail(@RequestBody String email) throws Exception {
-        return emailService.sendSimpleMessage(email);
+    @GetMapping("/ecert/send")
+    public String sendAuthEmail(@RequestParam String email) throws Exception {
+        return emailService.sendLoginAuthMessage(email);
     }
 
     // 이메일 인증 번호 확인하기
