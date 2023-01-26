@@ -1,20 +1,13 @@
 package com.example.airplanning.controller;
 
-import com.example.airplanning.domain.dto.UserJoinRequest;
-import com.example.airplanning.exception.AppException;
-import com.example.airplanning.exception.ErrorCode;
+import com.example.airplanning.domain.dto.user.UserJoinRequest;
 import com.example.airplanning.service.EmailService;
 import com.example.airplanning.service.UserService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 
 @Controller

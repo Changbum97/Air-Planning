@@ -1,7 +1,5 @@
 package com.example.airplanning.domain.entity;
 
-import com.example.airplanning.configuration.login.UserDetail;
-import com.example.airplanning.domain.dto.UserDto;
 import com.example.airplanning.domain.enum_class.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
