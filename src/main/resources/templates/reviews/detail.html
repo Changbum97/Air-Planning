@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-6 py-5">
+                <form class="form-group">
+                    <div>
+                        <div class="img-box">
+                            <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
+                        </div>
+                        <h5>[[${review.userName}]]</h5>
+                        <h6>
+                            <img src="/assets/images/eyes.svg" class="little-img"> 200
+                            <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
+                        </h6>
+                    </div>
+                    <br/>
+                    <div>
+                        <h5 th:text="'선택한 플래너 : ' + ${review.plannerName}"></h5>
+                        <h5 class="d-flex">별점 : &nbsp;
+                            <div class="star-ratings">
+                                <div class="star-ratings-base space-x-2 text-lg">
+                                    <span>★★★★★</span>
+                                </div>
+                                <div class="star-ratings-fill space-x-2 text-lg" th:style="'width: ' + ${review.star * 20} + '%'">
+                                    <span>★★★★★</span>
+                                </div>
+                            </div>
+                        </h5>
+                    </div>
+                    <br/>
+                    <div>
+                        <h1>[[${review.title}]]</h1>
+                    </div>
+                    <div>
+                        <textarea rows="10" class="w-100" readonly>[[${review.content}]]
+                        </textarea>
+                    </div>
+                    <div style="float: left" class="py-3">
+                        <span th:text="'작성일 : ' + ${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    </div>
+                    <div align="right" class="py-1">
+                        <button class="btn btn1">수정</button>
+                        <button class="btn btn1">삭제</button>
+                    </div>
+                    <br/>
+                </form>
+                <div>
+                    <button class="btn icon-btn">
+                        <img src="/assets/images/empty-hearts.svg" class="little-img">
+                    </button>
+                    <button class="btn icon-btn">
+                        <img src="/assets/images/fill-hearts.svg" class="little-img">
+                    </button>
+                </div>
+                <hr/>
+                <form class="form-group">
+                    <div>
+                        <textarea rows="3" class="w-100" placeholder="댓글을 입력해주세요"></textarea>
+                    </div>
+                    <br/>
+                    <div align="right">
+                        <button class="btn btn1">댓글 등록</button>
+                    </div>
+                </form>
+                <hr/>
+                <h5 class="px-2">댓글 10개</h5>
+                <br/>
+                <div align="left">
+                    <form class="form-group w-75">
+                        <textarea rows="3" class="w-100" readonly>댓글111</textarea>
+                        <div align="left">
+                            <a href="/">수정</a>
+                            <a href="/">삭제</a>
+                        </div>
+                    </form>
+                </div>
+                <br/>
+                <div align="right">
+                    <form class="form-group w-75">
+                        <textarea rows="3" class="w-100" readonly>대댓글111</textarea>
+                        <div align="right">
+                            <a href="/">수정</a>
+                            <a href="/">삭제</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
