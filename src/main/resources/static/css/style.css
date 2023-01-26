@@ -56,6 +56,16 @@ body, head {
     animation: jelly 0.5s;
 }
 
+.send-btn:disabled {
+    border: none;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 10px 5px;
+    background-color: #ffbe33;
+    color: #ffffff;
+    border-radius: 45px;
+}
+
 .check-btn, .check-btn:hover, .check-btn:active, .check-btn:focus {
     border: none;
     text-transform: uppercase;
