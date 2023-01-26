@@ -25,4 +25,9 @@ public class ReviewService {
         Review savedReview = reviewRepository.save(request.toEntity(user));
         return savedReview.getId();
     }
+
+    public Review findById(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+    }
 }

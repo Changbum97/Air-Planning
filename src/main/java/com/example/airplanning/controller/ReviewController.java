@@ -1,14 +1,13 @@
 package com.example.airplanning.controller;
 
 import com.example.airplanning.domain.dto.review.ReviewCreateRequest;
+import com.example.airplanning.domain.dto.review.ReviewDto;
+import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
@@ -31,5 +30,12 @@ public class ReviewController {
     public String writeReview(ReviewCreateRequest request, Principal principal) {
         reviewService.write(request, principal.getName());
         return "리뷰 작성 성공";
+    }
+
+    @GetMapping("/{reviewId}")
+    public String getOneReview(@PathVariable Long reviewId, Model model) {
+        Review review = reviewService.findById(reviewId);
+        model.addAttribute("review", ReviewDto.of(review));
+        return "reviews/detail";
     }
 }
