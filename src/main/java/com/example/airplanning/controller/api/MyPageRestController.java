@@ -82,4 +82,20 @@ public class MyPageRestController {
         return ResponseEntity.ok().body(boardDtos);
 
     }
+
+    //마이페이지 여행중
+    @GetMapping("/trip/progress")
+    public ResponseEntity<Page<MyPagePlanResponse>> getProgressPlan(@PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                    @PathVariable Long userId, Principal principal) {
+        Page<MyPagePlanResponse> planDtos = myPageService.getProgressPlan(pageable, principal.getName());
+        return ResponseEntity.ok().body(planDtos);
+    }
+
+    //마이페이지 여행완료
+    @GetMapping("/trip/finish")
+    public ResponseEntity<Page<MyPagePlanResponse>> getFinishPlan(@PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                    @PathVariable Long userId, Principal principal) {
+        Page<MyPagePlanResponse> planDtos = myPageService.getFinishPlan(pageable, principal.getName());
+        return ResponseEntity.ok().body(planDtos);
+    }
 }

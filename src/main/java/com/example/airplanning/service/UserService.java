@@ -55,4 +55,17 @@ public class UserService {
     public boolean checkPhoneNumber(String phoneNumber) {
         return userRepository.existsByPhoneNumber(phoneNumber);
     }
+
+    // 이메일로 아이디 찾기
+    public String findIdByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        return user.getUserName();
+    }
+
+    // 아이디 + 이메일로 비밀번호 찾기
+    public boolean findPassword(String userName, String email) {
+        return userRepository.existsByUserNameAndEmail(userName, email);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.airplanning.controller.api;
 
 import com.example.airplanning.domain.Response;
+import com.example.airplanning.domain.dto.FindPasswordRequest;
 import com.example.airplanning.domain.dto.UserDto;
 import com.example.airplanning.domain.dto.UserJoinRequest;
 import com.example.airplanning.domain.dto.UserJoinResponse;
@@ -73,13 +74,9 @@ public class UserRestController {
     }
 
     // 인증 이메일 보내기
-    @PostMapping("/emailcertification")
-    public ResponseEntity<String> emailConfirm(
-            @RequestBody @ApiParam(value="이메일정보 정보", required = true)String email) throws Exception {
-        log.info("email : {} ", email);
-
-        String confirm = emailService.sendSimpleMessage(email);
-
+    @GetMapping("/emailcertification")
+    public ResponseEntity<String> emailConfirm(@RequestParam String email) throws Exception {
+        String confirm = emailService.sendLoginAuthMessage(email);
         return ResponseEntity.ok().body(confirm);
     }
 
@@ -87,11 +84,31 @@ public class UserRestController {
     @PostMapping("/emailcheck")
     public String emailConfirm2(@RequestBody String code) {
         log.info("email : {} ", code);
-        code = code.substring(5);
         if (emailService.getData(code)==null) {
             return "인증실패!";
         } else {
             return "인증성공!";
+        }
+    }
+
+    // 이메일로 아이디 찾기
+    @GetMapping("/find-id")
+    public String findIdByEmail(@RequestParam String email) throws Exception {
+        String userName = userService.findIdByEmail(email);
+        String message = emailService.sendFoundIdMessage(email, userName);
+        return message;
+    }
+
+    // 아이디 + 이메일로 비밀번호 찾기
+    @PostMapping("/find-password")
+    public String findPassword(FindPasswordRequest request) throws Exception {
+        log.info("userName : {}", request.getUserName());
+        log.info("email : {}", request.getEmail());
+        if (userService.findPassword(request.getUserName(), request.getEmail())) {
+            emailService.sendFoundPasswordMessage(request.getEmail());
+            return "메일을 확인하세요.";
+        } else {
+            return "해당하는 유저 정보가 없습니다.";
         }
     }
 
