@@ -1,4 +1,4 @@
-package com.example.airplanning.domain.dto;
+package com.example.airplanning.domain.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
