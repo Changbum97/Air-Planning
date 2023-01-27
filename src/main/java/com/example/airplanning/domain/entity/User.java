@@ -55,4 +55,9 @@ public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "user")
     private List<Plan> plans;
+
+    public void updateUser(String password, String nickname) {
+        this.password = password;
+        this.nickname = nickname;
+    }
 }

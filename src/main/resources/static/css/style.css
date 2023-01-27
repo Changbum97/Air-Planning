@@ -89,6 +89,17 @@ body, head {
     margin-bottom: 20px;
 }
 
+.edit-img-box img {
+    border-radius: 100%;
+    border: 5px solid #ffbe33;
+    display:inline-block;
+}
+
+.edit-profile-text {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
 .little-img {
     width: 30px;
     height: 30px;

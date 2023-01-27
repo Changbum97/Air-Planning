@@ -9,16 +9,15 @@
             <div class="col-lg-8 py-5">
                 <div class="d-flex justify-content-between">
                     <h1>마이 페이지</h1>
-                    <button class="btn btn1">정보 수정</button>
+                    <button class="btn btn1" th:onclick="|location.href='@{/users/mypage/{userId}/edit (userId=${userId})}'|">정보 수정</button>
                 </div>
                 <hr/>
                 <div class="img-box">
                     <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="profile-img">
                 </div>
                 <div class="py-3">
-                    <h3 class="profile-text">아이디 : 111</h3>
-                    <h3 class="profile-text">이름 : 222</h3>
-                    <h3 class="profile-text">생년월일 : 2023/01/18</h3>
+                    <h3 class="profile-text" th:utext="${nickname}">닉네임</h3>
+                    <h3 class="profile-text" th:utext="${email}">이메일</h3>
                 </div>
                 <br/><br/><br/>
 
@@ -116,6 +115,7 @@
             document.getElementById("tab2").setAttribute("hidden", "true")
             document.getElementById("tab3").removeAttribute("hidden")
         }
+
     </script>
 </body>
 </html>

@@ -21,11 +21,6 @@ public class PageController {
         return "boards/list";
     }
 
-    @GetMapping("/users/my-page")
-    public String myPage() {
-        return "users/myPage";
-    }
-
     @GetMapping("/users/planner")
     public String plannerPage() {
         return "users/planner";

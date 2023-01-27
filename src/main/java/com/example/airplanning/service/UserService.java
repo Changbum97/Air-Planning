@@ -9,6 +9,7 @@ import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -38,6 +39,44 @@ public class UserService {
         String encodedPassword = encoder.encode(request.getPassword());
         User user = userRepository.save(request.toEntity(encodedPassword));
         return UserDto.of(user);
+    }
+
+    public void checkPassword(String userName, String password) {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        if(!encoder.matches(password, user.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_PASSWORD);
+        }
+
+    }
+
+    @Transactional
+    public void editUserInfo(String password, String nickname, String userName) {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        String changedPassword = user.getPassword();
+        String changedNickname = user.getNickname();
+        //String changedImage = user.getImage();
+
+        if (!password.equals("")) {
+            changedPassword = encoder.encode(password);
+        }
+
+        if (!nickname.equals("")) {
+            changedNickname = nickname;
+        }
+
+        /*if (!image.equals("")) {
+            changedImage = image;
+        }*/
+
+        user.updateUser(changedPassword, changedNickname);
+        userRepository.save(user);
+
     }
 
     public boolean checkUserName(String userName) {
