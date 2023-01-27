@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
 public class UserRestController {

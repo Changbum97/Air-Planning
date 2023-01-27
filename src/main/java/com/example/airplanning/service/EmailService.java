@@ -147,26 +147,27 @@ public class EmailService {
     // 아이디 찾기 아이디 메시지 발송
     public String sendFoundIdMessage(String to, String userName) throws Exception {
         MimeMessage message = foundIdMessage(to, userName);
-        try{//예외처리
+        try{    //예외처리
             mailSender.send(message);
         }catch(MailException es){
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
         return "메일을 확인해 주세요.";
-    }
+     }
 
-    // 비밀번호 찾기 인증 메시지 발송
+    // 비밀번호 찾기 새로운 비밀번호 메시지 발송
     public String sendFoundPasswordMessage(String to) throws Exception {
         MimeMessage message = foundPasswordMessage(to);
-        try{//예외처리
+        String newPassword = ePw;
+        try{    //예외처리
             mailSender.send(message);
         }catch(MailException es){
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
         setDataExpire(ePw, to, 60*5L);
-        return "메일을 확인해 주세요.";
+        return ePw;
     }
 
     // redis

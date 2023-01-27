@@ -64,4 +64,13 @@ public class UserService {
         return userRepository.existsByUserNameAndEmail(userName, email);
     }
 
+    // 비밀번호 변경
+    public void changePassword(String userName, String newPassword) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        String encodedPassword = encoder.encode(newPassword);
+        user.changePassword(encodedPassword);
+        userRepository.save(user);
+    }
 }
