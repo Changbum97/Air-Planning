@@ -156,7 +156,7 @@ public class EmailService {
         return "메일을 확인해 주세요.";
      }
 
-    // 비밀번호 찾기 새로운 비밀번호 메시지 발송
+    // 비밀번호 찾기 새 비밀번호 메시지 발송
     public String sendFoundPasswordMessage(String to) throws Exception {
         MimeMessage message = foundPasswordMessage(to);
         String newPassword = ePw;

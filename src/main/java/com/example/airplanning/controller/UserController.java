@@ -118,7 +118,7 @@ public class UserController {
     @ResponseBody
     @GetMapping("/find-pw-by-email")
     public String findPwByEmail(FindByEmailRequest request) {
-        String message = "메일로 새로운 비밀번호를 전송했습니다";
+        String message = "메일로 새 비밀번호를 전송했습니다";
 
         try {
             String email = request.getEmail();

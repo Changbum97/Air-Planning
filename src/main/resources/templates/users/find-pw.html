@@ -54,7 +54,11 @@
       data: $('#findByEmailRequest').serialize(),
       success: function (message) {
         alert(message)
-        location.href = "/users/find-pw"
+        if(message == "메일로 새 비밀번호를 전송했습니다") {
+          window.close()
+        } else {
+          location.href = "/users/find-pw"
+        }
       }
     });
   }
