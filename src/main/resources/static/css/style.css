@@ -66,11 +66,11 @@ body, head {
     border-radius: 45px;
 }
 
-.check-btn, .check-btn:hover, .check-btn:active, .check-btn:focus {
+.find-btn, .find-btn:hover, .find-btn:active, .find-btn:focus {
     border: none;
     text-transform: uppercase;
     display: inline-block;
-    padding: 10px 19px;
+    padding: 10px 15px;
     background-color: #ffbe33;
     color: #ffffff;
     border-radius: 45px;
@@ -78,7 +78,7 @@ body, head {
     transition: all 1s;
 }
 
-.check-btn:hover, .check-btn:active, .check-btn:focus {
+.find-btn:hover, .find-btn:active, .find-btn:focus {
     animation: jelly 0.5s;
 }
 
@@ -233,7 +233,6 @@ body, head {
     outline: none;
     border-bottom: solid 1px black;
     color: #636e72;
-    width: 70%;
 }
 
 .color-body {

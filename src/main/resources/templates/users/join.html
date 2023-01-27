@@ -42,16 +42,17 @@
         <br/>
         <div align="center">
           <div class="w-75 d-flex">
-            <input th:field="*{email}" type="text" class="join-input" placeholder="email" onchange="check_email()">
+            <input th:field="*{email}" type="text" class="join-input flex-fill" placeholder="email" onchange="check_email()">
             <button id="sendEmail-btn" type="button" class="btn send-btn" onclick="send_email()" disabled>인증번호 전송</button>
           </div>
           <div style="margin-top: 5px" class="w-75">
             <div id="email-pass" class="alert-pass" hidden>사용 가능한 이메일 입니다</div>
             <div id="email-fail" class="alert-fail" hidden>이메일이 중복됩니다.</div>
             <div id="email-null" class="alert-fail" hidden>공백일 수 없습니다</div>
+            <div id="email-type" class="alert-fail" hidden>이메일 형식이 아닙니다</div>
           </div>
           <div id="check-email" style="margin-top: 20px" hidden>
-            <input th:field="*{code}" type="text" class="join-input" placeholder="인증번호">
+            <input th:field="*{code}" type="text" class="join-input flex-fill" placeholder="인증번호">
             <button type="button" class="btn btn1" onclick="auth_email()">인증</button>
           </div>
           <div style="margin-top: 5px" class="w-75">
@@ -62,11 +63,11 @@
         <br/>
         <div align="center">
           <div class="w-75 d-flex">
-            <input type="text" class="join-input" placeholder="전화 번호">
+            <input type="text" class="join-input flex-fill" placeholder="전화 번호">
             <button type="button" class="btn send-btn" onclick="send_phone()">인증번호 전송</button>
           </div>
           <div id="check-phone" style="margin-top: 20px" hidden>
-            <input type="text" class="join-input" placeholder="인증번호">
+            <input type="text" class="join-input flex-fill" placeholder="인증번호">
             <button type="button" class="btn btn1">인증</button>
           </div>
         </div>
@@ -166,6 +167,13 @@
       show('email-null')
       hide('email-pass')
       hide('email-fail')
+      hide('email-type')
+      return
+    } else if(!email.includes("@")) {
+      hide('email-null')
+      hide('email-pass')
+      hide('email-fail')
+      show('email-type')
       return
     }
 
@@ -180,10 +188,12 @@
           hide('email-null')
           hide('email-pass')
           show('email-fail')
+          hide('email-type')
         } else {
           hide('email-null')
           show('email-pass')
           hide('email-fail')
+          hide('email-type')
           document.getElementById("sendEmail-btn").removeAttribute("disabled")
         }
       }
@@ -293,76 +303,6 @@
       }
     });
   }
-
-  /* 이메일, 전화번호 인증 => 구현 필요
-  $(function(){
-    sendMail();
-  });
-  function sendMail() {
-    var isCertification = false;
-    var key1 = "";
-    $('#sendMail').on('click', function () {// 메일 입력 유효성 검사
-      var email = $(".email").val(); //사용자의 이메일 입력값.
-      console.log(email);
-
-      if (email == "") {
-        alert("메일 주소가 입력되지 않았습니다.");
-      } else {
-
-        $.ajax({
-          type: 'post',
-          url: '/user/CheckMail',
-          data: {
-            email: email
-          },
-          success: function (key) {
-            console.log(key);
-            key1 = key;
-            console.log(key1);
-          }
-        });
-        console.log(key1);
-        alert("이메일을 확인하시기 바랍니다.");
-        $(".compare-email").css("display", "block");
-        $(".compare-text").css("display", "block");
-      }
-    });
-  }
-
-  $(function(){
-    sendPhone();
-
-  });
-  function sendPhone() {
-    var isCertification = false;
-    var key1 = "";
-    $('#sendPhone').on('click', function () {// 메일 입력 유효성 검사
-      var phone = $(".phone").val(); //사용자의 이메일 입력값.
-      console.log(phone);
-
-      if (phone == "") {
-        alert("핸드폰 번호가 입력되지 않았습니다.");
-      } else {
-
-        $.ajax({
-          type: 'post',
-          url: '/user/CheckPhone',
-          data: {
-            phone: phone
-          },
-          success: function (key) {
-            console.log(key);
-            key1 = key;
-            console.log(key1);
-          }
-        });
-        console.log(key1);
-        alert("메시지를 확인하시기 바랍니다.");
-        $(".compare-phone").css("display", "block");
-        $(".phone-text").css("display", "block");
-      }
-    });
-  }*/
 
 </script>
 </body>

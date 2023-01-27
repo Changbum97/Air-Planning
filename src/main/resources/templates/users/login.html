@@ -1,25 +1,22 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments/header.html :: head"/>
 
 <body class="color-body">
 <div class="container px-5">
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-4 py-5">
-      <form th:method="post" class="login-form form-group"> <!--th:action=""-->
+      <form th:method="post" th:action="@{/users/login}" th:object="${userLoginRequest}" class="login-form form-group"> <!--th:action=""-->
         <h2 onclick="location.href='/'">로고이미지(홈으로)</h2>
         <br/><br/>
         <div>
-          <input type="text" class="w-75 login-input" placeholder="아이디">
+          <input th:field="*{userName}" type="text" class="w-75 login-input" placeholder="아이디">
         </div>
         <br/>
-        <div>
-          <input type="password" class="w-75 login-input" placeholder="비밀번호">
+        <div style="margin-bottom: 15px">
+          <input th:field="*{password}" type="password" class="w-75 login-input" placeholder="비밀번호">
         </div>
-        <br/>
-        <div>
-          <input type="checkbox"> 아이디 저장<br>
-        </div>
+        <div id="login-fail" class="alert-fail" hidden>아이디 또는 비밀번호가 일치하지 않습니다</div>
         <br/>
         <div>
           <button type="submit" class="btn btn1">로그인</button>
@@ -27,16 +24,49 @@
         </div>
         <br/>
         <div class="bottom-text">
-          <a href="/" >아이디 찾기</a> | <a href= "/" >비밀번호 찾기</a>
+          <a onclick="find_id()">아이디 찾기</a> | <a onclick="find_pw()">비밀번호 찾기</a>
         </div>
         <hr/>
         <h5>소셜 로그인</h5>
-        <button type="button" class="icon-btn" onclick="location.href='/'"><img src="/assets/images/kakao.png" class="login-img"></button>
-        <button type="button" class="icon-btn" onclick="location.href='/'"><img src="/assets/images/naver.png" class="login-img"></button>
-        <button type="button" class="icon-btn" onclick="location.href='/'"><img src="/assets/images/google.svg" class="login-img"></button>
+        <button type="button" class="icon-btn" onclick="location.href='/oauth2/authorization/kakao'"><img src="/assets/images/kakao.png" class="login-img"></button>
+        <button type="button" class="icon-btn" onclick="location.href='/oauth2/authorization/naver'"><img src="/assets/images/naver.png" class="login-img"></button>
+        <button type="button" class="icon-btn" onclick="location.href='/oauth2/authorization/google'"><img src="/assets/images/google.svg" class="login-img"></button>
       </form>
     </div>
   </div>
 </div>
+
+<script th:inline="javascript" sec:authorize="isAuthenticated()">
+  window.onload = function () {
+    alert('이미 로그인 되어있습니다')
+    location.href='/'
+  }
+</script>
+
+<script th:inline="javascript" sec:authorize="isAnonymous()">
+  window.onload = function () {
+    if(location.href.includes("fail")) {
+      document.getElementById("login-fail").removeAttribute("hidden");
+    }
+  }
+  function find_id() {
+    let new_window_width = 400
+    let new_window_height = 600
+    let positionX = 50;
+    let positionY = 150;
+    window.open("/users/find-id", "아이디 찾기", "width=" + new_window_width + ", height=" + new_window_height +
+            ", top=" + positionY + ", left=" + positionX);
+  }
+  function find_pw() {
+    let new_window_width = 400
+    let new_window_height = 600
+    let positionX = 50;
+    let positionY = 150;
+    window.open("/users/find-pw", "비밀번호 찾기", "width=" + new_window_width + ", height=" + new_window_height +
+            ", top=" + positionY + ", left=" + positionX);
+
+  }
+</script>
+
 </body>
 </html>
