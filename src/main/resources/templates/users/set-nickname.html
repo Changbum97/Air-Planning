@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body class="color-body">
+<div class="container px-5">
+  <div class="row gx-5 justify-content-center">
+    <div class="col-lg-4 py-5">
+      <form class="login-form form-group" th:object="${setNicknameRequest}" id="setNicknameRequest">
+        <div>
+          <label th:for="userName">로그인 아이디 : </label>
+          <input type="text" th:field="*{userName}" readonly>
+        </div>
+        <br/>
+        <div>
+          <label th:for="nickname">사용할 닉네임 : </label>
+          <input type="text" th:field="*{nickname}">
+        </div>
+        <br/>
+        <button class="btn btn1" type="button">닉네임 등록</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

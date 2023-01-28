@@ -6,7 +6,7 @@
 <div class="container px-5">
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-4 py-5">
-      <form th:method="post" th:action="@{/users/login}" th:object="${userLoginRequest}" class="login-form form-group"> <!--th:action=""-->
+      <form th:method="post" th:action="@{/users/login}" th:object="${userLoginRequest}" class="login-form form-group">
         <h2 onclick="location.href='/'">로고이미지(홈으로)</h2>
         <br/><br/>
         <div>
@@ -64,7 +64,6 @@
     let positionY = 150;
     window.open("/users/find-pw", "비밀번호 찾기", "width=" + new_window_width + ", height=" + new_window_height +
             ", top=" + positionY + ", left=" + positionX);
-
   }
 </script>
 
