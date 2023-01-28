@@ -7,9 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class FindByEmailRequest {
+public class SetNicknameRequest {
+    public SetNicknameRequest(String userName) {
+        this.userName = userName;
+    }
+
     private String userName;
-    private String email;
+    private String nickname;
 }

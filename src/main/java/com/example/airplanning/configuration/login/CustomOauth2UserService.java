@@ -2,6 +2,8 @@ package com.example.airplanning.configuration.login;
 
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.domain.enum_class.UserRole;
+import com.example.airplanning.exception.AppException;
+import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,6 +13,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -52,6 +55,9 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             User existingUser = byUsername.get();
             return new UserDetail(existingUser.getId(), existingUser.getUserName(), existingUser.getPassword(), existingUser.getRole().name());
         } else {
+            if(userRepository.findByEmail(email).isPresent()) {
+                throw new AppException(ErrorCode.DUPLICATED_USER_EMAIL);
+            }
             User newUser = User.builder()
                     .userName(username)
                     .password(password)

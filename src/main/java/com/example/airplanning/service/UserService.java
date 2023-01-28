@@ -73,4 +73,13 @@ public class UserService {
         user.changePassword(encodedPassword);
         userRepository.save(user);
     }
+
+    // 닉네임 등록
+    public void setNickname(String userName, String newNickname) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        user.setNickname(newNickname);
+        userRepository.save(user);
+    }
 }

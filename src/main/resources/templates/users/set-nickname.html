@@ -14,14 +14,78 @@
         <br/>
         <div>
           <label th:for="nickname">사용할 닉네임 : </label>
-          <input type="text" th:field="*{nickname}">
+          <input type="text" th:field="*{nickname}" oninput="check_nickname()">
+          <div style="margin-top: 5px">
+            <div id="nickname-pass" class="alert-pass" hidden>사용 가능한 닉네임 입니다</div>
+            <div id="nickname-fail" class="alert-fail" hidden>닉네임이 중복됩니다</div>
+            <div id="nickname-null" class="alert-fail" hidden>공백일 수 없습니다</div>
+          </div>
         </div>
         <br/>
-        <button class="btn btn1" type="button">닉네임 등록</button>
+        <button id="nickname-btn" class="btn btn1" type="button" onclick="set_nickname()" disabled>닉네임 등록</button>
       </form>
     </div>
   </div>
 </div>
 
+<script th:inline="javascript">
+
+  function check_nickname() {
+    let nickname = $("#nickname").val();
+
+    document.getElementById('nickname-btn').setAttribute("disabled", "true")
+    if (nickname == "") {
+      show('nickname-null')
+      hide('nickname-pass')
+      hide('nickname-fail')
+      return
+    }
+
+    $.ajax({
+      type: 'GET',
+      url: '/users/check-nickname',
+      data: {
+        nickname: nickname
+      },
+      success: function (duplicated) {
+        if (duplicated == true) {
+          hide('nickname-null')
+          hide('nickname-pass')
+          show('nickname-fail')
+        } else {
+          hide('nickname-null')
+          show('nickname-pass')
+          hide('nickname-fail')
+          document.getElementById('nickname-btn').removeAttribute("disabled")
+        }
+      }
+    });
+  }
+
+  function set_nickname() {
+    $.ajax({
+      type: 'POST',
+      url: '/users/nickname',
+      data: $('#setNicknameRequest').serialize(),
+      success: function (nickname) {
+        alert(nickname + "님 반갑습니다!")
+        location.href="/"
+      }
+    })
+  }
+
+
+  function show(id) {
+    if(document.getElementById(id) != null) {
+      document.getElementById(id).removeAttribute("hidden")
+    }
+  }
+  function hide(id) {
+    if(document.getElementById(id) != null) {
+      document.getElementById(id).setAttribute("hidden", "true")
+    }
+  }
+
+</script>
 </body>
 </html>

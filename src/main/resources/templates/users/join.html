@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments/header.html :: head"/>
 
 <body class="color-body">
@@ -11,7 +11,7 @@
         <br/>
         <div align="center">
           <input th:field="*{userName}" type="text" class="w-75 login-input" placeholder="아이디"
-                 onchange="check_userName()">
+                 oninput="check_userName()">
           <div style="margin-top: 5px" class="w-75">
             <div id="userName-pass" class="alert-pass" hidden>사용 가능한 아이디 입니다</div>
             <div id="userName-fail" class="alert-fail" hidden>아이디가 중복됩니다</div>
@@ -24,7 +24,7 @@
         </div>
         <br/>
         <div align="center">
-          <input id="password-check" type="password" class="w-75 login-input" placeholder="비밀번호 확인" onchange="check_pw()">
+          <input id="password-check" type="password" class="w-75 login-input" placeholder="비밀번호 확인" oninput="check_pw()">
           <div style="margin-top: 5px" class="w-75">
             <div id="password-check-pass" class="alert-pass" hidden>비밀번호가 일치합니다</div>
             <div id="password-check-fail" class="alert-fail" hidden>비밀번호가 일치하지 않습니다</div>
@@ -32,8 +32,8 @@
         </div>
         <br/>
         <div align="center">
-          <input th:field="*{nickname}" type="text" class="w-75 login-input" placeholder="닉네임" onchange="check_nickname()">
-          <div style="margin-top: 5px" class="w-75">
+          <input th:field="*{nickname}" type="text" class="w-75 login-input" placeholder="닉네임" oninput="check_nickname()">
+          <div style="margin-top: 5px" class="w-75" align="center">
             <div id="nickname-pass" class="alert-pass" hidden>사용 가능한 닉네임 입니다</div>
             <div id="nickname-fail" class="alert-fail" hidden>닉네임이 중복됩니다</div>
             <div id="nickname-null" class="alert-fail" hidden>공백일 수 없습니다</div>
@@ -42,7 +42,7 @@
         <br/>
         <div align="center">
           <div class="w-75 d-flex">
-            <input th:field="*{email}" type="text" class="join-input flex-fill" placeholder="email" onchange="check_email()">
+            <input th:field="*{email}" type="text" class="join-input flex-fill" placeholder="email" oninput="check_email()">
             <button id="sendEmail-btn" type="button" class="btn send-btn" onclick="send_email()" disabled>인증번호 전송</button>
           </div>
           <div style="margin-top: 5px" class="w-75">
@@ -82,6 +82,12 @@
   </div>
 </div>
 
+<script th:inline="javascript" sec:authorize="isAuthenticated()">
+  window.onload = function () {
+    alert('이미 로그인 되어있습니다')
+    location.href='/'
+  }
+</script>
 
 <script th:inline="javascript">
 
@@ -89,7 +95,6 @@
   let passwordPass = false
   let nicknamePass = false
   let emailAuthPass = false
-
 
   function check_userName() {
     let userName = $("#userName").val();
@@ -224,7 +229,7 @@
     join_btn_disable()
 
     $.ajax({
-      type: 'POST',
+      type: 'GET',
       url: '/users/ecert/check',
       data: {
         code: code

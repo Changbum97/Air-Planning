@@ -1,6 +1,7 @@
 package com.example.airplanning.controller;
 
 import com.example.airplanning.domain.dto.user.FindByEmailRequest;
+import com.example.airplanning.domain.dto.user.SetNicknameRequest;
 import com.example.airplanning.domain.dto.user.UserJoinRequest;
 import com.example.airplanning.domain.dto.user.UserLoginRequest;
 import com.example.airplanning.exception.AppException;
@@ -8,10 +9,11 @@ import com.example.airplanning.service.EmailService;
 import com.example.airplanning.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.MailException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 
 @Controller
@@ -79,8 +81,9 @@ public class UserController {
 
     // 이메일 인증 번호 확인하기
     @ResponseBody
-    @PostMapping("/ecert/check")
-    public Boolean checkAuthEmail(@RequestBody String code) {
+    @GetMapping("/ecert/check")
+    public Boolean checkAuthEmail(@RequestParam String code) {
+        System.out.println(code);
         if (emailService.getData(code) == null) return false;
         else return true;
     }
@@ -118,7 +121,7 @@ public class UserController {
     @ResponseBody
     @GetMapping("/find-pw-by-email")
     public String findPwByEmail(FindByEmailRequest request) {
-        String message = "메일로 새 비밀번호를 전송했습니다";
+        String message = "메일로 새로운 비밀번호를 전송했습니다";
 
         try {
             String email = request.getEmail();
@@ -136,5 +139,20 @@ public class UserController {
         }
 
         return message;
+    }
+
+    // 소셜 로그인으로 가입한 유저가 닉네임을 설정하는 페이지
+    @GetMapping("/set-nickname")
+    public String setNicknamePage(Principal principal, Model model) {
+        model.addAttribute("setNicknameRequest", new SetNicknameRequest(principal.getName()));
+        return "users/set-nickname";
+    }
+
+    // 소셜 로그인 유저 닉네임 등록
+    @ResponseBody
+    @PostMapping("/nickname")
+    public String setNickname(SetNicknameRequest request) {
+        userService.setNickname(request.getUserName(), request.getNickname());
+        return request.getNickname();
     }
 }
