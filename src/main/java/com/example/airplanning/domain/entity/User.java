@@ -1,7 +1,5 @@
 package com.example.airplanning.domain.entity;
 
-import com.example.airplanning.configuration.login.UserDetail;
-import com.example.airplanning.domain.dto.UserDto;
 import com.example.airplanning.domain.enum_class.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,4 +53,11 @@ public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "user")
     private List<Plan> plans;
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
+    public void setNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
 }

@@ -1,7 +1,7 @@
 package com.example.airplanning.service;
 
-import com.example.airplanning.domain.dto.UserDto;
-import com.example.airplanning.domain.dto.UserJoinRequest;
+import com.example.airplanning.domain.dto.user.UserDto;
+import com.example.airplanning.domain.dto.user.UserJoinRequest;
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
@@ -9,10 +9,6 @@ import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -68,4 +64,22 @@ public class UserService {
         return userRepository.existsByUserNameAndEmail(userName, email);
     }
 
+    // 비밀번호 변경
+    public void changePassword(String userName, String newPassword) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        String encodedPassword = encoder.encode(newPassword);
+        user.changePassword(encodedPassword);
+        userRepository.save(user);
+    }
+
+    // 닉네임 등록
+    public void setNickname(String userName, String newNickname) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        user.setNickname(newNickname);
+        userRepository.save(user);
+    }
 }

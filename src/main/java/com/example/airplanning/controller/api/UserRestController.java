@@ -1,13 +1,12 @@
 package com.example.airplanning.controller.api;
 
 import com.example.airplanning.domain.Response;
-import com.example.airplanning.domain.dto.FindPasswordRequest;
-import com.example.airplanning.domain.dto.UserDto;
-import com.example.airplanning.domain.dto.UserJoinRequest;
-import com.example.airplanning.domain.dto.UserJoinResponse;
+import com.example.airplanning.domain.dto.user.FindPasswordRequest;
+import com.example.airplanning.domain.dto.user.UserDto;
+import com.example.airplanning.domain.dto.user.UserJoinRequest;
+import com.example.airplanning.domain.dto.user.UserJoinResponse;
 import com.example.airplanning.service.EmailService;
 import com.example.airplanning.service.UserService;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
 public class UserRestController {

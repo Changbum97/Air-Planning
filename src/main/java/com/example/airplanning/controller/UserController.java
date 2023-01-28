@@ -1,20 +1,19 @@
 package com.example.airplanning.controller;
 
-import com.example.airplanning.domain.dto.UserJoinRequest;
+import com.example.airplanning.domain.dto.user.FindByEmailRequest;
+import com.example.airplanning.domain.dto.user.SetNicknameRequest;
+import com.example.airplanning.domain.dto.user.UserJoinRequest;
+import com.example.airplanning.domain.dto.user.UserLoginRequest;
 import com.example.airplanning.exception.AppException;
-import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.EmailService;
 import com.example.airplanning.service.UserService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.security.Principal;
 
 
 @Controller
@@ -55,7 +54,8 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String loginPage() {
+    public String loginPage(Model model) {
+        model.addAttribute("userLoginRequest", new UserLoginRequest());
         return "users/login";
     }
 
@@ -81,9 +81,78 @@ public class UserController {
 
     // 이메일 인증 번호 확인하기
     @ResponseBody
-    @PostMapping("/ecert/check")
-    public Boolean checkAuthEmail(@RequestBody String code) {
+    @GetMapping("/ecert/check")
+    public Boolean checkAuthEmail(@RequestParam String code) {
+        System.out.println(code);
         if (emailService.getData(code) == null) return false;
         else return true;
+    }
+
+    @GetMapping("/find-id")
+    public String findIdPage(Model model) {
+        model.addAttribute("findByEmailRequest", new FindByEmailRequest());
+        return "users/find-id";
+    }
+
+    @GetMapping("/find-pw")
+    public String findPwPage(Model model) {
+        model.addAttribute("findByEmailRequest", new FindByEmailRequest());
+        return "users/find-pw";
+    }
+
+    @ResponseBody
+    @GetMapping("/find-id-by-email")
+    public String findIdByEmail(FindByEmailRequest request) {
+        String message = "메일로 아이디를 전송했습니다";
+
+        try {
+            String email = request.getEmail();
+            String userName = userService.findIdByEmail(email);
+            emailService.sendFoundIdMessage(email, userName);
+        } catch (AppException e) {
+            message = e.getMessage();
+        } catch (Exception e) {
+            message = "메일 전송에 실패하였습니다.";
+        }
+
+        return message;
+    }
+
+    @ResponseBody
+    @GetMapping("/find-pw-by-email")
+    public String findPwByEmail(FindByEmailRequest request) {
+        String message = "메일로 새로운 비밀번호를 전송했습니다";
+
+        try {
+            String email = request.getEmail();
+            String userName = userService.findIdByEmail(email);
+            if(!userName.equals(request.getUserName())) {
+                message = "아이디에 해당하는 이메일이 일치하지 않습니다";
+            } else {
+                String newPassword = emailService.sendFoundPasswordMessage(email);
+                userService.changePassword(userName, newPassword);
+            }
+        } catch (AppException e) {
+            message = e.getMessage();
+        } catch (Exception e) {
+            message = "메일 전송에 실패하였습니다.";
+        }
+
+        return message;
+    }
+
+    // 소셜 로그인으로 가입한 유저가 닉네임을 설정하는 페이지
+    @GetMapping("/set-nickname")
+    public String setNicknamePage(Principal principal, Model model) {
+        model.addAttribute("setNicknameRequest", new SetNicknameRequest(principal.getName()));
+        return "users/set-nickname";
+    }
+
+    // 소셜 로그인 유저 닉네임 등록
+    @ResponseBody
+    @PostMapping("/nickname")
+    public String setNickname(SetNicknameRequest request) {
+        userService.setNickname(request.getUserName(), request.getNickname());
+        return request.getNickname();
     }
 }

@@ -1,4 +1,4 @@
-package com.example.airplanning.domain.dto;
+package com.example.airplanning.domain.dto.user;
 
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.domain.enum_class.UserRole;

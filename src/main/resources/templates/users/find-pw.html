@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: head"/>
+
+<body class="color-body">
+<div class="container px-5">
+  <div class="row gx-5 justify-content-center">
+    <div class="login-form">
+      <h3>이메일로 비밀번호 찾기</h3><br/>
+      <form class="form-group" th:object="${findByEmailRequest}" id="findByEmailRequest">
+        <input th:field="*{userName}" type="text" class="login-input w-100" placeholder="아이디를 입력하세요"><br/><br/>
+        <div align="center">
+          <div class="w-100 d-flex">
+            <input th:field="*{email}" type="text" class="join-input flex-fill" placeholder="이메일을 입력하세요">
+            <button type="button" onclick="send_pw_by_email()" class="btn send-btn">비밀번호 찾기</button>
+          </div>
+        </div>
+      </form>
+      <br/><hr/><br/>
+      <h3>전화번호로 비밀번호 찾기</h3><br/>
+      <form class="form-group" >
+        <input type="text" class="login-input w-100" placeholder="아이디를 입력하세요"><br/><br/>
+        <div align="center">
+          <div class="w-100 d-flex">
+            <input type="text" class="join-input flex-fill" placeholder="전화번호를 입력하세요">
+            <button type="button" class="btn send-btn">비밀번호 찾기</button>
+          </div>
+        </div>
+      </form>
+      <br/><br/>
+      <button type="button" onclick="window.close()" class="btn find-btn">창닫기</button>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+
+  function send_pw_by_email() {
+    let userName = $("#userName").val()
+    let email = $("#email").val()
+
+    if (email == "" || userName == "") {
+      alert("공백일 수 없습니다")
+      return
+    }
+    if (!email.includes("@")) {
+      alert("이메일 형식이 아닙니다")
+      return
+    }
+
+    $.ajax({
+      type: 'GET',
+      url: '/users/find-pw-by-email',
+      data: $('#findByEmailRequest').serialize(),
+      success: function (message) {
+        alert(message)
+        if(message == "메일로 새로운 비밀번호를 전송했습니다") {
+          window.close()
+        } else {
+          location.href = "/users/find-pw"
+        }
+      }
+    });
+  }
+
+</script>
+
+</body>
+</html>

@@ -89,14 +89,14 @@ public class EmailService {
         msgg+= "<div style='margin:100px;'>";
         msgg+= "<h1> 안녕하세요 Air Planning 입니다. </h1>";
         msgg+= "<br>";
-        msgg+= "<p>아래의 인증 코드 확인해주세요<p>";
+        msgg+= "<p>새로운 비밀번호로 로그인 해주세요<p>";
         msgg+= "<br>";
         msgg+= "<p>감사합니다!<p>";
         msgg+= "<br>";
         msgg+= "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        msgg+= "<h3 style='color:blue;'>비밀번호 찾기 인증 코드입니다.</h3>";
+        msgg+= "<h3 style='color:blue;'>새로운 비밀번호 입니다.</h3>";
         msgg+= "<div style='font-size:130%'>";
-        msgg+= "CODE : <strong>";
+        msgg+= "비밀번호 : <strong>";
         msgg+= ePw+"</strong><div><br/> ";
         msgg+= "</div>";
         message.setText(msgg, "utf-8", "html");//내용
@@ -147,32 +147,32 @@ public class EmailService {
     // 아이디 찾기 아이디 메시지 발송
     public String sendFoundIdMessage(String to, String userName) throws Exception {
         MimeMessage message = foundIdMessage(to, userName);
-        try{//예외처리
+        try{    //예외처리
             mailSender.send(message);
         }catch(MailException es){
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
         return "메일을 확인해 주세요.";
-    }
+     }
 
-    // 비밀번호 찾기 인증 메시지 발송
+    // 비밀번호 찾기 새로운 비밀번호 메시지 발송
     public String sendFoundPasswordMessage(String to) throws Exception {
         MimeMessage message = foundPasswordMessage(to);
-        try{//예외처리
+        String newPassword = ePw;
+        try{    //예외처리
             mailSender.send(message);
         }catch(MailException es){
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
         setDataExpire(ePw, to, 60*5L);
-        return "메일을 확인해 주세요.";
+        return ePw;
     }
 
     // redis
     // 인증번호 확인 하기
     public String getData(String key){
-        key = key.substring(5);
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         return valueOperations.get(key);
     }
