@@ -20,6 +20,7 @@ public enum ErrorCode {
     BLACKLIST_USER(HttpStatus.UNAUTHORIZED, "블랙리스트는 접근이 불가능합니다."),
 
     USER_NOT_FOUNDED(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
+    PLANNER_NOT_FOUNDED(HttpStatus.NOT_FOUND, "플래너를 찾을 수 없습니다."),
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 글이 없습니다."),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글이 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰가 없습니다."),
