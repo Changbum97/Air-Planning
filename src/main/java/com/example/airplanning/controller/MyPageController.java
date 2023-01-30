@@ -1,7 +1,7 @@
 package com.example.airplanning.controller;
 
-import com.example.airplanning.domain.dto.UserDto;
 import com.example.airplanning.domain.dto.myPage.*;
+import com.example.airplanning.domain.dto.user.UserDto;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.UserService;
