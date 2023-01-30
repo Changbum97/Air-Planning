@@ -23,10 +23,32 @@
     <button class="btn btn1" th:onclick="|location.href='@{/boards/write}'|">글 작성 페이지</button>
     <button class="btn btn1" th:onclick="|location.href='@{/boards/detail}'|">글 보기 페이지</button>
     <button class="btn btn1" th:onclick="|location.href='@{/boards/list}'|">글 리스트 페이지</button>
-    <button class="btn btn1" th:onclick="|location.href='@{/users/my-page}'|">마이 페이지</button>
+    <button class="btn btn1" onclick="myPage()">마이 페이지</button>
     <button class="btn btn1" th:onclick="|location.href='@{/users/planner}'|">플래너 정보</button>
     <button class="btn btn1" th:onclick="|location.href='@{/users/login}'|">로그인</button>
     <button class="btn btn1" th:onclick="|location.href='@{/users/join}'|">회원가입</button>
 </div>
+
+<script th:inline="javascript">
+
+    function myPage() {
+        $.ajax({
+            type: 'GET',
+            url: '/users/mypage',
+
+            success: function (id) {
+
+                if (id == "") {
+                    alert("로그인 정보가 유효하지 않습니다. 로그인 해주세요.")
+                    location.herf = "/users/login"
+                }
+                else {
+                    location.href = "/users/mypage/" + id
+                }
+            }
+        });
+    }
+</script>
+
 </body>
 </html>

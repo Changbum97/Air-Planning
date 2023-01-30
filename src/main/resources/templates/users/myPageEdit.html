@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8 py-5">
+                <form class="join-form form-group" th:action="|@{/users/mypage/{userId}/edit (userId=${user.id})}|" th:method="post" th:object="${myPageEditRequest}" id="myPageEditRequest">
+                    <div class="d-flex justify-content-between">
+                        <h2>내 정보수정</h2>
+                    </div>
+                    <hr/>
+                    <div class="edit-img-box">
+                        <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="profile-img">
+                        <div align="center">
+                            <h4 class="edit-profile-text" th:text="${user.nickname}"></h4>
+                            <h4 class="edit-profile-text" th:text="${user.email}"></h4>
+                        </div>
+                    </div>
+                    <div class="py-3">
+                        <div align="center">
+                            <input type="password" id = "origin_password" class="w-75 login-input" placeholder="현재 비밀번호" onchange="check_origin_pw()">
+                            <div style="margin-top: 5px" class="w-75">
+                                <div id="origin-password-check-pass" class="alert-pass" hidden>비밀번호가 일치합니다</div>
+                                <div id="origin-password-check-fail" class="alert-fail" hidden>비밀번호가 일치하지 않습니다</div>
+                                <div id="origin-password-check-null" class="alert-fail">현재 비밀번호를 입력해 주세요</div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div align="center">
+                            <input th:field="*{password}" type="password" class="w-75 login-input" placeholder="변경할 비밀번호" onchange="check_pw()">
+                        </div>
+                        <br/>
+                        <div align="center">
+                            <input id="password-check" type="password" class="w-75 login-input" placeholder="비밀번호 확인" onchange="check_pw()">
+                            <div style="margin-top: 5px" class="w-75">
+                                <div id="password-check-pass" class="alert-pass" hidden>비밀번호가 일치합니다</div>
+                                <div id="password-check-fail" class="alert-fail" hidden>비밀번호가 일치하지 않습니다</div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div align="center">
+                            <input th:field="*{nickname}" type="text" class="w-75 login-input" placeholder="닉네임" onchange="check_nickname()">
+                            <div style="margin-top: 5px" class="w-75">
+                                <div id="nickname-pass" class="alert-pass" hidden>사용 가능한 닉네임 입니다</div>
+                                <div id="nickname-fail" class="alert-fail" hidden>닉네임이 중복됩니다</div>
+                            </div>
+                        </div>
+                        <br/>
+                        <button id="edit-btn" type = "button" class="btn btn1" onclick="editInfo()" disabled >정보 수정</button>
+                        <br/>
+                    </div>
+                    <br/><br/><br/>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+
+        let passwordPass = true
+        let nicknamePass = true
+        let originPasswordPass = false
+
+        let changePassword = false
+        let changeNickname = false
+
+        function check_origin_pw() {
+
+            let userId =  [[${userId}]];
+            let password = $("#origin_password").val();
+            originPasswordPass = false
+
+            if (password == '') {
+                show('origin-password-check-null')
+                hide('origin-password-check-pass')
+                hide('origin-password-check-fail')
+                return
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: '/users/mypage/'+userId+'/check-password/',
+                data: {
+                    password: password
+                },
+                success: function (message) {
+                    if (message == "1") {
+                        alert("로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요")
+                        location.replace("/users/login")
+                    } else if (message == "2") {
+                        hide('origin-password-check-pass')
+                        hide('origin-password-check-null')
+                        show('origin-password-check-fail')
+                    } else if (message == "3") {
+                        hide('origin-password-check-fail')
+                        hide('origin-password-check-null')
+                        show('origin-password-check-pass')
+                        originPasswordPass = true
+                    }
+                }
+            });
+        }
+
+        function check_nickname() {
+            let nickname = $("#nickname").val();
+            nicknamePass = false
+            edit_btn_disable()
+
+            if(nickname == "") {
+                hide('nickname-fail')
+                hide('nickname-pass')
+                changeNickname = false
+                nicknamePass = true
+                check_all()
+                return
+            }
+
+            $.ajax({
+                type: 'GET',
+                url: '/users/check-nickname',
+                data: {
+                    nickname: nickname
+                },
+                success: function (duplicated) {
+                    if (duplicated == true) {
+                        hide('nickname-pass')
+                        show('nickname-fail')
+                    } else {
+                        show('nickname-pass')
+                        hide('nickname-fail')
+                        changeNickname = true
+                        nicknamePass = true
+                        check_all()
+                    }
+                }
+            });
+        }
+
+        function check_pw() {
+            passwordPass = false
+            edit_btn_disable()
+
+            let pw = $("#password").val();
+            let pw2 = $("#password-check").val();
+
+            if(pw != "" && pw2 != ""){
+                if(pw == pw2){
+                    show('password-check-pass')
+                    hide('password-check-fail')
+                    changePassword = true
+                    passwordPass = true
+                    check_all()
+                }
+                else{
+                    hide('password-check-pass')
+                    show('password-check-fail')
+                }
+
+            } else if (pw == ""  && pw2 == "") {
+                hide('password-check-pass')
+                hide('password-check-fail')
+                changePassword = false
+                passwordPass = true
+                check_all()
+            }
+
+
+        }
+
+        function editInfo() {
+
+            let userId =  [[${userId}]];
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/mypage/'+userId+'/edit',
+                data: $('#myPageEditRequest').serialize(),
+                success: function (message) {
+                    alert(message.split("*")[0])
+                    location.href = "/users"+message.split("*")[1]
+                }
+            });
+
+        }
+
+        function show(id) {
+            if(document.getElementById(id) != null) {
+                document.getElementById(id).removeAttribute("hidden")
+            }
+        }
+        function hide(id) {
+            if(document.getElementById(id) != null) {
+                document.getElementById(id).setAttribute("hidden", "true")
+            }
+        }
+
+        function check_all() {
+            if(passwordPass == true && nicknamePass == true && (changePassword == true || changeNickname == true)) {
+                document.getElementById('edit-btn').removeAttribute("disabled")
+            }
+        }
+        function edit_btn_disable() {
+            document.getElementById('edit-btn').setAttribute("disabled", "true")
+        }
+
+    </script>
+</body>
+</html>
