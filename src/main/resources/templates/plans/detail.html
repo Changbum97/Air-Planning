@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+<div class="container px-5">
+    <div class="row gx-5 justify-content-center">
+        <div class="col-lg-6 py-5">
+            <form class="form-group">
+                <div>
+                    <div class="img-box">
+                        <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
+                    </div>
+                    <h5 th:text="'플랜 신청자 : ' + ${plan.userName}"></h5>
+                </div>
+                <br/>
+                <div>
+                    <h5 th:text="'플래너 : ' + ${plan.plannerName}"></h5>
+                </div>
+                <br/>
+                <div>
+                    <h1>[[${plan.title}]]</h1>
+                </div>
+                <div>
+                    <textarea rows="10" class="w-100" readonly>[[${plan.content}]] </textarea>
+                </div>
+                <div style="float: left" class="py-3">
+                    <span th:text="'작성일 : ' + ${#temporals.format(plan.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                </div>
+                <div align="right" class="py-1">
+                    <th:block th:if="principal">
+                    <a class="btn btn1" th:href="@{/plans/{planId}/update (planId=${planId})}">수정</a>
+                    <button class="btn btn1">삭제</button>
+                    </th:block>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
