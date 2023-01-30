@@ -24,6 +24,12 @@ public class UserService {
         return UserDto.of(user);
     }
 
+    public UserDto findNickname(String nickname) {
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        return UserDto.of(user);
+    }
+
     public UserDto join(UserJoinRequest request) {
 
         // userName, nickname 중복 체크
