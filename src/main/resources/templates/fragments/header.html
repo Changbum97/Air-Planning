@@ -13,15 +13,38 @@
 
   <!-- CSS -->
   <link href="/css/style.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- JQuery -->
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+  <!-- sse test -->
+  <script>
+    $(document).ready(function () {
+
+      let eventSource = new EventSource("/sub");
+
+      eventSource.addEventListener("Alarm", function (event) {
+        let message = JSON.parse(event.data);
+        toastr.options.positionClass = "toast-bottom-right";
+        toastr.options.onclick = function () { location.href=message.targetUrl }
+        toastr.info(message.alarmMessage)
+      })
+
+      eventSource.addEventListener("error", function(event) {
+        eventSource.close()
+      })
+    })
+  </script>
 </head>
 
 <body>
-
 <div th:fragment="header">
+
+  <!-- toastr -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <!-- Bootstrap 5.2.3 Version, 반응형 햄버거 메뉴 -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -43,13 +66,13 @@
               <li class="dropdown-item" href="#">리뷰 게시판</li>
             </ul>
           </li>
-          <li class="nav-item"><a class="nav-link" href="/users/login">Login</a></li>
+          <li sec:authorize="isAnonymous()" class="nav-item"><a class="nav-link" href="/users/login">Login</a></li>
+          <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/users/logout">Logout</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
 </div>
-
 </body>
 </html>

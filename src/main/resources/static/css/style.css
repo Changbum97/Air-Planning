@@ -56,11 +56,21 @@ body, head {
     animation: jelly 0.5s;
 }
 
-.check-btn, .check-btn:hover, .check-btn:active, .check-btn:focus {
+.send-btn:disabled {
     border: none;
     text-transform: uppercase;
     display: inline-block;
-    padding: 10px 19px;
+    padding: 10px 5px;
+    background-color: #ffbe33;
+    color: #ffffff;
+    border-radius: 45px;
+}
+
+.find-btn, .find-btn:hover, .find-btn:active, .find-btn:focus {
+    border: none;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 10px 15px;
     background-color: #ffbe33;
     color: #ffffff;
     border-radius: 45px;
@@ -68,7 +78,7 @@ body, head {
     transition: all 1s;
 }
 
-.check-btn:hover, .check-btn:active, .check-btn:focus {
+.find-btn:hover, .find-btn:active, .find-btn:focus {
     animation: jelly 0.5s;
 }
 
@@ -180,6 +190,15 @@ body, head {
     padding: 0;
 }
 
+.star-input {
+    cursor: pointer;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
 .search-input {
     border: none;
     outline: none;
@@ -225,7 +244,6 @@ body, head {
     outline: none;
     border-bottom: solid 1px black;
     color: #636e72;
-    width: 70%;
 }
 
 .color-body {

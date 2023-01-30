@@ -26,6 +26,15 @@
         <input type="text" name="code">
         <button>이메일인증하기</button>
     </form>
+    <form action="/api/find-id" method="post" >
+        <input type="text" name="email">
+        <button>아이디 찾기</button>
+    </form>
+    <form action="/api/find-password" method="post" >
+        <input type="text" name="userName">
+        <input type="text" name="email">
+        <button>비밀번호 찾기</button>
+    </form>
 
 
     <a href="/oauth2/authorization/google">구글 로그인</a>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+<div class="container px-5">
+    <div class="row gx-5 justify-content-center">
+        <div class="col-lg-6 py-5">
+            <form class="form-group" th:object="${planCreateRequest}" id="planCreateRequest">
+                <br/>
+                <div>
+                    <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
+                </div>
+                <br/>
+                <div>
+                    <textarea th:field="*{content}" rows="10" class="w-100" placeholder="내용을 입력해주세요" style="resize: none;"></textarea>
+                </div>
+
+                <br/>
+                <div align="center" class="py-1">
+                    <button class="btn btn1" onclick="write_plan()">등록</button>
+                </div>
+                <br/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function write_plan(){
+        $.ajax({
+            type:'POST',
+            url:'/plans',
+            data:$('#planCreateRequest').serialize(),
+            success: function (data){
+                console.log(data); //응답 body부분 데이터
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

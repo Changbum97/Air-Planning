@@ -49,6 +49,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// https://mvnrepository.com/artifact/org.webjars.bower/jquery
+	implementation group: 'org.webjars.bower', name: 'jquery', version: '3.6.2'
+
+
 }
 
 tasks.named('test') {
