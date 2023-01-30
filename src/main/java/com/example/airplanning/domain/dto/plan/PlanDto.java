@@ -25,10 +25,9 @@ public class PlanDto {
     private PlanType planType;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime updatedAt;
+    private String plannerName;
 
     public static PlanDto of(Plan plan){
         return PlanDto.builder()
@@ -37,8 +36,8 @@ public class PlanDto {
                 .content(plan.getContent())
                 .userName(plan.getUser().getUserName())
                 .planType(plan.getPlanType())
-                .createAt(plan.getCreatedAt())
-                .updatedAt(plan.getUpdatedAt())
+                .createdAt(plan.getCreatedAt())
+                .plannerName("test_planner")
                 .build();
     }
 

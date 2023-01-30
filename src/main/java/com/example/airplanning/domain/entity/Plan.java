@@ -1,5 +1,6 @@
 package com.example.airplanning.domain.entity;
 
+import com.example.airplanning.domain.dto.plan.PlanUpdateResponse;
 import com.example.airplanning.domain.enum_class.PlanType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,4 +33,10 @@ public class Plan extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "planner_id")
     private Planner planner;
+
+    public void update(String title, String content){
+        this.title = title;
+        this.content = content;
+    }
+
 }

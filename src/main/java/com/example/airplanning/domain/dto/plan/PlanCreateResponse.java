@@ -17,10 +17,10 @@ public class PlanCreateResponse {
     private String content;
     private PlanType planType;
 
-    public static PlanCreateResponse of(PlanDto plan){
+    public static PlanCreateResponse of(PlanDto planDto){
         return PlanCreateResponse.builder()
-                .title(plan.getTitle())
-                .content(plan.getContent())
+                .title(planDto.getTitle())
+                .content(planDto.getContent())
                 .planType(PlanType.WAITING)
                 .build();
     }
