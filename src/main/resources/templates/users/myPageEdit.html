@@ -7,7 +7,7 @@
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
             <div class="col-lg-8 py-5">
-                <form class="join-form form-group" th:action="|@{/users/mypage/{userId}/edit (userId=${userId})}|" th:method="post" th:object="${myPageEditRequest}" id="myPageEditRequest">
+                <form class="join-form form-group" th:action="|@{/users/mypage/{userId}/edit (userId=${user.id})}|" th:method="post" th:object="${myPageEditRequest}" id="myPageEditRequest">
                     <div class="d-flex justify-content-between">
                         <h2>내 정보수정</h2>
                     </div>
@@ -15,8 +15,8 @@
                     <div class="edit-img-box">
                         <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="profile-img">
                         <div align="center">
-                            <h4 class="edit-profile-text" th:text="${nickname}"></h4>
-                            <h4 class="edit-profile-text" th:text="${email}"></h4>
+                            <h4 class="edit-profile-text" th:text="${user.nickname}"></h4>
+                            <h4 class="edit-profile-text" th:text="${user.email}"></h4>
                         </div>
                     </div>
                     <div class="py-3">

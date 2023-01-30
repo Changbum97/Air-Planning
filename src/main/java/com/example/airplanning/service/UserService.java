@@ -79,6 +79,12 @@ public class UserService {
 
     }
 
+    public UserDto findUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        return UserDto.of(user);
+    }
+
     public boolean checkUserName(String userName) {
         return userRepository.existsByUserName(userName);
     }

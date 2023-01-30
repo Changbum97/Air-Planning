@@ -27,6 +27,8 @@ public class MyPageController {
     public String toMyPage(Principal principal) {
 
         String userId = "";
+
+        //principal 오류 (로그인 오류, 만료)
         try {
             userId = Long.toString(userService.findUser(principal.getName()).getId());
         } catch (Exception e) {
@@ -41,14 +43,8 @@ public class MyPageController {
     public String myPage(Principal principal, Model model) {
 
         UserDto user = userService.findUser(principal.getName());
-        Long id = user.getId();
-        String email = user.getEmail();
-        String nickname = user.getNickname();
 
-        model.addAttribute("userId", id);
-        model.addAttribute("email", email);
-        model.addAttribute("nickname", nickname);
-
+        model.addAttribute("user", user);
 
         return "users/myPage";
 
@@ -65,36 +61,33 @@ public class MyPageController {
 
     @ResponseBody
     @GetMapping("/{userId}/check-password")
-    public String checkPassword(@RequestParam String password, Principal principal) {
+    public String checkPassword(@PathVariable Long userId, @RequestParam String password) {
 
         try {
-            userService.checkPassword(principal.getName(), password);
+            UserDto user = userService.findUserById(userId);
+            userService.checkPassword(user.getUserName(), password);
         } catch (AppException e) {
+            //user가 찾아지지 않을 때
             if(e.getErrorCode().equals(ErrorCode.USER_NOT_FOUNDED)) {
                 return "1";
             }
+            // 비밀번호 오류
             else if(e.getErrorCode().equals(ErrorCode.INVALID_PASSWORD)) {
                 return "2";
             }
-        } catch (Exception e) {
-            return "1";
         }
 
+        //성공
         return "3";
     }
 
     //마이페이지 수정
     @GetMapping("/{userId}/edit")
-    public String editPage(Model model, Principal principal) {
+    public String editPage(Model model, @PathVariable Long userId) {
 
-        UserDto user = userService.findUser(principal.getName());
-        Long id = user.getId();
-        String email = user.getEmail();
-        String nickname = user.getNickname();
+        UserDto user = userService.findUserById(userId);
 
-        model.addAttribute("userId", id);
-        model.addAttribute("email", email);
-        model.addAttribute("nickname", nickname);
+        model.addAttribute("user", user);
         model.addAttribute("myPageEditRequest", new MyPageEditRequest());
 
         return "users/myPageEdit";
@@ -105,14 +98,11 @@ public class MyPageController {
     @PostMapping("/{userId}/edit")
     public String editInfo(@PathVariable Long userId, MyPageEditRequest req, Principal principal) {
 
-        log.info(req.getNickname());
-
+        //principal 오류 (로그인 오류, 만료)
         try {
             userService.editUserInfo(req.getPassword(), req.getNickname(), principal.getName());
-        } catch (AppException e) {
-            if(e.getErrorCode().equals(ErrorCode.USER_NOT_FOUNDED)) {
-                return "로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.*login";
-            }
+        } catch (Exception e) {
+            return "로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.*login";
         }
 
         return "변경이 완료되었습니다.*/mypage/"+userId;
