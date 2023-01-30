@@ -11,6 +11,8 @@ import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.PlanRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -86,6 +88,13 @@ public class PlanService {
 
         planRepository.deleteById(id);
         return id;
+    }
+
+    public Page<PlanDto> list(Pageable pageable){
+        Page<Plan> planPage = planRepository.findAll(pageable);
+        Page<PlanDto> planDtos = PlanDto.planDto(planPage);
+
+        return planDtos;
     }
 
 

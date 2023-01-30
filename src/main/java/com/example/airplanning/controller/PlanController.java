@@ -9,6 +9,7 @@ import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.PlanService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -58,10 +59,16 @@ public class PlanController {
         return "redirect:/plans/{planId}";
     }
 
-    @GetMapping("/")
-    public String deletePlan(@PathVariable Long planId, Principal principal, Model model){
+    @GetMapping("/{planId}/delete")
+    public String deletePlan(@PathVariable Long planId, Principal principal){
         planService.delete(planId, principal.getName());
-        return "redirect:/";
+        return "redirect:/plans/list";
+    }
+
+    @GetMapping("/list")
+    public String listPlan(Pageable pageable){
+        planService.list(pageable);
+        return "plans/list";
     }
 
 }

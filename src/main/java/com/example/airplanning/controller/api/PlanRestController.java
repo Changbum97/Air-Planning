@@ -5,6 +5,10 @@ import com.example.airplanning.domain.dto.plan.*;
 import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.service.PlanService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -42,6 +46,12 @@ public class PlanRestController {
         Long deletePlan = planService.delete(planId, "kakao_2637777345");
 
         return Response.success(new PlanDeleteResponse(deletePlan));
+    }
+
+    @GetMapping
+    public Response<Page<PlanDto>> planList(@PageableDefault(sort = "createdAt", size = 20, direction = Sort.Direction.DESC) Pageable pageable){
+        Page<PlanDto> planDtos = planService.list(pageable);
+        return Response.success(planDtos);
     }
 
 }
