@@ -12,16 +12,16 @@
                 <div class="img-box">
                     <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="profile-img">
                 </div>
-                <br/>
-                <div class="py-3">
-                    <h3 class="profile-text">아이디 : 111</h3>
-                    <h3 class="profile-text">관심 지역 : 서울, 파리, 일본</h3>
+                <div class="py-2">
+                    <h3 class="profile-text">아이디 : [[${planner.userName}]]</h3>
+                    <h3 class="profile-text">자신있는 국가 : [[${planner.country}]]</h3>
+                    <h3 class="profile-text">자신있는 지역 : [[${planner.region}]]</h3>
                     <h3 class="profile-text d-flex">별점 : &nbsp;
                         <div class="star-ratings">
                             <div class="star-ratings-base space-x-2 text-lg">
                                 <span>★★★★★</span>
                             </div>
-                            <div class="star-ratings-fill space-x-2 text-lg" style="width: 50%">
+                            <div class="star-ratings-fill space-x-2 text-lg" th:style="|width: ${planner.star * 20}%|">
                                 <span>★★★★★</span>
                             </div>
                         </div>
@@ -30,7 +30,7 @@
                 <br/>
 
                 <div align="center">
-                    <textarea rows="10" class="w-75" readonly>본인 설명</textarea>
+                    <textarea rows="10" class="w-75" readonly>[[${planner.description}]]</textarea>
                 </div>
                 <br/>
 
