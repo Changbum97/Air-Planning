@@ -2,53 +2,44 @@ package com.example.airplanning.controller;
 
 
 import com.example.airplanning.domain.Response;
-import com.example.airplanning.domain.dto.BoardCreateRequest;
 import com.example.airplanning.domain.dto.BoardDto;
-import com.example.airplanning.response.BoardResponse;
+import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.service.BoardService;
-import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.SortDefault;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.ui.Model;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.security.Principal;
+
+
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/posts")
-@Api(tags = {"Post Controller"})
+@RequestMapping("/boards")
+@Slf4j
 public class BoardController {
+
     private final BoardService boardService;
 
-    @PostMapping
-    public Response<BoardResponse> posts(@RequestBody BoardCreateRequest dto, Authentication authentication){
-        BoardDto boardDto = boardService.write(dto, "test");
-        return Response.success(new BoardResponse("포스트 등록 완료", boardDto.getId()));
+    @ResponseBody
+    @PostMapping("")
+    public String writeBoard(BoardCreateRequest createRequest, Principal principal){
+        boardService.write(createRequest, principal.getName());
+        return "redirect:/boards/{boardId}";
     }
 
+    @GetMapping("/new/write")
+    public String writeBoard(Model model) {
+        model.addAttribute(new BoardCreateRequest());
+        return "boards/write";
+    }
 
-
-//    /* Post 1개 조회
-//     */
-//    @GetMapping("/{postId}")
-//    public ResponseEntity<Response<BoardDto>> findById(@PathVariable Integer postId) {
-//        BoardDto postDto = boardService.get(boardId);
-//        return ResponseEntity.ok().body(Response.success(postDto));
-//    }
-//
-//
-//    /* Post List 조회
-//     */
-//    @GetMapping
-//    public ResponseEntity<Response<Page<BoardDto>>> getPostList(@PageableDefault(size = 20)
-//                                                               @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-//        Page<BoardDto> postDtos = boardService.getAllItems(pageable);
-//        return ResponseEntity.ok().body(Response.success(postDtos));
-//    }
-
+    @GetMapping("/{boardId}")
+    public String detailBoard(@PathVariable Long boardId, Model model){
+        BoardDto boardDto = boardService.detail(boardId);
+        model.addAttribute("board", boardDto);
+        return "boards/detail";
+    }
 
 }
