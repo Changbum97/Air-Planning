@@ -57,6 +57,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
+                .antMatchers("/upload").permitAll()
                 .antMatchers("/api/v1/hello").authenticated()
                 .antMatchers(HttpMethod.GET, "/reviews/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/reviews").authenticated()

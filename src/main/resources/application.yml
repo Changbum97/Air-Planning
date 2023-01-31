@@ -12,9 +12,9 @@ spring:
   # DB 적용
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://ec2-54-180-115-200.ap-northeast-2.compute.amazonaws.com:3306/air-planning-db
+    url: mySQL
     username: root
-    password: 3edc4rfv
+    password: password
   # Jpa 설정
   jpa:
     show-sql: true
@@ -86,7 +86,19 @@ AdminMail:
   id: skdlfma123@gmail.com
   password: ugwplewriwktlvss
 
+# multipart 설정
+spring.servlet.multipart.max-file-size: 10MB
+spring.servlet.multipart.max-request-size: 10MB
 
-
-
-
+# aws 설정
+cloud:
+  aws:
+    credentials:
+      accessKey: accessKey
+      secretKey: secretKey
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    s3:
+      bucket: airplanning-bucket
