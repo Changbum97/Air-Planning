@@ -1,8 +1,9 @@
-package com.example.airplanning.domain.dto;
+package com.example.airplanning.domain.dto.board;
 
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.User;
 import lombok.*;
+
 
 @AllArgsConstructor
 @Getter

@@ -14,9 +14,10 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Board extends BaseEntity{
+public class Board extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;       // 글 제목
@@ -30,9 +31,11 @@ public class Board extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)   //게시글 삭제시 댓글도 함께 삭제
+    @OrderBy("id asc") // 댓글 정렬
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "board")
     private List<Like> likes;
+
 }
