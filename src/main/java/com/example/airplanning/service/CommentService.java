@@ -5,11 +5,14 @@ import com.example.airplanning.domain.dto.comment.CommentDto;
 import com.example.airplanning.domain.dto.comment.CommentUpdateRequest;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Comment;
+import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.enum_class.CommentType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
 import com.example.airplanning.repository.CommentRepository;
+import com.example.airplanning.repository.ReviewRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,19 +24,25 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
+    private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
 
-    public CommentDto create (Long boardId, Long userId, CommentCreateRequest request, String commentType) {
-        // 해당 게시글(Board) 존재 유무 확인
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-
+    public CommentDto create (Long postId, Long userId, CommentCreateRequest request, String commentType) {
         // 댓글을 단 유저 존재 유무 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
-        // 댓글 작성
-        Comment savedComment = commentRepository.save(request.toEntity(user, board, commentType));
+        Comment savedComment = null;
+        // Board 혹은 Review 가 존재하는 지 확인
+        if (commentType.equals(CommentType.BOARD_COMMENT.name())) {
+            Board board = boardRepository.findById(postId)
+                    .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+            savedComment = commentRepository.save(request.toBoardCommentEntity(user, board));
+        } else {
+            Review review = reviewRepository.findById(postId)
+                    .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+            savedComment = commentRepository.save(request.toReviewCommentEntity(user, review));
+        }
 
         return CommentDto.of(savedComment);
     }
