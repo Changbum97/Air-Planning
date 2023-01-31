@@ -17,22 +17,23 @@ import java.util.UUID;
 @Service
 public class S3FileUploadTestService {
 
-    private final AmazonS3 amazonS3;
+    private final AmazonS3Client amazonS3;
 
-    @Value("${cloud.aws.s3.bucket")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    private String defaultUrl = "https://s3.amazonaws.com/";
+    private String dir = "/test1";
+    private String defaultUrl = "https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com";
 
     public String uploadFile(MultipartFile file) throws IOException {
+
+        String bucketDir = bucketName + dir;
+        String dirUrl = defaultUrl + dir + "/";
         String fileName = generateFileName(file);
 
-        try {
-            amazonS3.putObject(bucketName, fileName, file.getInputStream(), getObjectMetadata(file));
-            return defaultUrl + fileName;
-        } catch (SdkClientException e) {
-            throw new IOException("Error uploading file to S3", e);
-        }
+        amazonS3.putObject(bucketDir, fileName, file.getInputStream(), getObjectMetadata(file));
+        return dirUrl + fileName;
+
     }
 
     private ObjectMetadata getObjectMetadata(MultipartFile file) {
@@ -43,6 +44,6 @@ public class S3FileUploadTestService {
     }
 
     private String generateFileName(MultipartFile file) {
-        return UUID.randomUUID() + "-" + file.getOriginalFilename();
+        return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
     }
 }

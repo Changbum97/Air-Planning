@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AWSConfig {
 
-    @Value("${iamAccessKey}")
+    @Value("${cloud.aws.credentials.accessKey}")
     private String iamAccessKey; // IAM Access Key
 
-    @Value("${iamSecretKey}")
+    @Value("${cloud.aws.credentials.secretKey}")
     private String iamSecretKey; // IAM Secret Key
 
     private String region = "ap-northeast-2"; // Bucket Region (서울)
