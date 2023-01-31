@@ -2,6 +2,7 @@ package com.example.airplanning.service;
 
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
+import com.example.airplanning.domain.dto.comment.CommentUpdateRequest;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Comment;
 import com.example.airplanning.domain.entity.User;
@@ -12,6 +13,7 @@ import com.example.airplanning.repository.CommentRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,5 +43,16 @@ public class CommentService {
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
 
         return CommentDto.ofBoard(comment);
+    }
+
+    @Transactional
+    public CommentDto update (Long commentId, CommentUpdateRequest request) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+        comment.update(request);
+        Comment updatedComment = commentRepository.save(comment);
+
+        return CommentDto.ofBoard(updatedComment);
     }
 }

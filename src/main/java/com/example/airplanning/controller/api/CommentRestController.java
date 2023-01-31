@@ -4,6 +4,7 @@ import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
+import com.example.airplanning.domain.dto.comment.CommentUpdateRequest;
 import com.example.airplanning.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ public class CommentRestController {
 
     private final CommentService commentService;
 
+    // 댓글 작성
     @PostMapping("/{boardId}/create")
     public ResponseEntity<Response<CommentDto>> createComment (@PathVariable Long boardId, @AuthenticationPrincipal UserDetail userDetail, CommentCreateRequest request) {
         // 로그인 정보 말고, 임시로 6번 유저 댓글로 설정
@@ -24,9 +26,17 @@ public class CommentRestController {
         return ResponseEntity.ok().body(Response.success(commentDto));
     }
 
+    // 댓글 하나 조회
     @GetMapping("/{commentId}/read")
     public ResponseEntity<Response<CommentDto>> readComment(@PathVariable Long commentId) {
         CommentDto commentDto = commentService.read(commentId);
+        return ResponseEntity.ok().body(Response.success(commentDto));
+    }
+
+    // 댓글 수정
+    @PutMapping("/{commentId}/update")
+    public ResponseEntity<Response<CommentDto>> updateComment(@PathVariable Long commentId, CommentUpdateRequest request) {
+        CommentDto commentDto = commentService.update(commentId, request);
         return ResponseEntity.ok().body(Response.success(commentDto));
     }
 }
