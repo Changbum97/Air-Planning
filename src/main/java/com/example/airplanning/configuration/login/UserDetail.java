@@ -59,7 +59,11 @@ public class UserDetail implements UserDetails, OAuth2User {
     // 겨정 잠금 여부
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        if (this.role.equals("BLACKLIST")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     // 비밀번호 만료 여부

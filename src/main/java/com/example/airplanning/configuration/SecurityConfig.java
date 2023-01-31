@@ -1,6 +1,7 @@
 package com.example.airplanning.configuration;
 
 import com.example.airplanning.configuration.login.CustomOauth2UserService;
+import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +13,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.session.SessionInformationExpiredEvent;
+import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -34,6 +40,16 @@ public class SecurityConfig {
 
     private final CustomOauth2UserService customOauth2UserService;
     private final UserService userService;
+
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -58,6 +74,11 @@ public class SecurityConfig {
                         new AuthenticationSuccessHandler() {
                             @Override
                             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                                UserDetail userDetail = (UserDetail) authentication.getPrincipal();
+                                if (!userDetail.isAccountNonLocked()) {
+                                    throw new LockedException("현재 잠긴 계정입니다.");
+                                }
+
                                 HttpSession session = request.getSession();
                                 session.setMaxInactiveInterval(3600);
                                 response.setContentType("text/html");
@@ -123,6 +144,11 @@ public class SecurityConfig {
                         new AuthenticationSuccessHandler() {
                             @Override
                             public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                                UserDetail userDetail = (UserDetail) authentication.getPrincipal();
+                                if (!userDetail.isAccountNonLocked()) {
+                                    throw new LockedException("현재 잠긴 계정입니다.");
+                                }
+
                                 HttpSession session = request.getSession();
                                 session.setMaxInactiveInterval(3600);
                                 String loginUserNickname = userService.findUser(authentication.getName()).getNickname();
@@ -137,9 +163,50 @@ public class SecurityConfig {
                             }
                         }
                 )
+                .failureHandler(
+                        new AuthenticationFailureHandler() {
+                            @Override
+                            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+                                String loginFailMessage = "";
+                                if(exception instanceof AuthenticationServiceException) {
+                                    loginFailMessage = "죄송합니다. 시스템에 오류가 발생했습니다.";
+                                } else if(exception instanceof BadCredentialsException || exception instanceof UsernameNotFoundException) {
+                                    response.sendRedirect("/users/login?fail");
+                                    return;
+                                } else if(exception instanceof DisabledException) {
+                                    loginFailMessage = "현재 사용할 수 없는 계정입니다.";
+                                } else if(exception instanceof LockedException) {
+                                    loginFailMessage = "현재 잠긴 계정입니다.";
+                                } else if(exception instanceof AccountExpiredException) {
+                                    loginFailMessage = "이미 만료된 계정입니다.";
+                                } else if(exception instanceof CredentialsExpiredException) {
+                                    loginFailMessage = "비밀번호가 만료된 계정입니다.";
+                                }
+
+                                response.setContentType("text/html");
+                                PrintWriter out = response.getWriter();
+                                out.println("<script>alert('" + loginFailMessage + "'); location.href='/users/login';</script>");
+                                out.flush();
+                            }
+                        })
                 .userInfoEndpoint().userService(customOauth2UserService)
                 .and()
                 .and()
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(true)
+                        .sessionRegistry(sessionRegistry())
+                        .expiredSessionStrategy(new SessionInformationExpiredStrategy() {
+                            @Override
+                            public void onExpiredSessionDetected(SessionInformationExpiredEvent event) throws IOException, ServletException {
+                                HttpServletResponse response = event.getResponse();
+                                response.setContentType("text/html");
+                                PrintWriter out = response.getWriter();
+                                out.println("<script>alert('계정이 잠금되었습니다'); location.href='/users/login';</script>");
+                                out.flush();
+                            }
+                        })
+                )
                 .build();
     }
 }
