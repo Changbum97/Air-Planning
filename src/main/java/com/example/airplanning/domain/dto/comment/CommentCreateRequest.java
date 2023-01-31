@@ -11,6 +11,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class CommentCreateRequest {
+
+    private String commentType;
     private String content;
 
     public Comment toBoardCommentEntity(User user, Board board) {
