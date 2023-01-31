@@ -52,6 +52,8 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.webjars.bower/jquery
 	implementation group: 'org.webjars.bower', name: 'jquery', version: '3.6.2'
 
+	//aws
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 }
 
