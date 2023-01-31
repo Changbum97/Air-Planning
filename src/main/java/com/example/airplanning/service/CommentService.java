@@ -35,4 +35,11 @@ public class CommentService {
 
         return CommentDto.ofBoard(savedComment);
     }
+
+    public CommentDto read (Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+        return CommentDto.ofBoard(comment);
+    }
 }

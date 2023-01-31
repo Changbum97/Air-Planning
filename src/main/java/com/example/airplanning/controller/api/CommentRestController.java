@@ -24,4 +24,9 @@ public class CommentRestController {
         return ResponseEntity.ok().body(Response.success(commentDto));
     }
 
+    @GetMapping("/{commentId}/read")
+    public ResponseEntity<Response<CommentDto>> readComment(@PathVariable Long commentId) {
+        CommentDto commentDto = commentService.read(commentId);
+        return ResponseEntity.ok().body(Response.success(commentDto));
+    }
 }
