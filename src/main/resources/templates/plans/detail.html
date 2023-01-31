@@ -7,7 +7,7 @@
 <div class="container px-5">
     <div class="row gx-5 justify-content-center">
         <div class="col-lg-6 py-5">
-            <form class="form-group">
+            <form class="form-group" th:object="${plan}" id="plan">
                 <div>
                     <div class="img-box">
                         <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
@@ -31,7 +31,7 @@
                 <div align="right" class="py-1">
                     <th:block th:if="principal">
                     <a class="btn btn1" th:href="@{/plans/{planId}/update (planId=${planId})}">수정</a>
-                    <button class="btn btn1">삭제</button>
+                        <button class="btn btn1" onclick="delete_plan()">삭제</button>
                     </th:block>
 
                 </div>
@@ -39,5 +39,25 @@
         </div>
     </div>
 </div>
+
+<script th:inline="javascript">
+   function delete_plan() {
+
+       let planId = [[${planId}]];
+
+        if (confirm("정말 삭제하시겠습니까 ?")) {
+            $.ajax({
+                url : '/plans/'+planId+'/delete/',
+                type : "GET",
+                data : {
+                  planId : planId
+                },
+                success :  function () {
+                    location.href="/plans/list"
+                }
+            });
+        }
+    }
+</script>
 </body>
 </html>

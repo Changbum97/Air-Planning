@@ -41,4 +41,16 @@ public class PlanDto {
                 .build();
     }
 
+    public static Page<PlanDto> planDto(Page<Plan> planPage){
+        Page<PlanDto> planDtos = planPage.map(plan -> PlanDto.builder()
+                .id(plan.getId())
+                .title(plan.getTitle())
+                .content(plan.getContent())
+                .userName(plan.getUser().getUserName())
+                .planType(plan.getPlanType())
+                .createdAt(plan.getCreatedAt())
+                .plannerName("test_planner")
+                .build());
+        return planDtos;
+    }
 }
