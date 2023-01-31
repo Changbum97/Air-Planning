@@ -1,5 +1,6 @@
 package com.example.airplanning.domain.entity;
 
+import com.example.airplanning.domain.dto.comment.CommentUpdateRequest;
 import com.example.airplanning.domain.enum_class.CommentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,5 +35,9 @@ public class Comment extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
+
+    public void update(CommentUpdateRequest request) {
+        this.content = request.getContent();
+    }
 
 }
