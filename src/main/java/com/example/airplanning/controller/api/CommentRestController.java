@@ -1,0 +1,27 @@
+package com.example.airplanning.controller.api;
+
+import com.example.airplanning.configuration.login.UserDetail;
+import com.example.airplanning.domain.Response;
+import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
+import com.example.airplanning.domain.dto.comment.CommentDto;
+import com.example.airplanning.service.CommentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/comment")
+@RequiredArgsConstructor
+public class CommentRestController {
+
+    private final CommentService commentService;
+
+    @PostMapping("/{boardId}/create")
+    public ResponseEntity<Response<CommentDto>> createComment (@PathVariable Long boardId, @AuthenticationPrincipal UserDetail userDetail, CommentCreateRequest request) {
+        // 로그인 정보 말고, 임시로 6번 유저 댓글로 설정
+        CommentDto commentDto = commentService.create(boardId, 6L, request);
+        return ResponseEntity.ok().body(Response.success(commentDto));
+    }
+
+}
