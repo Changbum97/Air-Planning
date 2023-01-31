@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class User extends BaseEntity{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,5 +66,18 @@ public class User extends BaseEntity{
     }
     public void setNickname(String newNickname) {
         this.nickname = newNickname;
+    }
+    public void changeRank(String role) {
+        log.info("{}", role);
+        log.info("{}", UserRole.PLANNER.name());
+        if (role.equals(UserRole.USER.name())) {
+            this.role = UserRole.USER;
+        } else if (role.equals(UserRole.ADMIN.name())) {
+            this.role = UserRole.ADMIN;
+        } else if (role.equals(UserRole.PLANNER.name())) {
+            this.role = UserRole.PLANNER;
+        } else if (role.equals(UserRole.BLACKLIST.name())) {
+            this.role = UserRole.BLACKLIST;
+        }
     }
 }
