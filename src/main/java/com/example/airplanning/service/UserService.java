@@ -133,14 +133,4 @@ public class UserService {
         user.setNickname(newNickname);
         userRepository.save(user);
     }
-
-    @Transactional
-    public UserDto changeRank(Long id, String role) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-
-        user.changeRank(role);
-        User changedUser = userRepository.save(user);
-        return UserDto.of(changedUser);
-    }
 }
