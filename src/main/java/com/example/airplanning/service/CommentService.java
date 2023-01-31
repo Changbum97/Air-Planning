@@ -23,7 +23,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    public CommentDto create (Long boardId, Long userId, CommentCreateRequest request) {
+    public CommentDto create (Long boardId, Long userId, CommentCreateRequest request, String commentType) {
         // 해당 게시글(Board) 존재 유무 확인
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
@@ -33,16 +33,16 @@ public class CommentService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
         // 댓글 작성
-        Comment savedComment = commentRepository.save(request.toBoardCommentEntity(user,board));
+        Comment savedComment = commentRepository.save(request.toEntity(user, board, commentType));
 
-        return CommentDto.ofBoard(savedComment);
+        return CommentDto.of(savedComment);
     }
 
     public CommentDto read (Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
 
-        return CommentDto.ofBoard(comment);
+        return CommentDto.of(comment);
     }
 
     @Transactional
@@ -57,12 +57,11 @@ public class CommentService {
             comment.update(request);
             Comment updatedComment = commentRepository.save(comment);
 
-            return CommentDto.ofBoard(updatedComment);
+            return CommentDto.of(updatedComment);
         } else {
             throw  new AppException(ErrorCode.INVALID_PERMISSION);
         }
     }
-
     @Transactional
     public String delete (Long commentId, Long userId) {
         Comment comment = commentRepository.findById(commentId)

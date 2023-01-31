@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/api/comment")
@@ -20,9 +21,9 @@ public class CommentRestController {
 
     // 댓글 작성
     @PostMapping("/{boardId}/create")
-    public ResponseEntity<Response<CommentDto>> createComment (@PathVariable Long boardId, @AuthenticationPrincipal UserDetail userDetail, CommentCreateRequest request) {
+    public ResponseEntity<Response<CommentDto>> createComment (@PathVariable Long boardId, @ApiIgnore @AuthenticationPrincipal UserDetail userDetail, CommentCreateRequest request, String commentType) {
         // 로그인 정보 말고, 임시로 6번 유저 댓글로 설정
-        CommentDto commentDto = commentService.create(boardId, 6L, request);
+        CommentDto commentDto = commentService.create(boardId, 6L, request, commentType);
         return ResponseEntity.ok().body(Response.success(commentDto));
     }
 
@@ -35,7 +36,7 @@ public class CommentRestController {
 
     // 댓글 수정
     @PutMapping("/{commentId}/update")
-    public ResponseEntity<Response<CommentDto>> updateComment(@PathVariable Long commentId, CommentUpdateRequest request, @AuthenticationPrincipal UserDetail userDetail) {
+    public ResponseEntity<Response<CommentDto>> updateComment(@PathVariable Long commentId, CommentUpdateRequest request, @ApiIgnore @AuthenticationPrincipal UserDetail userDetail) {
         // 로그인 정보 말고, 임시로 6번 유저 댓글로 설정
         CommentDto commentDto = commentService.update(commentId, request, 6L);
         return ResponseEntity.ok().body(Response.success(commentDto));
@@ -43,7 +44,7 @@ public class CommentRestController {
 
     // 댓글 삭제
     @DeleteMapping("/{commentId}/delete")
-    public ResponseEntity<Response<String>> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal UserDetail userDetail) {
+    public ResponseEntity<Response<String>> deleteComment(@PathVariable Long commentId, @ApiIgnore @AuthenticationPrincipal UserDetail userDetail) {
         // 로그인 정보 말고, 임시로 6번 유저 댓글로 설정
         String deleteMessage = commentService.delete(commentId, 6L);
         return ResponseEntity.ok().body(Response.success(deleteMessage));

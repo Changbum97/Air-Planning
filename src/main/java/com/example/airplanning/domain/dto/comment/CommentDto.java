@@ -16,12 +16,11 @@ public class CommentDto {
     private Long reviewId;
     private Long boardId;
 
-    public static CommentDto ofBoard (Comment comment) {
+    public static CommentDto of(Comment comment) {
         return CommentDto.builder()
                 .userId(comment.getUser().getId())
                 .content(comment.getContent())
                 .commentType(comment.getCommentType())
-                .boardId(comment.getBoard().getId())
                 .build();
     }
 }

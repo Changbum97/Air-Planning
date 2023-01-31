@@ -12,11 +12,17 @@ import lombok.Getter;
 public class CommentCreateRequest {
     private String content;
 
-    public Comment toBoardCommentEntity(User user, Board board) {
+    public Comment toEntity(User user, Board board, String commentType) {
+        CommentType type = null;
+        if (commentType.equals(CommentType.BOARD_COMMENT.name())) {
+            type = CommentType.BOARD_COMMENT;
+        } else {
+            type = CommentType.REVIEW_COMMENT;
+        }
         return Comment.builder()
                 .content(this.content)
                 .user(user)
-                .commentType(CommentType.BOARD_COMMENT)
+                .commentType(type)
                 .board(board)
                 .build();
     }
