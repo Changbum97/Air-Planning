@@ -46,13 +46,36 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDto update (Long commentId, CommentUpdateRequest request) {
+    public CommentDto update (Long commentId, CommentUpdateRequest request, Long userId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
 
-        comment.update(request);
-        Comment updatedComment = commentRepository.save(comment);
+        userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
-        return CommentDto.ofBoard(updatedComment);
+        if (comment.getUser().getId() == userId) {
+            comment.update(request);
+            Comment updatedComment = commentRepository.save(comment);
+
+            return CommentDto.ofBoard(updatedComment);
+        } else {
+            throw  new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+    }
+
+    @Transactional
+    public String delete (Long commentId, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+        userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        if (comment.getUser().getId() == userId) {
+            commentRepository.delete(comment);
+            return "댓글이 삭제되었습니다.";
+        } else {
+            throw  new AppException(ErrorCode.INVALID_PERMISSION);
+        }
     }
 }

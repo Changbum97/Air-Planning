@@ -35,8 +35,17 @@ public class CommentRestController {
 
     // 댓글 수정
     @PutMapping("/{commentId}/update")
-    public ResponseEntity<Response<CommentDto>> updateComment(@PathVariable Long commentId, CommentUpdateRequest request) {
-        CommentDto commentDto = commentService.update(commentId, request);
+    public ResponseEntity<Response<CommentDto>> updateComment(@PathVariable Long commentId, CommentUpdateRequest request, @AuthenticationPrincipal UserDetail userDetail) {
+        // 로그인 정보 말고, 임시로 6번 유저 댓글로 설정
+        CommentDto commentDto = commentService.update(commentId, request, 6L);
         return ResponseEntity.ok().body(Response.success(commentDto));
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/{commentId}/delete")
+    public ResponseEntity<Response<String>> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal UserDetail userDetail) {
+        // 로그인 정보 말고, 임시로 6번 유저 댓글로 설정
+        String deleteMessage = commentService.delete(commentId, 6L);
+        return ResponseEntity.ok().body(Response.success(deleteMessage));
     }
 }
