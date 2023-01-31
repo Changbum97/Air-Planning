@@ -59,6 +59,7 @@ public class PlanController {
         return "redirect:/plans/{planId}";
     }
 
+    @ResponseBody
     @GetMapping("/{planId}/delete")
     public String deletePlan(@PathVariable Long planId, Principal principal){
         planService.delete(planId, principal.getName());
