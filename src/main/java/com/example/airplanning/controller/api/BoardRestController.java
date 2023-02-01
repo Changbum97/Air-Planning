@@ -4,12 +4,13 @@ package com.example.airplanning.controller.api;
 import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
+import com.example.airplanning.domain.dto.board.BoardModifyRequest;
+import com.example.airplanning.domain.dto.board.BoardModifyResponse;
 import com.example.airplanning.domain.dto.board.BoardResponse;
 import com.example.airplanning.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
 
 @RestController
@@ -23,8 +24,8 @@ public class BoardRestController {
 
     // Post 1개 조회
     @GetMapping("/{boardid}")
-    public Response<BoardDto> findById(@PathVariable Long boardid) {
-        BoardDto boardDto =  boardService.detail(boardid);
+    public Response<BoardDto> findById(@PathVariable Long id) {
+        BoardDto boardDto =  boardService.detail(id);
         return Response.success(boardDto);
     }
 
@@ -38,6 +39,15 @@ public class BoardRestController {
     }
 
     // 수정
+    @PutMapping("/{boardId}")
+    public Response<BoardModifyResponse> update(@PathVariable Long id, @RequestBody BoardModifyRequest boardModifyRequest, Principal principal){
+        String userName = principal.getName();
+        BoardDto boardDto = boardService.modify(boardModifyRequest, "test", id);
+        return Response.success(new BoardModifyResponse("포스트 수정이 완료되었습니다.", boardDto.getId()));
+    }
+
+
+
 
     // 삭제
 

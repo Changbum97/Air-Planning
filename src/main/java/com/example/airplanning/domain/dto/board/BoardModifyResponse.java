@@ -1,14 +1,12 @@
 package com.example.airplanning.domain.dto.board;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-
-
-@AllArgsConstructor
 @Getter
-public class BoardResponse {
+@AllArgsConstructor
+public class BoardModifyResponse {
     private String message;
     private Long id;
 }
-
