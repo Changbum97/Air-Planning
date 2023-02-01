@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+<div class="container px-5">
+  <div class="row gx-5 justify-content-center">
+    <div class="col-lg-6 py-5">
+      <form class="form-group" th:action="@{/boards/{boardId}/modify (boardId=${boardId})}" th:object="${boardModifyRequest}" method="post">
+        <br/>
+        <div>
+          <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
+        </div>
+        <br/>
+        <div>
+          <textarea th:field="*{content}" rows="10" class="w-100" placeholder="내용을 입력해주세요" style="resize: none;"></textarea>
+        </div>
+        <br/>
+        <div align="center" class="py-1">
+         <input type="submit" class="btn btn1" th:value="저장"/>
+        </div>
+        <br/>
+      </form>
+    </div>
+  </div>
+</div>
+<!--
+  <script th:inline="javascript">
+
+    function edit(){
+      let boardId = [[${boardId}]];
+
+      $.ajax({
+        type : 'POST',
+        url : '/boards/'+boardId+'modify',
+        data : $('#boardModifyRequest').serialize(),
+        success: function (){
+          location.href="/"
+        }
+      });
+    }
+
+  </script>-->
+
+</body>
+</html>

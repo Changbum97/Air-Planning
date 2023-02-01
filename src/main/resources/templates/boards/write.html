@@ -7,14 +7,14 @@
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
             <div class="col-lg-6 py-5">
-                <form class="form-group">
+                <form class="form-group" th:object="${boardCreateRequest}" id="boardCreateRequest">
                     <br/>
                     <div>
-                        <input type="text" placeholder="제목을 입력해주세요">
+                        <input type="text" placeholder="제목을 입력해주세요" th:field="*{title}">
                     </div>
                     <br/>
                     <div>
-                        <textarea rows="10" class="w-100" placeholder="내용을 입력해주세요"></textarea>
+                        <textarea rows="10" class="w-100" placeholder="내용을 입력해주세요" th:field="*{content}"></textarea>
                     </div>
                     <br/>
                     <div class="input-group">
@@ -23,12 +23,24 @@
                     </div>
                     <br/>
                     <div align="right" class="py-1">
-                        <button class="btn btn1">등록</button>
+                        <button type="button" class="btn btn1" onclick="write_board()">등록</button>
                     </div>
                     <br/>
                 </form>
             </div>
         </div>
     </div>
+<script th:inline="javascript">
+    function write_board(){
+        $.ajax({
+            type:'POST',
+            url:'/boards',
+            data:$('#boardCreateRequest').serialize(),
+            success: function (data){
+                console.log(data); //응답 body부분 데이터
+            }
+        });
+    }
+</script>
 </body>
 </html>

@@ -4,6 +4,10 @@ package com.example.airplanning.controller;
 import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
+import com.example.airplanning.domain.dto.board.BoardModifyRequest;
+import com.example.airplanning.domain.dto.plan.PlanUpdateRequest;
+import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +44,20 @@ public class BoardController {
         BoardDto boardDto = boardService.detail(boardId);
         model.addAttribute("board", boardDto);
         return "boards/detail";
+
     }
 
+    @GetMapping("/{boardId}/modify")
+    public String modifyBoardPage(@PathVariable Long boardId, Model model){
+        Board board = boardService.view(boardId);
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+        return "boards/modify";
+    }
+
+    @PostMapping("/{boardId}/modify")
+    public String modifyBoard(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
+        boardService.modify(boardModifyRequest, principal.getName(), boardId);
+        model.addAttribute("boardId", boardId);
+        return "redirect:/boards/{boardId}";
+    }
 }
