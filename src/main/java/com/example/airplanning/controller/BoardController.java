@@ -1,6 +1,5 @@
 package com.example.airplanning.controller;
 
-
 import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
@@ -46,8 +45,8 @@ public class BoardController {
         BoardDto boardDto = boardService.detail(boardId);
         model.addAttribute("board", boardDto);
         return "boards/detail";
-
     }
+
 
     @GetMapping("/{boardId}/modify")
     public String modifyBoardPage(@PathVariable Long boardId, Model model){
@@ -63,11 +62,32 @@ public class BoardController {
         return "redirect:/boards/{boardId}";
     }
 
+    // 플래너등급신청
+    @GetMapping("/rankUpWrite")
+    public String rankUpWrite(Model model) {
+        model.addAttribute(new BoardCreateRequest());
+        return "boards/write";
+    }
+    @ResponseBody
+    @PostMapping("/rankUpWrite")
+    public String rankUpWrite(BoardCreateRequest createRequest, Principal principal){
+        boardService.write(createRequest, principal.getName());
+        return "redirect:/boards/rankUp/{boardId}";
+    }
+
+    // 플래너신청조회
+    @GetMapping("/rankUp/{boardId}")
+    public String rankUpDetail(@PathVariable Long boardId, Model model){
+        BoardDto boardDto = boardService.rankUpDetail(boardId);
+        model.addAttribute("board", boardDto);
+        return "/boards/rankUpDetail";
+    }
+
     @ResponseBody
     @GetMapping("/{boardId}/delete")
     public String deleteBoard(@PathVariable Long boardId, Principal principal){
         Long boardDelete = boardService.delete(principal.getName(), boardId);
         return "redirect:/boards/new/write";
     }
-
+    
 }
