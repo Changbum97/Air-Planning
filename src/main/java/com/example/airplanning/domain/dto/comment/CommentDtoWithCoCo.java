@@ -2,16 +2,22 @@ package com.example.airplanning.domain.dto.comment;
 
 import com.example.airplanning.domain.entity.Comment;
 import com.example.airplanning.domain.enum_class.CommentType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import reactor.util.annotation.Nullable;
 
+import java.security.PrivateKey;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Builder
-public class CommentDto {
+public class CommentDtoWithCoCo {
 
     private Long id;
     private Long userId;
@@ -22,35 +28,36 @@ public class CommentDto {
     private Long parentCommentId;
     private String content;
     private String createdAt;
+    private List<CommentDto> coComment;
 
-    public static CommentDto of(Comment comment) {
+    public static CommentDtoWithCoCo of(Comment comment) {
         Long postId = 0L;
         if (comment.getBoard() != null) {
             postId = comment.getBoard().getId();
         } else {
             postId = comment.getReview().getId();
         }
-        return CommentDto.builder()
+        List<CommentDto> coCo = comment.getChildren().stream().map(coComment -> CommentDto.of(coComment)).collect(Collectors.toList());
+        return CommentDtoWithCoCo.builder()
                 .id(comment.getId())
-                .nickname(comment.getUser().getNickname())
                 .userId(comment.getUser().getId())
+                .nickname(comment.getUser().getNickname())
                 .content(comment.getContent())
                 .commentType(comment.getCommentType())
                 .postId(postId)
                 .createdAt(comment.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm:ss")))
+                .coComment(coCo)
                 .build();
     }
 
-    public static CommentDto ofCo(Comment comment) {
+    public static CommentDtoWithCoCo ofCo(Comment comment) {
         Long postId = 0L;
         if (comment.getBoard() != null) {
             postId = comment.getBoard().getId();
         } else {
             postId = comment.getReview().getId();
         }
-        return CommentDto.builder()
-                .id(comment.getId())
-                .nickname(comment.getUser().getNickname())
+        return CommentDtoWithCoCo.builder()
                 .userId(comment.getUser().getId())
                 .content(comment.getContent())
                 .commentType(comment.getCommentType())

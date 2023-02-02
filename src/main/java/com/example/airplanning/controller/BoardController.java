@@ -5,15 +5,24 @@ import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.board.BoardModifyRequest;
+import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
+import com.example.airplanning.domain.dto.comment.CommentDto;
+import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
 import com.example.airplanning.domain.dto.plan.PlanUpdateRequest;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.service.BoardService;
+import com.example.airplanning.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 
@@ -25,6 +34,7 @@ import java.security.Principal;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
 
     @ResponseBody
     @PostMapping("")
@@ -40,9 +50,15 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public String detailBoard(@PathVariable Long boardId, Model model){
+    public String detailBoard(@PathVariable Long boardId, Model model, @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
         BoardDto boardDto = boardService.detail(boardId);
         model.addAttribute("board", boardDto);
+
+        Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
+        Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
+        model.addAttribute("commentPage", commentPage);
+        model.addAttribute("commentCreateRequest", new CommentCreateRequest());
+        model.addAttribute("commentSize", commentSize.getTotalElements());
         return "boards/detail";
 
     }
