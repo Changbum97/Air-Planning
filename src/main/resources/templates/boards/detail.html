@@ -46,42 +46,116 @@
                     </button>
                 </div>
                 <hr/>
-                <form class="form-group">
+
+                <!-- 여기서부터 댓글 시작입니다!! -->
+                <!-- 댓글 작성  th:method="post" th:action="@{/api/comment/4/create}" -->
+                <form class="form-group" th:object="${commentCreateRequest}" id="commentCreateRequest">
                     <div>
-                        <textarea rows="3" class="w-100" placeholder="댓글을 입력해주세요"></textarea>
+                        <textarea th:field="*{content}" rows="3" class="w-100" placeholder="댓글을 입력해주세요"></textarea>
+                        <input th:field="*{commentType}" value="BOARD_COMMENT" hidden>
                     </div>
                     <br/>
                     <div align="right">
-                        <button class="btn btn1">댓글 등록</button>
+                        <button type="submit" class="btn btn1" onclick="createComment()">댓글 등록</button>
                     </div>
-                </form>
+                </form >
                 <hr/>
-                <h5 class="px-2">댓글 10개</h5>
-                <br/>
-                <div align="left">
-                    <form class="form-group w-75">
-                        <textarea rows="3" class="w-100" readonly>댓글111</textarea>
-                        <div align="left">
-                            <a href="/">수정</a>
-                            <a href="/">삭제</a>
+                <!-- 댓글 조회 -->
+                <div class="container" th:object="${commentPage}" >
+                    <div class="card border-warning mb-3">
+                        <!-- 댓글 머리(최상단) -->
+                        <div class="card-header bi bi-chat-dots">
+                            <span th:text="${commentSize}"></span>
+                            <span> Comments</span>
                         </div>
-                    </form>
-                </div>
-                <br/>
-                <div align="right">
-                    <form class="form-group w-75">
-                            <textarea rows="3" class="w-100" readonly>대댓글111</textarea>
-                            <div align="right">
-                                <a href="/">수정</a>
-                                <a href="/">삭제</a>
+                        <span style="line-height:90%"><br></span>
+                        <!--본 댓글 조회-->
+                        <ul class="list-group-flush"  th:each="comment: ${commentPage}">
+                            <li class="list-group-item">
+                                <span>
+                                    <span span style="font-size: 15px;font-weight: bold;" th:text="${comment.nickname}"></span>
+                                    <span style="font-size: xx-small;margin-left: 8px;" th:text="${comment.createdAt}"></span>
+                                    <span style="float: right; margin-right: 15px">
+                                    <a type="button" style="font-size: xx-small" data-bs-toggle="collapse" th:attr="data-bs-target='#createCoComment'+${comment.id}">답글</a>
+                                    <a type="button" style="font-size: xx-small" data-bs-toggle="collapse" th:attr="data-bs-target='#updateComment'+${comment.id}">수정</a>
+                                    <a type="button" style="font-size: xx-small">삭제</a>
+                                    </span>
+                                </span>
+                                    <div th:text="${comment.content}" style="margin-top: 3px"></div>
+                            </li>
+                            <!-- 답글 버튼 누르면 나오는 대댓글 작성 창 -->
+                            <div class="collapse" th:id="'createCoComment' + ${comment.id}">
+                                <span style="line-height:20%"><br></span>
+                                <form>
+                                    <div class="input-group" style="width:auto; margin-right: 15px">
+                                        <input type="text"  th:name="content" class="form-control">
+                                        <input type="hidden" th:name="parentId"/>
+                                        <button type="submit" class="btn btn-outline-warning">작성</button>
+                                    </div>
+                                </form>
+                                <span style="line-height:20%"><br></span>
                             </div>
-                    </form>
+                            <!-- 수정 버튼 누르면 나오는 댓글 수정 창 -->
+                            <div class="collapse" th:id="'updateComment' + ${comment.id}">
+                                <span style="line-height:20%"><br></span>
+                                <form>
+                                    <div class="input-group" style="width:auto; margin-right: 15px">
+                                        <input type="text"  th:name="content" class="form-control">
+                                        <input type="hidden" th:name="parentId"/>
+                                        <button type="submit" class="btn btn-outline-warning">수정</button>
+                                    </div>
+                                </form>
+                                <span style="line-height:20%"><br></span>
+                            </div>
+                            <!-- 본 댓글 속 대댓글 조회-->
+                            <ul class="list-group-flush"  th:each="coComment: ${comment.coComment}">
+                                <li class="list-group-item">
+                                <hr style="margin-bottom: 10px; margin-top: 5px; margin-right: 15px;">
+                                <span>
+                                    <span>↪ </span>
+                                    <span span style="font-size: 15px;font-weight: bold;" th:text="${coComment.nickname}"></span>
+                                    <span style="font-size: xx-small;margin-left: 8px" th:text="${coComment.createdAt}"></span>
+                                    <span style="float: right; margin-right: 15px">
+                                        <a type="button" style="font-size: xx-small" data-bs-toggle="collapse" th:attr="data-bs-target='#updateCoComment'+${coComment.id}">수정</a>
+                                        <a type="button" style="font-size: xx-small">삭제</a>
+                                    </span>
+                                </span>
+                                    <div th:text="${coComment.content}" style="margin-left: 17px; margin-top: 3px"></div>
+                                </li>
+                                <!-- 대댓글 수정 버튼 누르면 나오는 대댓글 수정 창 -->
+                                <div class="collapse" th:id="'updateCoComment' + ${coComment.id}">
+                                    <span style="line-height:20%"><br></span>
+                                    <form>
+                                        <div class="input-group" style="width:auto; margin-right: 15px">
+                                            <input type="text"  th:name="content" class="form-control">
+                                            <input type="hidden" th:name="parentId"/>
+                                            <button type="submit" class="btn btn-outline-warning">수정</button>
+                                        </div>
+                                    </form>
+                                    <span style="line-height:20%"><br></span>
+                                </div>
+                            </ul>
+                            <hr style="margin-bottom: 0px; margin-top: 5px">
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
 <script th:inline="javascript">
+    function createComment() {
+        let postId = [[${boardId}]]
+        $.ajax({
+            type: 'post',
+            url: '/api/comment/4/create',
+            data: $('#commentCreateRequest').serialize(),
+            success: function (message) {
+                alert(message)
+                location.href="/boards/"+5
+            }
+        })
+    }
 
     function delete_board(){
 
@@ -101,9 +175,8 @@
         }
     }
 
-
-
 </script>
 
+>>>>>>> src/main/resources/templates/boards/detail.html
 </body>
 </html>
