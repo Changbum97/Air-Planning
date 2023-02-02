@@ -4,6 +4,7 @@ package com.example.airplanning.controller;
 import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
+import com.example.airplanning.domain.dto.board.BoardDeleteRequest;
 import com.example.airplanning.domain.dto.board.BoardModifyRequest;
 import com.example.airplanning.domain.dto.plan.PlanUpdateRequest;
 import com.example.airplanning.domain.entity.Board;
@@ -11,6 +12,7 @@ import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -60,4 +62,12 @@ public class BoardController {
         model.addAttribute("boardId", boardId);
         return "redirect:/boards/{boardId}";
     }
+
+    @ResponseBody
+    @GetMapping("/{boardId}/delete")
+    public String deleteBoard(@PathVariable Long boardId, Principal principal){
+        Long boardDelete = boardService.delete(principal.getName(), boardId);
+        return "redirect:/boards/new/write";
+    }
+
 }

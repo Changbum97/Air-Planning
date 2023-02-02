@@ -38,8 +38,11 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board")
     private List<Like> likes;
 
+    
+    // 수정
     public void modify(String title, String content){
         this.title = title;
         this.content = content;
     }
+
 }
