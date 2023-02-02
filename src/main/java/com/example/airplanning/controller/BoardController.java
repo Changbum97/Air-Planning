@@ -1,6 +1,6 @@
 package com.example.airplanning.controller;
 
-
+import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.board.BoardDeleteRequest;
@@ -45,6 +45,21 @@ public class BoardController {
         BoardDto boardDto = boardService.detail(boardId);
         model.addAttribute("board", boardDto);
         return "boards/detail";
+    }
+
+
+    @GetMapping("/{boardId}/modify")
+    public String modifyBoardPage(@PathVariable Long boardId, Model model){
+        Board board = boardService.view(boardId);
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+        return "boards/modify";
+    }
+
+    @PostMapping("/{boardId}/modify")
+    public String modifyBoard(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
+        boardService.modify(boardModifyRequest, principal.getName(), boardId);
+        model.addAttribute("boardId", boardId);
+        return "redirect:/boards/{boardId}";
     }
 
     // 플래너등급신청
