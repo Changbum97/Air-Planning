@@ -2,6 +2,7 @@ package com.example.airplanning.service;
 
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.BoardDto;
+import com.example.airplanning.domain.dto.board.BoardDeleteRequest;
 import com.example.airplanning.domain.dto.board.BoardModifyRequest;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.User;
@@ -60,8 +61,6 @@ public class BoardService {
         }
 
         board.modify(modifyRequest.getTitle(), modifyRequest.getContent());
-        log.info(board.getTitle());
-        log.info(board.getContent());
         boardRepository.save(board);
         return BoardDto.of(board);
 
@@ -70,4 +69,41 @@ public class BoardService {
     public Board view(Long id){
         return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
     }
+    
+    public BoardDto rankUpWrite(BoardCreateRequest boardCreateRequest, String userName) {
+        User userEntity = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        Board board= boardRepository.save(boardCreateRequest.toEntity(userEntity));
+
+        return BoardDto.of(board);
+    }
+
+
+    // 플래너신청조회
+    public BoardDto rankUpDetail(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        return BoardDto.of(board);
+    }
+    
+    // 삭제
+    @Transactional
+    public Long delete(String userName, Long id) {
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        if (!Objects.equals(board.getUser().getUserName(),userName)){
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        boardRepository.deleteById(id);
+        return id;
+
+
+    }
+
 }
