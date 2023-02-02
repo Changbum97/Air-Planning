@@ -13,7 +13,7 @@
                 </div>
                 <hr/>
                 <div class="img-box">
-                    <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="profile-img">
+                    <img th:src = "${user.image}" class="profile-btn">
                 </div>
                 <div class="py-3">
                     <h3 class="profile-text" th:utext="${user.nickname}">닉네임</h3>

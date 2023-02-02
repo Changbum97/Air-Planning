@@ -1,6 +1,7 @@
 package com.example.airplanning.domain.dto.myPage;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -9,7 +10,6 @@ import lombok.*;
 public class MyPageEditRequest {
 
     private String password;
-    //private String image;
     private String nickname;
 
 }
