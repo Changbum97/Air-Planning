@@ -4,12 +4,16 @@ import com.example.airplanning.domain.dto.myPage.*;
 import com.example.airplanning.domain.dto.user.UserDto;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
+import com.example.airplanning.service.MyPageService;
 import com.example.airplanning.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.security.Principal;
 
 @Controller
@@ -18,6 +22,7 @@ import java.security.Principal;
 @Slf4j
 public class MyPageController {
 
+    private final MyPageService myPageService;
     private final UserService userService;
 
 
@@ -93,16 +98,21 @@ public class MyPageController {
         return "users/myPageEdit";
     }
 
+
     //마이페이지 정보 수정 완료
     @ResponseBody
     @PostMapping("/{userId}/edit")
-    public String editInfo(@PathVariable Long userId, MyPageEditRequest req, Principal principal) {
-
-        //principal 오류 (로그인 오류, 만료)
+    public String editInfo(@PathVariable Long userId, @RequestPart(value = "request") MyPageEditRequest req,
+                           @RequestPart(value = "img",required = false) MultipartFile file, Principal principal) throws IOException {
+        
         try {
-            userService.editUserInfo(req.getPassword(), req.getNickname(), principal.getName());
-        } catch (Exception e) {
-            return "로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.*login";
+            userService.editUserInfo(req.getPassword(), req.getNickname(), file, principal.getName());
+        } catch (AppException e) {
+            if  (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
+                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/mypage/"+userId+"/edit";
+            }
+        } catch (Exception e) { //principal 오류 (로그인 오류, 만료)
+            return "로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.*/login";
         }
 
         return "변경이 완료되었습니다.*/mypage/"+userId;

@@ -56,9 +56,10 @@ public class User extends BaseEntity{
     @OneToMany(mappedBy = "user")
     private List<Plan> plans;
 
-    public void updateUser(String password, String nickname) {
+    public void updateUser(String password, String nickname, String image) {
         this.password = password;
         this.nickname = nickname;
+        this.image = image;
     }
 
     public void changePassword(String newPassword) {
