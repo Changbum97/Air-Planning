@@ -32,7 +32,7 @@
                     <div align="right" class="py-1">
                         <th:block th:if="principal">
                             <a class="btn btn1" th:href="@{/boards/{boardId}/modify (boardId=${boardId})}">수정</a>
-                            <button class="btn btn1">삭제</button>
+                            <button class="btn btn1" onclick="delete_board()">삭제</button>
                         </th:block>
                     </div>
                     <br/>
@@ -80,5 +80,29 @@
             </div>
         </div>
     </div>
+
+<script th:inline="javascript">
+
+    function delete_board(){
+
+        let boardId = [[${boardId}]];
+
+        if (confirm("글을 삭제하시겠습니까?")){
+            $.ajax({
+                url : '/boards/'+boardId+'/delete/',
+                type : "GET",
+                data : {
+                    boardId : boardId
+                },
+                success : function (){
+                    location.href="/boards/new/write"
+                }
+            });
+        }
+    }
+
+
+</script>
+
 </body>
 </html>
