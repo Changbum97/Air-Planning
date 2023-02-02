@@ -30,6 +30,7 @@ public class UserJoinRequest {
                 .password(encodedPassword)
                 .phoneNumber(this.phoneNumber)
                 .role(UserRole.USER)
+                .image("https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com/default.jpeg")
                 .build();
     }
 }

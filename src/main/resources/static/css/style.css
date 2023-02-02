@@ -94,13 +94,30 @@ body, head {
     height: 200px;
 }
 
+.profile-edit-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-btn {
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 50%;
+    border:none;
+    width: 200px;
+    height: 200px;
+}
 .profile-text {
     margin-left: 300px;
     margin-bottom: 20px;
 }
 
 .edit-img-box img {
-    border-radius: 100%;
+    margin: auto;
     border: 5px solid #ffbe33;
     display:inline-block;
 }
@@ -108,6 +125,10 @@ body, head {
 .edit-profile-text {
     margin-top: 5px;
     margin-bottom: 10px;
+}
+
+.edit-upload {
+    display: none;
 }
 
 .little-img {
