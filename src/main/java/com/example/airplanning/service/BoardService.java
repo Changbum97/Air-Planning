@@ -70,4 +70,23 @@ public class BoardService {
     public Board view(Long id){
         return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
     }
+    
+    public BoardDto rankUpWrite(BoardCreateRequest boardCreateRequest, String userName) {
+        User userEntity = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        Board board= boardRepository.save(boardCreateRequest.toEntity(userEntity));
+
+        return BoardDto.of(board);
+    }
+
+
+    // 플래너신청조회
+    public BoardDto rankUpDetail(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        return BoardDto.of(board);
+    }
+    
+    
+
 }

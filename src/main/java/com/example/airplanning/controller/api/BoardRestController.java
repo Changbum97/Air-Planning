@@ -8,6 +8,7 @@ import com.example.airplanning.domain.dto.board.BoardModifyRequest;
 import com.example.airplanning.domain.dto.board.BoardModifyResponse;
 import com.example.airplanning.domain.dto.board.BoardResponse;
 import com.example.airplanning.service.BoardService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -52,5 +53,23 @@ public class BoardRestController {
     // 삭제
 
     // Post 리스트 조회
+
+
+
+    // 플래너 신청 등록
+    @PostMapping("/rankUpWrite/{boardId}")
+    public Response<BoardResponse>rankUpWrite(@RequestBody BoardCreateRequest boardCreateRequest, Principal principal) {
+        String userName = principal.getName();
+        BoardDto boardDto = boardService.write(boardCreateRequest, "test");
+        return Response.success(new BoardResponse("프래너 등급 신청이 완료되었습니다.", boardDto.getId()));
+    }
+
+    // 플래너 신청 조회
+    @GetMapping("/rankUp/{boardId}")
+    @Operation(summary = "플래너 신청 조회")
+    public Response<BoardDto> rankUpDetail(@PathVariable Long boardId){
+        BoardDto boardDto = boardService.rankUpDetail(boardId);
+        return Response.success(boardDto);
+    }
 
 }
