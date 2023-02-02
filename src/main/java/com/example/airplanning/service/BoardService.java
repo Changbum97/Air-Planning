@@ -88,6 +88,7 @@ public class BoardService {
         boardRepository.deleteById(id);
         return id;
 
+
     }
 
 }

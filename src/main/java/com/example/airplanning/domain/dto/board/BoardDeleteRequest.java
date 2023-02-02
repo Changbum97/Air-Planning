@@ -11,3 +11,4 @@ public class BoardDeleteRequest {
     private String title;
     private String content;
 }
+

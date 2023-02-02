@@ -70,5 +70,4 @@ public class BoardController {
         return "redirect:/boards/new/write";
     }
 
-
 }

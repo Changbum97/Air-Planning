@@ -44,4 +44,5 @@ public class Board extends BaseEntity {
         this.title = title;
         this.content = content;
     }
+
 }

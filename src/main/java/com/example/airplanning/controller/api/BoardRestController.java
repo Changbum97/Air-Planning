@@ -57,8 +57,6 @@ public class BoardRestController {
         return Response.success(new BoardResponse("포스트 삭제가 완료되었습니다.", boardDelete));
     }
 
-
-
     // Post 리스트
 
 }
