@@ -25,96 +25,291 @@
                 <hr/>
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a id="item1" class="nav-link" onclick="clickItem1()">여행</a>
+                        <a id="trip" class="nav-link" onclick="clickItem1()">여행</a>
                     </li>
                     <li class="nav-item">
-                        <a id="item2" class="nav-link" onclick="clickItem2()">내가 작성한</a>
+                        <a id="my" class="nav-link" onclick="clickItem2()">내가 작성한</a>
                     </li>
                     <li class="nav-item">
-                        <a id="item3" class="nav-link" onclick="clickItem3()">좋아요</a>
+                        <a id="like" class="nav-link" onclick="clickItem3()">좋아요</a>
                     </li>
                 </ul>
                 <ul class="nav nav-tabs" id="tab1" hidden>
                     <li class="nav-item">
-                        <a class="nav-link" href="/1">신청중</a>
+                        <a id = "trip/progress" class="nav-link">신청중</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/2">여행 완료</a>
+                        <a id = "trip/finish" class="nav-link">여행 완료</a>
                     </li>
                 </ul>
                 <ul class="nav nav-tabs" id="tab2" hidden>
                     <li class="nav-item">
-                        <a class="nav-link" href="/3">게시글</a>
+                        <a id = "my/boards" class="nav-link">게시글</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/4">리뷰</a>
+                        <a id = "my/reviews" class="nav-link">리뷰</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/5">댓글</a>
+                        <a id = "my/comments" class="nav-link">댓글</a>
                     </li>
                 </ul>
                 <ul class="nav nav-tabs" id="tab3" hidden>
                     <li class="nav-item">
-                        <a class="nav-link" href="/6">게시글</a>
+                        <a id = "like/boards" class="nav-link">게시글</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/7">리뷰</a>
+                        <a id = "like/reviews" class="nav-link">리뷰</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/8">플래너</a>
+                        <a id = "like/planners" class="nav-link">플래너</a>
                     </li>
                 </ul>
                 <br/>
                 <table class="table list-table table-hover text-center">
-                    <thead>
-                    <tr>
-                        <th>타이틀1</th>
-                        <th>타이틀2</th>
-                        <th>타이틀3</th>
-                    </tr>
+                    <thead id = "list-title">
                     </thead>
-                    <tbody>
-                    <tr>
-                        <td>내용1-1</td>
-                        <td>내용1-2</td>
-                        <td>내용1-3</td>
-                    </tr>
-                    <tr>
-                        <td>내용2-1</td>
-                        <td>내용2-2</td>
-                        <td>내용2-3</td>
-                    </tr>
+                    <tbody id = "list-content">
                     </tbody>
                 </table>
+                <ul id = "pagingul" class="pagination justify-content-center">
+                </ul>
             </div>
         </div>
     </div>
 
     <script th:inline="javascript">
+
+        let pageSort;
+        let totalData=0; //총 데이터 수
+        let dataPerPage = 5; //한 페이지에 나타낼 글 수
+        let pageCount = 5; //페이징에 나타낼 페이지 수
+        let globalCurrentPage=1; //현재 페이지
+        let dataList; //표시하려하는 데이터 리스트
+        let listTitle; // 리스트 타이틀
+        let listComponent; // 리스트 구성
+
+        let userId =  [[${user.id}]];
+
+        //여행 리스트 설정
+        document.getElementById('trip/progress').onclick = function(){
+            listTitle = "<tr><th>id</th><th>제목</th><th>상태</th><th>작성일</th></tr>";
+            listComponent = new Array('id', 'title', 'planType', 'createdAt');
+            getList("trip/progress")
+        };
+
+        document.getElementById('trip/finish').onclick = function(){
+            listTitle = "<tr><th>id</th><th>제목</th><th>상태</th><th>작성일</th></tr>";
+            listComponent = new Array('id', 'title', 'planType', 'createdAt');
+            getList("trip/finish")
+        };
+
+
+        //내 게시글 리스트 설정
+        document.getElementById('my/boards').onclick = function(){
+            listTitle = "<tr><th>id</th><th>제목</th><th>카테고리</th><th>작성일</th></tr>";
+            listComponent = new Array('id', 'title', 'category', 'createdAt');
+            getList("my/boards")
+        };
+
+        document.getElementById('my/comments').onclick = function(){
+            listTitle = "<tr><th>id</th><th>글 제목</th><th>내용</th><th>작성일</th></tr>";
+            listComponent = new Array('id', 'parentTitle', 'content', 'createdAt');
+            getList("my/comments")
+        };
+
+        document.getElementById('my/reviews').onclick = function(){
+            listTitle = "<tr><th>id</th><th>제목</th><th>플래너</th><th>작성일</th></tr>";
+            listComponent = new Array('id', 'title', 'plannerName', 'createdAt');
+            getList("my/reviews")
+        };
+
+        //좋아요 리스트 설정
+        document.getElementById('like/boards').onclick = function(){
+            listTitle = "<tr><th>id</th><th>제목</th><th>카테고리</th><th>시간</th></tr>";
+            listComponent = new Array('id', 'title', 'category', 'createdAt');
+            getList("like/boards")
+        };
+
+        document.getElementById('like/reviews').onclick = function(){
+            listTitle = "<tr><th>id</th><th>제목</th><th>플래너</th><th>시간</th></tr>";
+            listComponent = new Array('id', 'title', 'plannerName', 'createdAt');
+            getList("like/reviews")
+        };
+
+        document.getElementById('like/planners').onclick = function(){
+            listTitle = "<tr><th>id</th><th>플래너</th><th>별점</th><th>시간</th></tr>";
+            listComponent = new Array('id', 'plannerName', 'starMean', 'createdAt');
+            getList("like/planners")
+        };
+
+        window.onload = function () {
+            document.getElementById("trip").click();
+            document.getElementById("trip/progress").click();
+        }
+
         function clickItem1() {
-            document.getElementById("item1").className="nav-link active"
-            document.getElementById("item2").className="nav-link"
-            document.getElementById("item3").className="nav-link"
+
+            globalCurrentPage=1;
+
+            document.getElementById("trip/progress").click();
+            document.getElementById("trip").className="nav-link active"
+            document.getElementById("my").className="nav-link"
+            document.getElementById("like").className="nav-link"
             document.getElementById("tab1").removeAttribute("hidden")
             document.getElementById("tab2").setAttribute("hidden", "true")
             document.getElementById("tab3").setAttribute("hidden", "true")
         }
+
         function clickItem2() {
-            document.getElementById("item1").className="nav-link"
-            document.getElementById("item2").className="nav-link active"
-            document.getElementById("item3").className="nav-link"
+
+            globalCurrentPage=1;
+
+            document.getElementById("my/boards").click();
+            document.getElementById("trip").className="nav-link"
+            document.getElementById("my").className="nav-link active"
+            document.getElementById("like").className="nav-link"
             document.getElementById("tab1").setAttribute("hidden", "true")
             document.getElementById("tab2").removeAttribute("hidden")
             document.getElementById("tab3").setAttribute("hidden", "true")
         }
+
         function clickItem3() {
-            document.getElementById("item1").className="nav-link"
-            document.getElementById("item2").className="nav-link"
-            document.getElementById("item3").className="nav-link active"
+
+            globalCurrentPage=1;
+
+            document.getElementById("like/boards").click();
+            document.getElementById("trip").className="nav-link"
+            document.getElementById("my").className="nav-link"
+            document.getElementById("like").className="nav-link active"
             document.getElementById("tab1").setAttribute("hidden", "true")
             document.getElementById("tab2").setAttribute("hidden", "true")
             document.getElementById("tab3").removeAttribute("hidden")
         }
+
+        function getList(buttonId) {
+
+            pageSort = buttonId;
+
+            $.ajax({ // ajax로 데이터 가져오기
+                method: "GET",
+                url: '/users/mypage/'+userId+'/' + pageSort,
+                dataType: "json",
+                async: false,
+                success: function (d) {
+                    //totalData(총 데이터 수) 구하기
+                    totalData = d.length;
+                    //데이터 대입
+                    dataList = d;
+                }
+                });
+
+            //글 목록 표시 호출 (테이블 생성)
+            displayData(1, dataPerPage);
+
+            //페이징 표시 호출
+            paging(totalData, dataPerPage, pageCount, 1);
+
+        }
+
+        //현재 페이지(currentPage)와 페이지당 글 개수(dataPerPage) 반영
+        function displayData(currentPage, dataPerPage) {
+
+            let chartHtml = "";
+
+            //Number로 변환하지 않으면 아래에서 +를 할 경우 스트링 결합이 되어버림..
+            currentPage = Number(currentPage);
+            dataPerPage = Number(dataPerPage);
+
+            for (
+                let i = (currentPage - 1) * dataPerPage;
+                i < (currentPage - 1) * dataPerPage + dataPerPage;
+                i++
+            ) {
+                if (i < totalData) {
+                    chartHtml += "<tr><td>"
+                    for(const n of listComponent) {
+                        chartHtml += dataList[i][n] + "</td><td>";
+                    }
+                    chartHtml.replace(/<\/td><td>,$/,'');
+                    chartHtml += "</td></tr>"
+                    //chartHtml += "</td> <a href = \""++" \" ></tr>";
+                } else {
+                    break;
+                }
+            }
+
+            $("#list-title").html(listTitle);
+            $("#list-content").html(chartHtml);
+        }
+
+        //페이징 표시 함수
+        function paging(totalData, dataPerPage, pageCount, currentPage) {
+            console.log("currentPage : " + currentPage);
+
+            totalPage = Math.ceil(totalData / dataPerPage); //총 페이지 수
+
+            if(totalPage<pageCount){
+                pageCount=totalPage;
+            }
+
+            let pageGroup = Math.ceil(currentPage / pageCount); // 페이지 그룹
+            let last = pageGroup * pageCount; //화면에 보여질 마지막 페이지 번호
+
+            if (last > totalPage) {
+                last = totalPage;
+            }
+
+            let first = last - (pageCount - 1); //화면에 보여질 첫번째 페이지 번호
+            let next = last + 1;
+            let prev = first - 1;
+
+            let pageHtml = "";
+
+            if (prev > 0) {
+                pageHtml += "<li><a class='page-link' href='#' id='prev'> 이전 </a></li>";
+            }
+
+            //페이징 번호 표시
+            for (var i = first; i <= last; i++) {
+                if (currentPage == i) {
+                    pageHtml +=
+                        "<li class='page-item active'><a class= 'page-link' href='#'  id='" + i + "'>" + i + "</a></li>";
+                } else {
+                    pageHtml += "<li class='page-item'><a class= 'page-link' href='#' id='" + i + "'>" + i + "</a></li>";
+                }
+            }
+
+            if (last < totalPage) {
+                pageHtml += "<li><a class='page-link' href='#' id='next'> 다음 </a></li>";
+            }
+
+            $("#pagingul").html(pageHtml);
+
+            //페이징 번호 클릭 이벤트
+            $("#pagingul li a").click(function () {
+                let $id = $(this).attr("id");
+                selectedPage = $(this).text();
+
+                if ($id == "next") selectedPage = next;
+                if ($id == "prev") selectedPage = prev;
+
+                //전역변수에 선택한 페이지 번호를 담는다...
+                globalCurrentPage = selectedPage;
+                //페이징 표시 재호출
+                paging(totalData, dataPerPage, pageCount, selectedPage);
+                //글 목록 표시 재호출
+                displayData(selectedPage, dataPerPage);
+            });
+        }
+
+        //페이지 번호 클릭 시
+        $("#dataPerPage").change(function () {
+            dataPerPage = $("#dataPerPage").val();
+
+            //전역 변수에 담긴 globalCurrent 값을 이용하여 페이지 이동없이 글 표시개수 변경
+            paging(totalData, dataPerPage, pageCount, globalCurrentPage);
+            displayData(globalCurrentPage, dataPerPage);
+        });
 
     </script>
 </body>

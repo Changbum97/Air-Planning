@@ -13,7 +13,7 @@
                     </div>
                     <hr/>
                     <div align = "center" class = "edit-img-box img">
-                    <button id="profile-btn" type = "button" class="profile-btn"><img id ="button-image"th:src = "${user.image}" class = "profile-edit-img"></button>
+                    <button id="profile-btn" type = "button" class="profile-btn" disabled><img id ="button-image"th:src = "${user.image}" class = "profile-edit-img"></button>
                     <input type="file" class="edit-upload" id ="image-input" accept="image/*" style="display: none;">
                     </div>
                     <div align="center">
@@ -31,19 +31,20 @@
                         </div>
                         <br/>
                         <div align="center">
-                            <input th:field="*{password}" type="password" class="w-75 login-input" placeholder="변경할 비밀번호" onchange="check_pw()">
+                            <input id = "password" th:field="*{password}" type="password" class="w-75 login-input" placeholder="변경할 비밀번호" onchange="check_pw()" disabled>
                         </div>
                         <br/>
                         <div align="center">
-                            <input id="password-check" type="password" class="w-75 login-input" placeholder="비밀번호 확인" onchange="check_pw()">
+                            <input id="password-check" type="password" class="w-75 login-input" placeholder="비밀번호 확인" onchange="check_pw()" disabled>
                             <div style="margin-top: 5px" class="w-75">
                                 <div id="password-check-pass" class="alert-pass" hidden>비밀번호가 일치합니다</div>
                                 <div id="password-check-fail" class="alert-fail" hidden>비밀번호가 일치하지 않습니다</div>
+                                <div id="password-check-fail2" class="alert-fail" hidden>기존 비밀번호와 동일합니다</div>
                             </div>
                         </div>
                         <br/>
                         <div align="center">
-                            <input th:field="*{nickname}" type="text" class="w-75 login-input" placeholder="닉네임" onchange="check_nickname()">
+                            <input id="nickname" th:field="*{nickname}" type="text" class="w-75 login-input" placeholder="닉네임" onchange="check_nickname()" disabled>
                             <div style="margin-top: 5px" class="w-75">
                                 <div id="nickname-pass" class="alert-pass" hidden>사용 가능한 닉네임 입니다</div>
                                 <div id="nickname-fail" class="alert-fail" hidden>닉네임이 중복됩니다</div>
@@ -141,6 +142,8 @@
                         hide('origin-password-check-null')
                         show('origin-password-check-pass')
                         originPasswordPass = true
+                        document.getElementById('origin_password').setAttribute("disabled", "true")
+                        edit_component_able()
                         check_all()
                     }
                 }
@@ -190,21 +193,32 @@
             let pw2 = $("#password-check").val();
 
             if(pw != "" && pw2 != ""){
-                if(pw == pw2){
+
+                if(pw == $("#origin_password").val()) {
+                    hide('password-check-pass')
+                    hide('password-check-fail')
+                    show('password-check-fail2')
+                }
+
+                if(pw == pw2 && pw != $("#origin_password").val()){
                     show('password-check-pass')
                     hide('password-check-fail')
+                    hide('password-check-fail2')
                     changePassword = true
                     passwordPass = true
                     check_all()
                 }
-                else{
+
+                if (pw != pw2){
                     hide('password-check-pass')
+                    hide('password-check-fail2')
                     show('password-check-fail')
                 }
 
             } else if (pw == ""  && pw2 == "") {
                 hide('password-check-pass')
                 hide('password-check-fail')
+                hide('password-check-fail2')
                 changePassword = false
                 passwordPass = true
                 check_all()
@@ -258,6 +272,13 @@
         }
         function edit_btn_disable() {
             document.getElementById('edit-btn').setAttribute("disabled", "true")
+        }
+
+        function edit_component_able() {
+            document.getElementById('profile-btn').removeAttribute("disabled")
+            document.getElementById('password').removeAttribute("disabled")
+            document.getElementById('password-check').removeAttribute("disabled")
+            document.getElementById('nickname').removeAttribute("disabled")
         }
 
     </script>
