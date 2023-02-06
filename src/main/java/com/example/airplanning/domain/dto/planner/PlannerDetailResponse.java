@@ -14,7 +14,6 @@ public class PlannerDetailResponse {
 
     private String userName;
     private Double star;            // 별점 총 합 / 리뷰 개수
-    private String country;         // 자신있는 국가
     private String region;          // 자신있는 지역
     private String description;     // 자기 소개
 
@@ -22,8 +21,7 @@ public class PlannerDetailResponse {
         return PlannerDetailResponse.builder()
                 .userName(planner.getUser().getUserName())
                 .star((double)planner.getStarSum() / planner.getReviewCount())
-                .country(planner.getCountry())
-                .region(planner.getRegion())
+                .region(planner.getRegion().getRegion1() +" "+ planner.getRegion().getRegion2())
                 .description(planner.getDescription())
                 .build();
     }

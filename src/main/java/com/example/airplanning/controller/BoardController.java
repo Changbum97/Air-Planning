@@ -5,6 +5,7 @@ import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.board.BoardDeleteRequest;
 import com.example.airplanning.domain.dto.board.BoardModifyRequest;
+import com.example.airplanning.domain.dto.board.PortfolioCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
 import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
@@ -105,5 +106,19 @@ public class BoardController {
         Long boardDelete = boardService.delete(principal.getName(), boardId);
         return "redirect:/boards/new/write";
     }
+
+
+    // 포토폴리오신청
+    @GetMapping("/portfolio/write")
+    public String portfolioWrite(Model model) {
+        model.addAttribute(new PortfolioCreateRequest());
+        return "boards/portfolioWrite";
+    }
+//    @ResponseBody
+//    @PostMapping("/portfolio/write")
+//    public String portfolioWrite(PortfolioCreateRequest createRequest, Principal principal){
+//        boardService.write(createRequest, principal.getName());
+//        return "redirect:/boards/portfolio/{boardId}";
+//    }
     
 }
