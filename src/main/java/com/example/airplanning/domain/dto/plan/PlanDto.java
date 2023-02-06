@@ -3,6 +3,7 @@ package com.example.airplanning.domain.dto.plan;
 import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.domain.enum_class.PlanType;
+import com.example.airplanning.domain.enum_class.UserRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class PlanDto {
     private String content;
     private String userName;
     private PlanType planType;
+    private UserRole userRole;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
@@ -36,8 +38,9 @@ public class PlanDto {
                 .content(plan.getContent())
                 .userName(plan.getUser().getUserName())
                 .planType(plan.getPlanType())
+                .userRole(plan.getUser().getRole())
                 .createdAt(plan.getCreatedAt())
-                .plannerName("test_planner")
+                .plannerName("test")
                 .build();
     }
 

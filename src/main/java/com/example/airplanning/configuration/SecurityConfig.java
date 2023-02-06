@@ -62,6 +62,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/reviews/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/reviews").authenticated()
                 .antMatchers(HttpMethod.GET, "/users/set-nickname").authenticated()
+                .antMatchers(HttpMethod.GET, "/plans/write").authenticated()
+                .antMatchers(HttpMethod.POST, "/plans").authenticated()
                 .anyRequest().permitAll()
                 .and()
 
