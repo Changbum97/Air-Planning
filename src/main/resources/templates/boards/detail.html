@@ -1,182 +1,468 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments/header.html :: head"/>
 
 <body>
 <div th:replace="fragments/header.html :: header"/>
-    <div class="container px-5">
-        <div class="row gx-5 justify-content-center">
-            <div class="col-lg-6 py-5">
-                <form class="form-group" th:object="${board}" id="board">
-                    <div>
-                        <div class="img-box">
-                            <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
-                        </div>
-                        <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
-                        <h6>
-                            <img src="/assets/images/eyes.svg" class="little-img"> 200
-                            <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
-                        </h6>
+<div class="container px-5">
+    <div class="row gx-5 justify-content-center">
+        <th:block class="col-lg-6 py-5">
+            <form class="form-group" th:object="${board}" id="board">
+                <div>
+                    <div class="img-box">
+                        <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
                     </div>
-                    <br/>
-                    <div>
-                        <h1>[[${board.title}]]</h1>
-                    </div>
-                    <div>
+                    <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
+                    <h6>
+                        <img src="/assets/images/eyes.svg" class="little-img"> 200
+                        <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
+                    </h6>
+                </div>
+                <br/>
+                <div>
+                    <h1>[[${board.title}]]</h1>
+                </div>
+                <div>
                         <textarea rows="10" class="w-100" readonly>[[${board.content}]]
                         </textarea>
-                    </div>
-                    <div style="float: left" class="py-3">
-                        <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
-                    </div>
-                    <div align="right" class="py-1">
-                        <th:block th:if="principal">
-                            <a class="btn btn1" th:href="@{/boards/{boardId}/modify (boardId=${boardId})}">수정</a>
-                            <button class="btn btn1" onclick="delete_board()">삭제</button>
-                        </th:block>
-                    </div>
-                    <br/>
-                </form>
-                <div>
-                    <button class="btn icon-btn">
-                        <img src="/assets/images/empty-hearts.svg" class="little-img">
-                    </button>
-                    <button class="btn icon-btn">
-                        <img src="/assets/images/fill-hearts.svg" class="little-img">
-                    </button>
                 </div>
-                <hr/>
+                <div style="float: left" class="py-3">
+                    <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                </div>
+                <div align="right" class="py-1">
+                    <th:block th:if="principal">
+                        <a class="btn btn1" th:href="@{/boards/{boardId}/modify (boardId=${boardId})}">수정</a>
+                        <button class="btn btn1" onclick="delete_board()">삭제</button>
+                    </th:block>
+                </div>
+                <br/>
+            </form>
+            <div>
+                <button class="btn icon-btn">
+                    <img src="/assets/images/empty-hearts.svg" class="little-img">
+                </button>
+                <button class="btn icon-btn">
+                    <img src="/assets/images/fill-hearts.svg" class="little-img">
+                </button>
+            </div>
+            <hr/>
 
-                <!-- 여기서부터 댓글 시작입니다!! -->
-                <!-- 댓글 작성  th:method="post" th:action="@{/api/comment/4/create}" -->
-                <form class="form-group" th:object="${commentCreateRequest}" id="commentCreateRequest">
-                    <div>
-                        <textarea th:field="*{content}" rows="3" class="w-100" placeholder="댓글을 입력해주세요"></textarea>
-                        <input th:field="*{commentType}" value="BOARD_COMMENT" hidden>
-                    </div>
-                    <br/>
-                    <div align="right">
-                        <button type="submit" class="btn btn1" onclick="createComment()">댓글 등록</button>
-                    </div>
-                </form >
-                <hr/>
-                <!-- 댓글 조회 -->
-                <div class="container" th:object="${commentPage}" >
-                    <div class="card border-warning mb-3">
-                        <!-- 댓글 머리(최상단) -->
-                        <div class="card-header bi bi-chat-dots">
-                            <span th:text="${commentSize}"></span>
-                            <span> Comments</span>
-                        </div>
-                        <span style="line-height:90%"><br></span>
-                        <!--본 댓글 조회-->
-                        <ul class="list-group-flush"  th:each="comment: ${commentPage}">
-                            <li class="list-group-item">
-                                <span>
-                                    <span span style="font-size: 15px;font-weight: bold;" th:text="${comment.nickname}"></span>
-                                    <span style="font-size: xx-small;margin-left: 8px;" th:text="${comment.createdAt}"></span>
-                                    <span style="float: right; margin-right: 15px">
-                                    <a type="button" style="font-size: xx-small" data-bs-toggle="collapse" th:attr="data-bs-target='#createCoComment'+${comment.id}">답글</a>
-                                    <a type="button" style="font-size: xx-small" data-bs-toggle="collapse" th:attr="data-bs-target='#updateComment'+${comment.id}">수정</a>
-                                    <a type="button" style="font-size: xx-small">삭제</a>
-                                    </span>
-                                </span>
-                                    <div th:text="${comment.content}" style="margin-top: 3px"></div>
-                            </li>
-                            <!-- 답글 버튼 누르면 나오는 대댓글 작성 창 -->
-                            <div class="collapse" th:id="'createCoComment' + ${comment.id}">
-                                <span style="line-height:20%"><br></span>
-                                <form>
-                                    <div class="input-group" style="width:auto; margin-right: 15px">
-                                        <input type="text"  th:name="content" class="form-control">
-                                        <input type="hidden" th:name="parentId"/>
-                                        <button type="submit" class="btn btn-outline-warning">작성</button>
-                                    </div>
-                                </form>
-                                <span style="line-height:20%"><br></span>
-                            </div>
-                            <!-- 수정 버튼 누르면 나오는 댓글 수정 창 -->
-                            <div class="collapse" th:id="'updateComment' + ${comment.id}">
-                                <span style="line-height:20%"><br></span>
-                                <form>
-                                    <div class="input-group" style="width:auto; margin-right: 15px">
-                                        <input type="text"  th:name="content" class="form-control">
-                                        <input type="hidden" th:name="parentId"/>
-                                        <button type="submit" class="btn btn-outline-warning">수정</button>
-                                    </div>
-                                </form>
-                                <span style="line-height:20%"><br></span>
-                            </div>
-                            <!-- 본 댓글 속 대댓글 조회-->
-                            <ul class="list-group-flush"  th:each="coComment: ${comment.coComment}">
-                                <li class="list-group-item">
-                                <hr style="margin-bottom: 10px; margin-top: 5px; margin-right: 15px;">
-                                <span>
-                                    <span>↪ </span>
-                                    <span span style="font-size: 15px;font-weight: bold;" th:text="${coComment.nickname}"></span>
-                                    <span style="font-size: xx-small;margin-left: 8px" th:text="${coComment.createdAt}"></span>
-                                    <span style="float: right; margin-right: 15px">
-                                        <a type="button" style="font-size: xx-small" data-bs-toggle="collapse" th:attr="data-bs-target='#updateCoComment'+${coComment.id}">수정</a>
-                                        <a type="button" style="font-size: xx-small">삭제</a>
-                                    </span>
-                                </span>
-                                    <div th:text="${coComment.content}" style="margin-left: 17px; margin-top: 3px"></div>
-                                </li>
-                                <!-- 대댓글 수정 버튼 누르면 나오는 대댓글 수정 창 -->
-                                <div class="collapse" th:id="'updateCoComment' + ${coComment.id}">
-                                    <span style="line-height:20%"><br></span>
-                                    <form>
-                                        <div class="input-group" style="width:auto; margin-right: 15px">
-                                            <input type="text"  th:name="content" class="form-control">
-                                            <input type="hidden" th:name="parentId"/>
-                                            <button type="submit" class="btn btn-outline-warning">수정</button>
-                                        </div>
-                                    </form>
-                                    <span style="line-height:20%"><br></span>
-                                </div>
-                            </ul>
-                            <hr style="margin-bottom: 0px; margin-top: 5px">
-                        </ul>
-                    </div>
+            <!-- 여기서부터 댓글 시작입니다!! -->
+            <!-- 댓글 작성  th:method="post" th:action="@{/api/comment/4/create}" -->
+            <div>
+                <textarea id="commentContent" rows="3" class="w-100" placeholder="댓글을 입력해주세요"></textarea>
+                <div align="right">
+                    <button id="commentCreateBtn" class="btn btn1" onclick="createCo()">댓글 등록</button>
                 </div>
             </div>
-        </div>
+            <hr/>
+
+
+            <div id="loginCheck" sec:authentication="principal" hidden/>
+            <div sec:authorize="isAuthenticated()" id="userName" sec:authentication="principal.username" hidden/>
+
+
+            <div id="comment-list">
+                <!-- 댓글 내용 -->
+            </div>
+            <ul id="pagingul" class="pagination justify-content-center">
+                <!-- 페이징 버튼 -->
+            </ul>
+        </th:block>
     </div>
+</div>
+</div>
 
 <script th:inline="javascript">
-    function createComment() {
-        let postId = [[${boardId}]]
+
+    let totalData; //총 데이터 수
+    let dataPerPage = 10; //한 페이지에 나타낼 글 수
+    let pageCount = 5; //페이징에 나타낼 페이지 수
+    let globalCurrentPage = 1; //현재 페이지
+    let dataList; //표시하려하는 데이터 리스트
+    let totalPage;
+    let loginCheck = document.getElementById("loginCheck").innerText;
+    let userName
+    if (loginCheck != "anonymousUser") {
+        userName = document.getElementById("userName").innerText;
+    }
+
+    function isLogin() {
+        if (loginCheck == "anonymousUser") {
+            document.getElementsByName("updateCommentBtn").forEach(btn => btn.setAttribute("hidden", "true"));
+            document.getElementsByName("deleteCommentBtn").forEach(btn => btn.setAttribute("hidden", "true"));
+            document.getElementsByName("createCoCommentBtn").forEach(btn => btn.setAttribute("hidden", "true"));
+            document.getElementsByName("updateCoCommentBtn").forEach(btn => btn.setAttribute("hidden", "true"));
+            document.getElementsByName("deleteCoCommentBtn").forEach(btn => btn.setAttribute("hidden", "true"));
+        } else {
+        }
+    }
+
+    $(document).ready(function () {
+        getCommentPage()
+        paging(totalData, dataPerPage, pageCount, 1);
+    });
+
+    function getCommentPage(pageNum) {
+        $.ajax({
+            method: "GET",
+            url: "/comments/" + [[${board.id}]] + "/readTest?page=" + pageNum,
+            dataType: "json",
+            async: false,
+            success: function (d) {
+                console.log(d)
+                totalData = d.totalElements;
+                console.log(totalData)
+                dataList = d.content;
+                console.log(dataList)
+            }
+        });
+
+        //글 목록 표시 호출 (테이블 생성)
+        displayData(globalCurrentPage, dataPerPage);
+
+        isLogin()
+    }
+
+    function displayData(currentPage, dataPerPage) {
+
+        //Number로 변환하지 않으면 아래에서 +를 할 경우 스트링 결합이 되어버림..
+        currentPage = Number(currentPage);
+        dataPerPage = Number(dataPerPage);
+
+        let output = "";
+        output += "<div class=\"container\">";
+        output += "<div class=\"card border-warning mb-3\">";
+        output += "<div class=\"card-header bi bi-chat-dots\"> <span> Comments</span> </div>";
+        output += "<span style=\"line-height:90%\"><br></span>";
+        output += "<ul class=\"list-group-flush\">";
+
+        for (
+            var i = 0; i < 10; i++
+            // var i = (currentPage - 1) * dataPerPage;
+            // i < (currentPage - 1) * dataPerPage + dataPerPage;
+            // i++
+        ) {
+            if (dataList[i]) {
+                // 댓글 내용 부분
+                output += "<li class=\"list-group-item\">";
+                // 댓글 작성자, 작성시간, 답글, 수정, 삭제 버튼
+                if (dataList[i].deletedAt) {
+                    output += "<div style='padding-top: 5px;'><span> " +
+                        "<span span style=\"font-size: 15px;font-weight: bold;\"></span>" +
+                        "<span style=\"font-size: xx-small;margin-left: 8px;\" ></span>" +
+                        "<span style=\"float: right; margin-right: 15px\">" +
+                        "<a type=\"button\" style=\"font-size: xx-small; margin-right: 5px;\" data-bs-toggle=\"collapse\" data-bs-target=\"#createCoComment" + dataList[i].id + "\">답글(" + dataList[i].coComment.length + ")</a>" +
+                        // "<a name='updateCommentBtn' type=\"button\" style=\"font-size: xx-small; margin-right: 5px;\" data-bs-toggle=\"collapse\" data-bs-target=\"#updateComment" + dataList[i].id + "\"></a>" +
+                        // "<a name='deleteCommentBtn' type=\"button\" style=\"font-size: xx-small\" id='deleteComment' onclick='deleteCo(" + dataList[i].id + ")'></a>" +
+                        "</span>" +
+                        "</span></div>";
+                    output += "<div style='border-bottom:1px solid #C8C8C8; padding-bottom: 3px;'>" +
+                        "<div style=\"margin-top: 1px; margin-bottom: 5px; padding-bottom: 3px;\">" + dataList[i].content + "</div>";
+                } else {
+                    output += "<div style='padding-top: 5px;'><span> " +
+                        "<span span style=\"font-size: 15px;font-weight: bold;\">" + dataList[i].nickname + "</span>" +
+                        "<span style=\"font-size: xx-small;margin-left: 8px;\" >" + dataList[i].createdAt + "</span>" +
+                        "<span style=\"float: right; margin-right: 15px\">";
+                    if (userName == dataList[i].userName) {
+                        output += "<a name='updateCommentBtn' type=\"button\" style=\"font-size: xx-small; margin-right: 5px;\" data-bs-toggle=\"collapse\" data-bs-target=\"#updateComment" + dataList[i].id + "\">수정</a>" +
+                            "<a name='deleteCommentBtn' type=\"button\" style=\"font-size: xx-small\; margin-right: 5px;\" id='deleteComment' onclick='deleteCo(" + dataList[i].id + ")'>삭제</a>";
+                    }
+                    output += "<a type=\"button\" style=\"font-size: xx-small; margin-right: 5px;\" data-bs-toggle=\"collapse\" data-bs-target=\"#createCoComment" + dataList[i].id + "\">답글(" + dataList[i].coComment.length + ")</a>" +
+                        "</span>" +
+                        "</span></div>";
+                    // 댓글 내용
+                    output += "<div style='border-bottom:1px solid #C8C8C8; padding-bottom: 3px;'>" +
+                        "<div style=\"margin-top: 1px; margin-bottom: 5px; padding-bottom: 3px;\">" + dataList[i].content + "</div>";
+                }
+                // 댓글 내용 수정
+                output += "<div class=\"collapse\" id=\"updateComment" + dataList[i].id + "\">\n" +
+                    "                                <form>\n" +
+                    "                                    <div class=\"input-group\" style=\"width:auto; margin-right: 15px\">\n" +
+                    "                                        <input type=\"text\"  id='updateCommentContent" + dataList[i].id + "' class=\"form-control\">\n" +
+                    //"                                        <input type=\"hidden\" th:name=\"parentId\"/>\n" +
+                    "                                        <button type=\"button\" class=\"btn btn-outline-warning\" onclick='updateCo(" + dataList[i].id + ")' >수정</button>\n" +
+                    "                                    </div>\n" +
+                    "                                </form>\n" +
+                    "                                <span style=\"line-height:20%\"><br></span>\n" +
+                    "                            </div>" +
+                    "<div class=\"collapse\" id=\"createCoComment" + dataList[i].id + "\">\n" +
+                    "                        <ul class=\"list-group-flush\">\n";
+                // 대댓글 내용
+                for (let j in dataList[i].coComment) {
+                    output += "                            <li class=\"list-group-item\">\n" +
+                        "                                <hr style=\"margin-bottom: 10px; margin-top: 5px; margin-right: 15px;\">\n" +
+                        "                                <span>\n" +
+                        "                                    <span>↪ </span>\n" +
+                        "                                    <span span style=\"font-size: 15px;font-weight: bold;\">" + dataList[i].coComment[j].nickname + "</span>\n" +
+                        "                                    <span style=\"font-size: xx-small;margin-left: 8px\">" + dataList[i].coComment[j].createdAt + "</span>\n" +
+                        "                                    <span style=\"float: right; margin-right: 15px\">\n";
+                    if (userName == dataList[i].coComment[j].userName) {
+                        output += "                                        <a name='updateCoCommentBtn' type=\"button\" style=\"font-size: xx-small\" data-bs-toggle=\"collapse\" data-bs-target=\"#updateCoComment" + dataList[i].coComment[j].id + "\">수정</a>\n" +
+                            "                                        <a name='deleteCoCommentBtn' type=\"button\" style=\"font-size: xx-small\" onclick='deleteCo(" + dataList[i].coComment[j].id + ")'>삭제</a>\n";
+                    }
+                    output += "                                    </span>\n" +
+                        "                                </span>\n" +
+                        "                                <div style=\"margin-left: 17px; margin-top: 3px\" id='CoCommentContent" + dataList[i].coComment[j].id + "'>" + dataList[i].coComment[j].content + "</div>\n" +
+                        "                            </li>\n" +
+                        "                            <!-- 대댓글 수정 버튼 누르면 나오는 대댓 글 수정 창 -->\n" +
+                        "                            <div class=\"collapse\" id=\"updateCoComment" + dataList[i].coComment[j].id + "\">\n" +
+                        "                                <span style=\"line-height:20%\"><br></span>\n" +
+                        "                                <form>\n" +
+                        "                                    <div class=\"input-group\" style=\"width:auto; margin-right: 15px\">\n" +
+                        "                                        <input type=\"text\" id='updateCoCommentContent" + dataList[i].coComment[j].id + "' class=\"form-control\">\n" +
+                        "                                        <button type=\"submit\" class=\"btn btn-outline-warning\" onclick='updateCoCo(" + dataList[i].coComment[j].id + ")'>수정</button>\n" +
+                        "                                    </div>\n" +
+                        "                                </form>\n" +
+                        "                                <span style=\"line-height:20%\"><br></span>\n" +
+                        "                            </div>";
+                }
+                output += "<form name='createCoCommentBtn' style='margin-top: 10px;'>\n" +
+                    "<div class=\"input-group\" style=\"width:auto; margin-right: 15px\">\n" +
+                    "<input type=\"text\" class=\"form-control\" id='createCoCo" + dataList[i].id + "'>\n" +
+                    "<button type=\"submit\" class=\"btn btn-outline-warning\" onclick='createCoCo(" + dataList[i].id + ")'>작성</button>\n" +
+                    "</div>\n" +
+                    "</form>\n" +
+                    "<span style=\"line-height:20%\"><br></span>\n" +
+                    "</div>" +
+                    "</div>";
+                output += "</li>";
+            } else {
+                break;
+            }
+        }
+        output += "</ul>";
+        output += "</div>";
+        output += "</div>";
+        //$("#dataTableBody").html(chartHtml);
+        $("#comment-list").html(output);
+        //document.getElementById('comment-list').innerHTML = output;
+        document.getElementById('commentContent').value = '';
+    }
+
+    function paging(totalData, dataPerPage, pageCount, currentPage) {
+        console.log("currentPage : " + currentPage);
+
+        totalPage = Math.ceil(totalData / dataPerPage);
+
+        if (totalPage < pageCount) {
+            pageCount = totalPage;
+        }
+
+        let pageGroup = Math.ceil(currentPage / pageCount); // 페이지 그룹
+        let last = pageGroup * pageCount; //화면에 보여질 마지막 페이지 번호
+
+        if (last > totalPage) {
+            last = totalPage;
+        }
+
+        let first = last - (pageCount - 1); //화면에 보여질 첫번째 페이지 번호
+        let next = last + 1;
+        let prev = first - 1;
+
+        let pageHtml = "";
+
+        if (prev > 0) {
+            pageHtml += "<li><a class='page-link' href='#;' id='prev'> 이전 </a></li>";
+        }
+
+        //페이징 번호 표시
+        for (var i = first; i <= last; i++) {
+            if (currentPage == i) {
+                pageHtml +=
+                    "<li class='page-item active'><a class= 'page-link' href='#;'  id='" + i + "'>" + i + "</a></li>";
+            } else {
+                pageHtml += "<li class='page-item'><a class= 'page-link' href='#;' id='" + i + "'>" + i + "</a></li>";
+            }
+        }
+
+        if (last < totalPage) {
+            pageHtml += "<li><a class='page-link' href='#;' id='next'> 다음 </a></li>";
+        }
+
+        $("#pagingul").html(pageHtml);
+
+        //페이징 번호 클릭 이벤트
+        $("#pagingul li a").click(function () {
+            let $id = $(this).attr("id");
+            selectedPage = $(this).text();
+
+            if ($id == "next") selectedPage = next;
+            if ($id == "prev") selectedPage = prev;
+
+            //전역변수에 선택한 페이지 번호를 담는다...
+            globalCurrentPage = selectedPage;
+            //페이징 표시 재호출
+            paging(totalData, dataPerPage, pageCount, selectedPage);
+            getCommentPage(selectedPage - 1)
+            //글 목록 표시 재호출
+            displayData(selectedPage, dataPerPage);
+            isLogin()
+        });
+    }
+
+    function createCo() {
+        const content = document.getElementById("commentContent").value;
+        const boardId = [[${board.id}]];
+
         $.ajax({
             type: 'post',
-            url: '/api/comment/4/create',
-            data: $('#commentCreateRequest').serialize(),
-            success: function (message) {
-                alert(message)
-                location.href="/boards/"+5
+            url: '/comments/create',
+            data: {
+                "content": content,
+                "boardId": boardId,
+            },
+            success: function () {
+                getCommentPage(globalCurrentPage - 1);
+            },
+            error: function (request) {
+                const errorMessage = JSON.parse(request.responseText);
+                if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
+                    if (confirm("로그인이 필요한 서비스입니다.\n" + "로그인 화면으로 이동하시겠습니까?")) {
+                        document.location = "/users/login"
+                    } else {
+                        document.getElementById('commentContent').value = '';
+                    }
+                }
             }
         })
     }
 
-    function delete_board(){
+    function updateCo(id) {
+        const targetCommentId = id;
+        const updateCommentContent = document.getElementById("updateCommentContent" + id).value;
+        const boardId = [[${board.id}]];
+        if (confirm("수정 하시겠습니까?") == true) {
+            $.ajax({
+                type: 'post',
+                url: '/comments/update',
+                data: {
+                    "targetCommentId": targetCommentId,
+                    "boardId": boardId,
+                    "content": updateCommentContent,
+                },
+                success: function () {
+                    getCommentPage(globalCurrentPage - 1);
+                },
+                error: function (request) {
+                    const errorMessage = JSON.parse(request.responseText);
+                    if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
+                        alert("댓글을 작성한 사용자만 수정할 수 있습니다.")
+                    } else if (errorMessage.result.errorCode == "BOARD_NOT_FOUND") {
+                        alert("이미 삭제된 게시글 입니다.")
+                    } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
+                        alert("이미 삭제된 댓글 입니다.")
+                    }
+                }
+            })
+        } else {
+        }
+    }
+
+    function deleteCo(id) {
+        const targetCommentId = id;
+        const boardId = [[${board.Id}]]
+        if (confirm("삭제 하시겠습니까?") == true) {
+            $.ajax({
+                type: 'Post',
+                url: "/comments/delete",
+                data: {
+                    "targetCommentId": targetCommentId,
+                    "boardId": boardId
+                },
+                success: function () {
+                    getCommentPage(globalCurrentPage - 1);
+                },
+                error: function (request) {
+                    const errorMessage = JSON.parse(request.responseText);
+                    if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
+                        alert("댓글을 작성한 사용자만 삭제할 수 있습니다.")
+                    } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
+                        alert("이미 삭제된 댓글 입니다.")
+                    }
+                }
+            })
+        } else {
+
+        }
+    }
+
+    function createCoCo(id) {
+        const parentId = id;
+        const content = document.getElementById("createCoCo" + id).value;
+        const boardId = [[${board.id}]];
+        $.ajax({
+            type: 'post',
+            url: "/comments/createcoco",
+            data: {
+                "parentId": parentId,
+                "boardId": boardId,
+                "content": content
+            },
+            success: function () {
+                getCommentPage(globalCurrentPage - 1);
+            },
+            error: function (request) {
+                const errorMessage = JSON.parse(request.responseText);
+                if (errorMessage.result.errorCode == "BOARD_NOT_FOUND") {
+                    alert("이미 삭제된 게시글 입니다.")
+                } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
+                    alert("이미 삭제된 댓글 입니다.")
+                }
+            }
+        })
+    }
+
+    function updateCoCo(id) {
+        const targetCommentId = id;
+        const updateCoCommentContent = document.getElementById("updateCoCommentContent" + id).value;
+        const boardId = [[${board.id}]];
+        if (confirm("수정 하시겠습니까?") == true) {
+            $.ajax({
+                type: 'post',
+                url: '/comments/update',
+                data: {
+                    "targetCommentId": targetCommentId,
+                    "boardId": boardId,
+                    "content": updateCoCommentContent,
+                },
+                success: function () {
+                    getCommentPage(globalCurrentPage - 1);
+                },
+                error: function (request) {
+                    const errorMessage = JSON.parse(request.responseText);
+                    if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
+                        alert("대댓글을 작성한 사용자만 수정할 수 있습니다.")
+                    } else if (errorMessage.result.errorCode == "BOARD_NOT_FOUND") {
+                        alert("이미 삭제된 게시글 입니다.")
+                    } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
+                        alert("이미 삭제된 댓글 입니다.")
+                    }
+                }
+            })
+        } else {
+
+        }
+    }
+
+    function delete_board() {
 
         let boardId = [[${boardId}]];
 
-        if (confirm("글을 삭제하시겠습니까?")){
+        if (confirm("글을 삭제하시겠습니까?")) {
             $.ajax({
-                url : '/boards/'+boardId+'/delete/',
-                type : "GET",
-                data : {
-                    boardId : boardId
+                url: '/boards/' + boardId + '/delete/',
+                type: "GET",
+                data: {
+                    boardId: boardId
                 },
-                success : function (){
-                    location.href="/boards/new/write"
+                success: function () {
+                    location.href = "/boards/new/write"
                 }
             });
         }
     }
 
 </script>
-
->>>>>>> src/main/resources/templates/boards/detail.html
 </body>
 </html>

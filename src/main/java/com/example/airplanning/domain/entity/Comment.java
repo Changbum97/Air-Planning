@@ -6,8 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +48,13 @@ public class Comment extends BaseEntity{
     @OneToMany(mappedBy = "parent")
     private List<Comment> children = new ArrayList<>();
 
-    public void update(CommentUpdateRequest request) {
-        this.content = request.getContent();
-    }
+    private LocalDateTime deletedAt;
 
+    public void update(String updatedContent) {
+        this.content = updatedContent;
+    }
+    public void deleteUpdate() {
+        this.content = "삭제된 댓글입니다.";
+        this.deletedAt = LocalDateTime.now();
+    }
 }
