@@ -184,9 +184,6 @@
                     chatMessages.content.forEach(function (chatMessage) {
                         makeHtml(chatMessage, false);
                     });
-
-                    // 화면에 글 추가후 스크롤 이동
-                    $('html, body').animate({scrollTop: $('html, body').height() - temp}, 1200);
                     firstMessageId = chatMessages.content[chatMessages.content.length - 1].id;
                 },
             })
