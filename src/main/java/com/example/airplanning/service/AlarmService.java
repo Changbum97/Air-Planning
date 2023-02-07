@@ -63,9 +63,9 @@ public class AlarmService {
         Alarm savedAlarm = alarmRepository.save(alarm);
         log.info("알람저장까진 완료!");
 
-        SseEmitter emitters = emitterRepository.findEmitterByUserId(1L);
+        SseEmitter emitters = emitterRepository.findEmitterByUserId(receiver.getId());
         if (emitters != null) {
-            sendNotification(emitters, 1L, AlarmResponse.of(savedAlarm));
+            sendNotification(emitters, receiver.getId(), AlarmResponse.of(savedAlarm));
         }
 
 //        SseEmitter emitters = emitterRepository.findEmitterByUserId(receiver.getId());
