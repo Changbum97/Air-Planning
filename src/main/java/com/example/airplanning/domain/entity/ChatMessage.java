@@ -1,5 +1,6 @@
 package com.example.airplanning.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,5 +24,10 @@ public class ChatMessage extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
+    @JsonIgnore
     private ChatRoom chatRoom;
+
+    public void read() {
+        this.isRead = true;
+    }
 }

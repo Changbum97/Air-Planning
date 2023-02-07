@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+<div class="container px-5">
+    <div class="row gx-5 justify-content-center">
+        <div class="col-lg-8 py-5" align="center">
+            <h2>채팅방 아이디 : [[${room.Id}]]</h2>
+            <h3>접속한 유저 아이디 : [[${userId}]]</h3>
+            <div id="msgArea" class="col"></div>
+            <div class="col-6">
+                <div class="input-group mb-3">
+                    <input type="text" id="msg" class="form-control">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="send-button">전송</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SockJs, STOMP -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script th:inline="javascript">
+
+    $(document).ready(function () {
+
+        let roomId = [[${room.id}]];
+        let userId = [[${userId}]];
+
+        // 채팅방 입장 시 읽지 않은 메세지 전체 + 읽었던 최근 메세지 20개를 화면에 출력
+        let moreMessages = [[${moreMessages}]];
+        let notReadMessages = [[${notReadMessages}]];
+        let firstScrollToBottom = true;
+
+        if(notReadMessages.length != 0) {
+            notReadMessages.reverse().forEach(function (chatMessage) {
+                makeHtml(chatMessage, false);
+            });
+            $("#msgArea").prepend("<span id='temp-span'>------여기까지 읽었습니다------</span>");
+            firstScrollToBottom = false;
+        }
+        if (moreMessages.content.length != 0) {
+            moreMessages.content.forEach(function (chatMessage) {
+                makeHtml(chatMessage, false);
+            });
+        }
+        // 전에 안 읽은 메세지가 없다면 채팅방 입장시 맨 아래로 스크롤
+        // 있다면 여기까지 읽었습니다로 스크롤
+        if(firstScrollToBottom == true) {
+            $('html, body').scrollTop($('body').height());
+        } else {
+            $('html, body').scrollTop($("#temp-span").offset().top);
+        }
+
+        // SockJs, Stomp 연결
+        let sockJs = new SockJS("/stomp/chat");
+        let stomp = Stomp.over(sockJs);
+
+        stomp.connect({}, function () {
+            console.log("STOMP Connection")
+
+            // 메세지가 새로 생성되면 화면에 출력
+            stomp.subscribe("/sub/chat/room" + roomId, function (chat) {
+                let content = JSON.parse(chat.body);
+
+                if(content.messageType == "ENTER") {
+                    if(content.writerId != userId) {
+                        // 다른 사람이 입장한 경우 => 메세지 읽음 처리
+                        $( $("[name=read-check]").get().reverse() ).each(function (index, item) {
+                            if($(item).text() == "읽지 않음") {
+                                $(item).text("읽음");
+                            } else {
+                                return;
+                            }
+                        });
+                    }
+                } else {
+                    // 읽었다는 메세지가 아니면 화면에 출력
+                    if(content.targetMessageId == null) {
+                        let content = JSON.parse(chat.body);
+                        makeHtml(content, true);
+                        $('html, body').scrollTop($('body').height());
+                    } else if(content.writerId == userId) {
+                        // 내가 작성한 메세지에만 읽음 출력
+                        $('#span' + content.targetMessageId).text("읽음");
+                    }
+                }
+            });
+
+            // 채팅방 입장시 실행
+            stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writerId: userId, messageType: "ENTER"}));
+        });
+
+        // 전송 버튼 클릭 시 메세지 전송
+        $("#send-button").on("click", function (e) {
+            let msg = document.getElementById("msg");
+            if(msg.value != "") {
+                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writerId: userId, messageType: "TALK"}));
+                msg.value = '';
+            }
+        });
+
+        // 메세지 창에서 엔터 누르면 메세지 전송
+        $("#msg").on("keyup", function (key) {
+            let msg = document.getElementById("msg");
+            if(key.keyCode == 13 && msg.value != "") {
+                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writerId: userId, messageType: "TALK"}));
+                msg.value = '';
+            }
+        });
+
+        // 무한 스크롤(위로)
+        let isLoading = false;
+        let noMoreMessages = moreMessages.last;
+        let firstMessageId = moreMessages.content[moreMessages.content.length - 1].id;
+
+        $(document).scroll(function () {
+            if(isLoading == false && noMoreMessages == true) {
+                alert("모든 메세지를 불러왔습니다");
+                isLoading = true;
+                return;
+            }
+            if($('html, body').scrollTop() == 0 && isLoading == false) {
+                getMoreMessages();
+                isLoading = true;
+            }
+        });
+
+        function makeHtml(chatMessage, append) {
+            let message = chatMessage.message;
+            let writerId = chatMessage.writerId;
+            let isRead = chatMessage.isRead;
+            let createdAt = chatMessage.createdAt;
+            let messageId = chatMessage.id;
+            let str = '';
+
+            if(writerId != userId){
+                str = "<div class='col-6' id='msg" + messageId + "'>";
+                str += "<div class='alert alert-secondary'>";
+                str += "<b>" + messageId + " : " + message + "</b>";
+                str += "<br>" + createdAt;
+                str += "</div></div>";
+
+                // 접속 중에 새 채팅이 온 경우
+                if(append == true) {
+                    stomp.send('/pub/chat/read', {}, JSON.stringify({roomId: roomId, writerId: writerId, targetMessageId: messageId, messageType: "READ"}));
+                }
+            }
+            else{
+                str = "<div class='col-6' id='msg" + messageId + "'>";
+                str += "<div class='alert alert-warning'>";
+                str += "<b>" + messageId + " : "  + message + "</b>";
+                str += "<br>" + createdAt;
+                if(isRead == false) {
+                    str += "<br><span id='span" + messageId + "' name='read-check'>읽지 않음</span>";
+                } else {
+                    str += "<br><span id='span" + messageId + "' name='read-check'>읽음</span>";
+                }
+                str += "</div></div>";
+            }
+            // append가 true이면 (새 메세지) 뒤에다 붙이고 false이면 (과거 메세지) 앞에다 붙임
+            if(append == true) {
+                $("#msgArea").append(str);
+            } else {
+                $("#msgArea").prepend(str);
+            }
+        }
+
+        // 스크롤 시 이전 메세지 가져오는 부분
+        function getMoreMessages() {
+            $.ajax({
+                type: 'GET',
+                url: '/chat/more/' + roomId + '?firstMessageId=' + firstMessageId,
+                success: function (chatMessages) {
+                    noMoreMessages = chatMessages.last;
+                    isLoading = false;
+                    let temp = $('html, body').height();
+                    chatMessages.content.forEach(function (chatMessage) {
+                        makeHtml(chatMessage, false);
+                    });
+
+                    // 화면에 글 추가후 스크롤 이동
+                    $('html, body').animate({scrollTop: $('html, body').height() - temp}, 1200);
+                    firstMessageId = chatMessages.content[chatMessages.content.length - 1].id;
+                },
+            })
+        }
+
+    });
+</script>
+</body>
+</html>

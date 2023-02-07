@@ -1,5 +1,6 @@
 package com.example.airplanning.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,5 +24,6 @@ public class ChatRoom extends BaseEntity{
     private Long user2Id;
 
     @OneToMany(mappedBy = "chatRoom")
+    @JsonIgnore
     private List<ChatMessage> chatMessages = new ArrayList<>();
 }
