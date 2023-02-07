@@ -24,6 +24,7 @@
     <button class="btn btn1" th:onclick="|location.href='@{/boards/detail}'|">글 보기 페이지</button>
     <button class="btn btn1" th:onclick="|location.href='@{/boards/list}'|">글 리스트 페이지</button>
     <button class="btn btn1" onclick="myPage()">마이 페이지</button>
+    <button class="btn btn1" onclick="portfolio()">포토폴리오 작성</button>
     <button class="btn btn1" th:onclick="|location.href='@{/users/planner}'|">플래너 정보</button>
     <button class="btn btn1" th:onclick="|location.href='@{/users/login}'|">로그인</button>
     <button class="btn btn1" th:onclick="|location.href='@{/users/join}'|">회원가입</button>
@@ -44,6 +45,24 @@
                 }
                 else {
                     location.href = "/users/mypage/" + id
+                }
+            }
+        });
+    }
+
+    function portfolio() {
+        $.ajax({
+            type: 'GET',
+            url: 'boards/portfolio',
+
+            success: function (check) {
+
+                if (check == false) {
+                    alert("플래너 등급 유저만  작성 가능합니다.")
+                    location.href="/"
+                }
+                else {
+                    location.href = "/boards/portfolio/write"
                 }
             }
         });
