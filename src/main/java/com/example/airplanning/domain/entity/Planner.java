@@ -21,13 +21,15 @@ public class Planner extends BaseEntity{
 
     private Integer reviewCount;    // 리뷰 개수
     private Integer starSum;        // 별점 총 합
-    private String country;         // 자신있는 국가
-    private String region;          // 자신있는 지역
     private String description;     // 자기 소개
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private Region region;
 
     @OneToMany(mappedBy = "planner")
     private List<Like> likes;

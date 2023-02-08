@@ -1,16 +1,14 @@
 package com.example.airplanning.configuration.login;
 
 import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.enum_class.UserRole;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 // 인증 관련 사용자 정보를 담은 Dto

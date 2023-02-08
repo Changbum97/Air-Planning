@@ -1,22 +1,29 @@
 package com.example.airplanning.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.BoardDto;
-import com.example.airplanning.domain.dto.board.BoardDeleteRequest;
 import com.example.airplanning.domain.dto.board.BoardModifyRequest;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -24,6 +31,10 @@ import java.util.Objects;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final AmazonS3 amazonS3;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
 
 
     @Transactional
@@ -40,7 +51,7 @@ public class BoardService {
 
         return boardDto;
     }
-
+    
     public BoardDto detail(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
         return BoardDto.of(board);
@@ -104,6 +115,67 @@ public class BoardService {
         return id;
 
 
+    }
+
+    //포토폴리오 작성
+    @Transactional
+    public void writePortfolio(BoardCreateRequest req, MultipartFile file, String username) throws IOException {
+
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        String changedFile = null;
+
+        if (file != null) {
+            changedFile = uploadFile(file);
+        }
+
+        Board board = Board.builder()
+                .user(user)
+                .category(Category.PORTFOLIO)
+                .title(req.getTitle())
+                .content(req.getContent())
+                .image(changedFile)
+                .build();
+
+        boardRepository.save(board);
+
+    }
+
+    //기존 이미지 삭제
+    public void deleteFile(String filePath) {
+        //앞의 defaultUrl을 제외한 파일이름만 추출
+        String[] bits = filePath.split("/");
+        String fileName = bits[bits.length-1];
+        //S3에서 delete
+        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+    }
+
+    //파일 업로드
+    public String uploadFile(MultipartFile file) throws IOException {
+
+        String defaultUrl = "https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com/";
+        String fileName = generateFileName(file);
+
+        try {
+            amazonS3.putObject(bucketName, fileName, file.getInputStream(), getObjectMetadata(file));
+        } catch (AppException e) {
+            throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
+        }
+        
+        return defaultUrl + fileName;
+
+    }
+
+    private ObjectMetadata getObjectMetadata(MultipartFile file) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(file.getContentType());
+        objectMetadata.setContentLength(file.getSize());
+        return objectMetadata;
+    }
+
+    private String generateFileName(MultipartFile file) {
+        return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
     }
 
 }
