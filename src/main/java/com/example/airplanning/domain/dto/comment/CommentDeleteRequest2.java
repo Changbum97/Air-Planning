@@ -9,5 +9,5 @@ import lombok.ToString;
 @ToString
 public class CommentDeleteRequest2 {
     private Long targetCommentId;
-    private Long boardId;
+    private Long postId;
 }

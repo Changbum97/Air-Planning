@@ -110,7 +110,15 @@ public class BoardController {
     @GetMapping("/{boardId}/delete")
     public String deleteBoard(@PathVariable Long boardId, Principal principal){
         Long boardDelete = boardService.delete(principal.getName(), boardId);
-        return "redirect:/boards/new/write";
+        log.info("delete");
+        return "boards/delete";
+    }
+
+    @GetMapping("/list")
+    public String listBoard(Pageable pageable, Model model){
+        Page<BoardDto> boardPage = boardService.boardList(pageable);
+        model.addAttribute("list", boardPage);
+        return "boards/list";
     }
 
     // 포토폴리오 작성

@@ -2,6 +2,8 @@ package com.example.airplanning.domain.dto;
 
 import com.example.airplanning.domain.entity.Board;
 import lombok.*;
+import org.springframework.data.domain.Page;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -27,4 +29,16 @@ public class BoardDto {
                 .createdAt(board.getCreatedAt())
                 .build();
     }
+
+    public static Page<BoardDto> toDtoList(Page<Board> boards){
+        Page<BoardDto> boardDtoList = boards.map(m -> BoardDto.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+                .content(m.getContent())
+                .userName(m.getUser().getUserName())
+                .createdAt(m.getCreatedAt())
+                .build());
+        return boardDtoList;
+    }
+
 }
