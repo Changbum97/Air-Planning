@@ -34,18 +34,7 @@ public class UserDetail implements UserDetails, OAuth2User {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        //authorities.add(new SimpleGrantedAuthority(role));
-
-        if (this.role.equals(UserRole.USER.name())) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-        } else if (this.role.equals(UserRole.ADMIN.name())) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        } else if (this.role.equals(UserRole.PLANNER.name())) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_PLANNER"));
-        } else if (this.role.equals(UserRole.BLACKLIST.name())) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_BLACKLIST"));
-        }
-
+        authorities.add(new SimpleGrantedAuthority(role));
         return authorities;
     }
 
