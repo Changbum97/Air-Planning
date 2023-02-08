@@ -2,10 +2,7 @@ package com.example.airplanning.configuration.login;
 
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.domain.enum_class.UserRole;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +16,7 @@ import java.util.*;
 @NoArgsConstructor
 @Getter
 @Builder
+@ToString
 public class UserDetail implements UserDetails, OAuth2User {
     private Long id;
     private String userName;    // 로그인에 사용할 ID

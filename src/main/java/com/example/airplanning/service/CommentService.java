@@ -101,7 +101,7 @@ public class CommentService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
         if (comment.getUser().getId() == userId) {
-            comment.update(request);
+            comment.update(request.getContent());
             Comment updatedComment = commentRepository.save(comment);
 
             return CommentDto.of(updatedComment);

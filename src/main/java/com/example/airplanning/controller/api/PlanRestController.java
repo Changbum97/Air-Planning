@@ -28,8 +28,8 @@ public class PlanRestController {
     }
 
     @GetMapping("/{planId}")
-    public Response<PlanDto> detail(@PathVariable Long planId, String userName){
-        PlanDto planDto = planService.detail(planId, userName);
+    public Response<PlanDto> detail(@PathVariable Long planId, Principal principal){
+        PlanDto planDto = planService.detail(planId, principal.getName());
         return Response.success(planDto);
     }
 
