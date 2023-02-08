@@ -149,5 +149,17 @@ public class BoardController {
 
         return "글이 등록되었습니다.*/";
     }
-    
+
+    //포토폴리오 상세
+    @GetMapping("/portfolio/{boardId}")
+    public String portfolioDetail(@PathVariable Long boardId, Model model) {
+
+        BoardDto boardDto = boardService.portfolioDetail(boardId);
+        PlannerDetailResponse response = plannerService.findByUser(boardDto.getUserName());
+
+        log.info(boardDto.getTitle());
+        model.addAttribute("planner", response);
+        model.addAttribute("board", boardDto);
+        return "/boards/portfolioDetail";
+    }
 }

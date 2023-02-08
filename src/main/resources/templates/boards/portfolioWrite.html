@@ -31,14 +31,6 @@
 
 <script th:inline="javascript">
 
-    function authorization() {
-        alert("플래너 등급 유저만 사용 가능합니다.");
-        location.href = "/"
-    }
-
-    document.getElementById("authorize").onclick = authorization;
-
-
     let file
 
     $("#file-input").on("change", (e) => {

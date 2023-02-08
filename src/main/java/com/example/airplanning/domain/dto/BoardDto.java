@@ -16,6 +16,7 @@ public class BoardDto {
     private String userName;    // 로그인 ID
     private String title;       // 제목
     private String content;     // 내용
+    private String image; //파일 경로
     private LocalDateTime createdAt; // 등록 날짜
 
     public static BoardDto of (Board board){
@@ -24,6 +25,7 @@ public class BoardDto {
                 .userName(board.getUser().getUserName())
                 .title(board.getTitle())
                 .content(board.getContent())
+                .image(board.getImage())
                 .createdAt(board.getCreatedAt())
                 .build();
     }

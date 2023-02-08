@@ -183,6 +183,13 @@ public class BoardService {
 
     }
 
+    // 포토폴리오 상세 조회
+    public BoardDto portfolioDetail(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        return BoardDto.of(board);
+    }
+
     //기존 이미지 삭제
     public void deleteFile(String filePath) {
         //앞의 defaultUrl을 제외한 파일이름만 추출
@@ -210,7 +217,7 @@ public class BoardService {
 
     private ObjectMetadata getObjectMetadata(MultipartFile file) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(file.getContentType());
+        //objectMetadata.setContentType(file.getContentType());
         objectMetadata.setContentLength(file.getSize());
         return objectMetadata;
     }
