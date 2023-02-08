@@ -1,4 +1,4 @@
-package com.example.airplanning.response;
+package templates.reviews.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -43,7 +43,7 @@
   }
 </script>
 
-<script th:inline="javascript" sec:authorize="isAnonymous()">
+<script th:inline="javascript" sec:authorize="isAnonymous()" >
   window.onload = function () {
     if(location.href.includes("fail")) {
       document.getElementById("login-fail").removeAttribute("hidden");

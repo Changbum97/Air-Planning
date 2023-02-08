@@ -2,10 +2,13 @@ package com.example.airplanning.domain.dto.myPage;
 
 import com.example.airplanning.domain.entity.Like;
 import com.example.airplanning.domain.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,20 +17,17 @@ import lombok.NoArgsConstructor;
 public class MyPagePlannerResponse {
 
     private Long id; // 플래너 id
-    private String userName; //이름 (닉네임으로 변경될 듯!!!)
-    private Integer reviewCount;    // 리뷰 개수
-    private Integer starSum;        // 별점 총 합
-    private String country;         // 자신있는 국가
-    private String region;          // 자신있는 지역
+    private String plannerName; // 플래너 닉네임
+    private String starMean;        // 별점 평균
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDateTime createdAt;
 
     public static MyPagePlannerResponse of(Like like) {
         return MyPagePlannerResponse.builder()
                 .id(like.getPlanner().getId())
-                .userName(like.getPlanner().getUser().getUserName())
-                .reviewCount(like.getPlanner().getReviewCount())
-                .starSum(like.getPlanner().getStarSum())
-                .country(like.getPlanner().getCountry())
-                .region(like.getPlanner().getRegion())
+                .plannerName(like.getPlanner().getUser().getNickname())
+                .starMean(String.format("%.2f", (double)like.getPlanner().getStarSum()/(double)like.getPlanner().getReviewCount()))
+                .createdAt(like.getCreatedAt())
                 .build();
     }
 }

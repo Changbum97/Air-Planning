@@ -67,6 +67,7 @@ spring:
   redis:
     host: ec2-52-78-223-101.ap-northeast-2.compute.amazonaws.com
     port: 6379
+    password: password
 
 # Email 인증
 mail:
