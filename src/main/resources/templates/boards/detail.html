@@ -308,6 +308,7 @@
             alert("내용을 입력해주세요")
         } else {
             $.ajax({
+
                 type: 'post',
                 url: '/comments/create',
                 data: {
