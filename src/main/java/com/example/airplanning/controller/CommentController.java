@@ -36,37 +36,37 @@ public class CommentController {
         }
     }
 
-    // 댓글 목록 조회
-    @GetMapping("/{boardId}/read")
-    public ResponseEntity readComment(@PathVariable Long boardId, @PageableDefault(size = Integer.MAX_VALUE, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    // 자유게시판 댓글 목록 조회
+    @GetMapping("/{boardId}/readBoardComment")
+    public ResponseEntity readBoardComment(@PathVariable Long boardId, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<CommentResponse> commentPage = commentService2.readBoardComment(boardId, pageable);
-        return ResponseEntity.ok().body(commentPage.getContent());
+        return ResponseEntity.ok().body(commentPage);
     }
 
-    // 댓글 목록 페이지 방식 조회
-    @GetMapping("/{boardId}/readTest")
-    public ResponseEntity readCommentTest(@PathVariable Long boardId, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<CommentResponse> commentPage = commentService2.readBoardComment(boardId, pageable);
+    // 리뷰 댓글 목록 조회
+    @GetMapping("/{reviewId}/readReviewComment")
+    public ResponseEntity readReviewComment(@PathVariable Long reviewId, @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<CommentResponse> commentPage = commentService2.readReviewComment(reviewId, pageable);
         return ResponseEntity.ok().body(commentPage);
     }
 
     // 댓글 수정
     @PostMapping("/update")
     public void updateComment(@ModelAttribute CommentUpdateRequest2 request, @AuthenticationPrincipal UserDetail userDetail) {
-        log.info(String.valueOf(request.getTargetCommentId()));
-        commentService2.updateBoardComment(request, userDetail.getId());
+        commentService2.updateComment(request, userDetail.getId());
     }
 
     // 댓글 삭제
     @PostMapping("/delete")
     public void deleteComment(@ModelAttribute CommentDeleteRequest2 request, @AuthenticationPrincipal UserDetail userDetail) {
-        commentService2.deleteBoardComment(request, userDetail.getId());
+        Long parentId = commentService2.deleteComment(request, userDetail.getId());
+        commentService2.deleteParent(parentId);
     }
 
     // 대댓글 작성
     @PostMapping("/createcoco")
     public void createCoComment(@ModelAttribute CoCommentCreateRequest2 request, @AuthenticationPrincipal UserDetail userDetail) {
-        commentService2.createBoardCoComment(request, userDetail.getId());
+        commentService2.createCoComment(request, userDetail.getId());
     }
 
 }
