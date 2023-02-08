@@ -19,6 +19,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +31,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Set;
 
 
 @Controller
@@ -106,21 +111,6 @@ public class BoardController {
     public String deleteBoard(@PathVariable Long boardId, Principal principal){
         Long boardDelete = boardService.delete(principal.getName(), boardId);
         return "redirect:/boards/new/write";
-    }
-
-
-    //포토폴리오 작성 권한 확인
-    @ResponseBody
-    @GetMapping("/portfolio")
-    public boolean toPortfolioWrite(Principal principal) {
-
-        try {
-            PlannerDetailResponse response = plannerService.findByUser(principal.getName());
-        } catch (Exception e) {
-            return false;
-        }
-
-        return true;
     }
 
     // 포토폴리오 작성

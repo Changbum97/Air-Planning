@@ -1,6 +1,7 @@
 package com.example.airplanning.configuration.login;
 
 import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.enum_class.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,10 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 // 인증 관련 사용자 정보를 담은 Dto
@@ -36,7 +34,18 @@ public class UserDetail implements UserDetails, OAuth2User {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add(new SimpleGrantedAuthority(role));
+        //authorities.add(new SimpleGrantedAuthority(role));
+
+        if (this.role.equals(UserRole.USER.name())) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        } else if (this.role.equals(UserRole.ADMIN.name())) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else if (this.role.equals(UserRole.PLANNER.name())) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_PLANNER"));
+        } else if (this.role.equals(UserRole.BLACKLIST.name())) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_BLACKLIST"));
+        }
+
         return authorities;
     }
 
