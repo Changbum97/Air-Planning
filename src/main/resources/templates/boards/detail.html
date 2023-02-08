@@ -91,10 +91,8 @@
             $.ajax({
                 url : '/boards/'+boardId+'/delete/',
                 type : "GET",
-                data : {
-                    boardId : boardId
-                },
                 success : function (){
+                    alert(1)
                     location.href="/boards/new/write"
                 }
             });

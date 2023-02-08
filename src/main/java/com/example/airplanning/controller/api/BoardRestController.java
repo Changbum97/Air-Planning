@@ -8,6 +8,10 @@ import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import org.springframework.security.core.Authentication;
@@ -47,8 +51,6 @@ public class BoardRestController {
     }
 
 
-
-
     // 삭제
     @DeleteMapping("/{boardid}/delete")
     public Response<BoardResponse> delete(@PathVariable Long id, Principal principal) {
@@ -58,5 +60,25 @@ public class BoardRestController {
     }
 
     // Post 리스트
+    @GetMapping
+    public Response<Page<BoardDto>> list(@PageableDefault(sort = "createdAt",size = 20,direction = Sort.Direction.DESC) Pageable pageable){
+        Page<BoardDto> boardDto = boardService.boardList(pageable);
+        return Response.success(boardDto);
+    }
+
+//    // 좋아요 누르기
+//    @PostMapping("/{boardid}/dolikes")
+//    public Response<String> like(@PathVariable Long id,  Principal principal) {
+//        Long dolike = boardService.like("test", id);
+//        return Response.success("좋아요를 눌렀습니다.");
+//    }
+//
+//    // 좋아요 count
+//    @GetMapping("/{boardid}/getlikes")
+//    public Response<Long> likeCount(@PathVariable Long id) {
+//        Integer likeCount = boardService.likeCount(id);
+//        return Response.success(likeCount);
+//    }
 
 }
+

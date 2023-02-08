@@ -2,21 +2,26 @@ package com.example.airplanning.service;
 
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.BoardDto;
-import com.example.airplanning.domain.dto.board.BoardDeleteRequest;
 import com.example.airplanning.domain.dto.board.BoardModifyRequest;
+import com.example.airplanning.domain.entity.Alarm;
 import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.entity.Like;
 import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.enum_class.AlarmType;
+import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
+import com.example.airplanning.repository.LikeRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Objects;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @Slf4j
@@ -24,6 +29,9 @@ import java.util.Objects;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+
+//    private final LikeRepository likeRepository;
+//    private final AlarmService alarmRepository;
 
 
     @Transactional
@@ -69,8 +77,7 @@ public class BoardService {
     public Board view(Long id){
         return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
     }
-    
-    
+
     // 삭제
     @Transactional
     public Long delete(String userName, Long id) {
@@ -88,7 +95,39 @@ public class BoardService {
         boardRepository.deleteById(id);
         return id;
 
-
     }
+
+    public Page<BoardDto> boardList(Pageable pageable){
+        Page<Board> board = boardRepository.findAllByCategory(Category.FREE, pageable);
+        Page<BoardDto> boardDtos = BoardDto.toDtoList(board);
+        return boardDtos;
+    }
+
+//    @Transactional
+//    public void like(String userName, Long id) {
+//
+//        Board board = boardRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+//
+//        User user = userRepository.findByUserName(userName)
+//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+//
+//        // 좋아요 중복체크
+//        likeRepository.findByUserBoard(user, board)
+//                .ifPresent(item -> {
+//                    throw new AppException(ErrorCode.ALREADY_LIKED)});
+//
+//        likeRepository.save(Like.of(user, board));
+//        alarmRepository.save(Alarm.of(board.getUser(), AlarmType.NEW_LIKE_ON_POST,
+//                user.getId(), board.getId()));
+//
+//    }
+//
+//    public Integer likeCount(Long id) {
+//        // Board 유무 확인
+//        Board board = boardRepository.findById(id)
+//                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+//        return likeRepository.countByBoard(id);
+//    }
 
 }
