@@ -10,4 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository2 extends JpaRepository<Comment, Long> {
     Page<Comment> findByBoardAndParentIsNull(Board board, Pageable pageable);
+    Page<Comment> findByReviewAndParentIsNull(Review review, Pageable pageable);
 }
