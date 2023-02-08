@@ -5,6 +5,7 @@ import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Comment;
 import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.enum_class.AlarmType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
@@ -31,6 +32,8 @@ public class CommentService2 {
     private final BoardRepository boardRepository;
     private final ReviewRepository reviewRepository;
 
+    private final AlarmService alarmService;
+
     public void createBoardComment(CommentCreateRequest2 request, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUNDED));
@@ -39,10 +42,12 @@ public class CommentService2 {
             Board board = boardRepository.findById(request.getPostId())
                     .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
             commentRepository2.save(request.toBoardCommentEntity(user, board));
+            alarmService.send(board.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId());
         } else {
             Review review = reviewRepository.findById(request.getPostId())
                     .orElseThrow(()->new AppException(ErrorCode.REVIEW_NOT_FOUND));
             commentRepository2.save(request.toReviewCommentEntity(user, review));
+            alarmService.send(review.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId());
         }
     }
 
@@ -69,7 +74,6 @@ public class CommentService2 {
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
     }
-
     @Transactional
     public Long deleteComment(CommentDeleteRequest2 request, Long userId) {
         User user = userRepository.findById(userId)
@@ -122,10 +126,16 @@ public class CommentService2 {
             Board board = boardRepository.findById(request.getPostId())
                     .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
             commentRepository2.save(request.toBoardCoCommentEntity(user, board, parentComment));
+            // 알람 발송
+            alarmService.send(board.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId());
+            alarmService.send(parentComment.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId());
         } else {
             Review review = reviewRepository.findById(request.getPostId())
                     .orElseThrow(()->new AppException(ErrorCode.REVIEW_NOT_FOUND));
             commentRepository2.save(request.toReviewCoCommentEntity(user, review, parentComment));
+            // 알람 발송
+            alarmService.send(review.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId());
+            alarmService.send(parentComment.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId());
         }
     }
 

@@ -54,14 +54,16 @@ public class AlarmService {
     }
 
     public void send(User receiver, AlarmType alarmType, String url) {
+        System.out.println("알람 보내기 요청이 들어오긴 했습니다.");
         Alarm alarm = Alarm.builder()
                 .user(receiver)
                 .alarmType(alarmType)
                 .targetUrl(url)
                 .isChecked(false)
                 .build();
+        System.out.println("알람저장 시도");
         Alarm savedAlarm = alarmRepository.save(alarm);
-        log.info("알람저장까진 완료!");
+        System.out.println("알람 저장 완료");
 
         SseEmitter emitters = emitterRepository.findEmitterByUserId(receiver.getId());
         if (emitters != null) {
