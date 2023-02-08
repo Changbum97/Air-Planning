@@ -2,6 +2,7 @@ package com.example.airplanning.controller;
 
 import com.example.airplanning.domain.dto.chat.CreateChatRoomRequest;
 import com.example.airplanning.domain.entity.ChatMessage;
+import com.example.airplanning.domain.entity.ChatRoom;
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.service.ChatService;
 import com.example.airplanning.service.UserService;
@@ -44,9 +45,26 @@ public class ChatController {
     @GetMapping("/room/{roomId}")
     public String getChatRoom(@PathVariable Long roomId, Model model, Principal principal,
                               @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable) {
+
+        ChatRoom chatRoom = chatService.findRoomById(roomId);
         Long userId = userService.findUser(principal.getName()).getId();
+
+        // 채팅방에 속한 사람이 아니라면 접근 불가
+        if(chatRoom.getUser1Id() != userId && chatRoom.getUser2Id() != userId) {
+            model.addAttribute("nextPage", "/chat/rooms");
+            model.addAttribute("msg", "해당 채팅방에 접근할 수 없습니다");
+            return "error/redirect";
+        }
+
+        // 채팅방 이름 => "상대 유저 닉네임"과의 채팅방
+        if(chatRoom.getUser1Id() == userId) {
+            model.addAttribute("roomName", userService.findUserById(chatRoom.getUser2Id()).getNickname() + "님과의 채팅방");
+        } else {
+            model.addAttribute("roomName", userService.findUserById(chatRoom.getUser1Id()).getNickname() + "님과의 채팅방");
+        }
+
         model.addAttribute("userId", userId);
-        model.addAttribute("room", chatService.findRoomById(roomId));
+        model.addAttribute("room", chatRoom);
 
         // 안 읽은 메세지 리스트
         List<ChatMessage> notReadMessages = chatService.findNotReadMessages(roomId, userId);

@@ -227,6 +227,14 @@ body, head {
     text-align: center;
 }
 
+.chatting-div {
+    width: 100%;
+    background-color: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
 .join-form {
     position: absolute;
     width: 500px;
