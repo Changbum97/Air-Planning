@@ -1,12 +1,10 @@
 package com.example.airplanning.controller;
 
-import com.example.airplanning.domain.dto.chat.ChatMessageDto;
 import com.example.airplanning.domain.dto.chat.ChatRoomDto;
 import com.example.airplanning.domain.dto.chat.CreateChatRoomRequest;
 import com.example.airplanning.domain.dto.user.UserDto;
 import com.example.airplanning.domain.entity.ChatMessage;
 import com.example.airplanning.domain.entity.ChatRoom;
-import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.service.ChatService;
 import com.example.airplanning.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,41 +34,16 @@ public class ChatController {
     @ResponseBody
     @PostMapping("/room")
     public String createChatRoom(@RequestBody CreateChatRoomRequest request) {
-        chatService.createChatRoom(request);
-        return "채팅방 생성 완료";
+        // 444 -> principal.getNickname으로 수정
+        Long targetRoomId = chatService.createChatRoom(request, "444");
+        return "redirect:/chat/room/" + targetRoomId;
     }
 
     // 채팅방 리스트 출력
     @GetMapping("/rooms")
-    public String getAllRooms(Model model, Principal principal, @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        Long loginUserId = userService.findUser(principal.getName()).getId();
-        Page<ChatRoom> chatRooms = chatService.findMyRooms(loginUserId, pageable);
-
-        List<ChatRoomDto> chatRoomDtos = chatRooms.stream()
-                .map(chatRoom -> {
-                    UserDto otherUser;
-                    if(chatRoom.getUser1Id() == loginUserId) {
-                        otherUser = userService.findUserById(chatRoom.getUser2Id());
-                    } else {
-                        otherUser = userService.findUserById(chatRoom.getUser1Id());
-                    }
-                    String otherUserNickname = otherUser.getNickname();
-                    String image = otherUser.getImage();
-
-                    ChatMessage lastChatMessage = chatService.findMessageById(chatRoom.getLastMessageId());
-                    String lastMessage = lastChatMessage.getMessage();
-                    String updatedAt = chatRoom.getUpdatedAt().format(DateTimeFormatter.ofPattern("MM/dd HH:mm"));
-                    Boolean hasNew = false;
-                    // 내가 쓴 글이 아닌데 읽지 않았다면 => 새로운 메세지가 온 것으로 판단
-                    if(lastChatMessage.getWriterId() != loginUserId && lastChatMessage.getIsRead() == false) {
-                        hasNew = true;
-                    }
-                    return new ChatRoomDto(chatRoom.getId(), otherUserNickname, lastMessage, updatedAt, hasNew, image);
-                })
-                .collect(Collectors.toList());
-
-        model.addAttribute("rooms", chatRoomDtos);
+    public String getAllRooms(Model model, Principal principal, @PageableDefault(size = Integer.MAX_VALUE, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+//        model.addAttribute("rooms", chatRoomDtos);
+        model.addAttribute("rooms", chatService.findMyRooms(principal.getName(), pageable));
         return "chat/list";
     }
 

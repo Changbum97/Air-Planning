@@ -56,6 +56,24 @@ body, head {
     animation: jelly 0.5s;
 }
 
+.fixed-btn, .fixed-btn:hover, .fixed-btn:active, .fixed-btn:focus {
+    border: none;
+    text-transform: uppercase;
+    display: inline-block;
+    background-color: gray;
+    height: 50px;
+    width: 50px;
+    margin-right: 30px;
+    color: #ffffff;
+    border-radius: 100%;
+    -webkit-transition: all 1s;
+    transition: all 1s;
+}
+
+.fixed-btn:hover, .fixed-btn:active, .fixed-btn:focus {
+    animation: jelly 0.5s;
+}
+
 .send-btn, .send-btn:hover, .send-btn:active, .send-btn:focus {
     border: none;
     text-transform: uppercase;

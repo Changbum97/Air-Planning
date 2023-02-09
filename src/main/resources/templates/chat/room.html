@@ -5,6 +5,9 @@
 <body class="color-body">
 <div th:replace="fragments/header.html :: header"/>
 <div class="container px-5" align="center">
+    <div style="position: fixed; right: 50px; bottom:80px">
+        <button class="btn fixed-btn" id="bottom-button">&#9660;</button>
+    </div>
     <div class="row gx-5 justify-content-center">
         <div class="col-lg-6 py-3">
             <h2>[[${roomName}]]</h2>
@@ -128,8 +131,7 @@
                 alert("모든 메세지를 불러왔습니다");
                 isLoading = true;
                 return;
-            }
-            if($('html, body').scrollTop() <= 0 && isLoading == false) {
+            }else if($('html, body').scrollTop() <= 0 && isLoading == false) {
                 getMoreMessages();
             }
         });
@@ -145,7 +147,7 @@
             if(writerId != userId){
                 str = "<div class='row'><div class='col-8 d-flex' align='left'>";
                 str += "<div class='alert alert-secondary' style='overflow-wrap: break-word; width: fit-content; max-width: 70%; margin: 0px 10px 0px 0px;'>";
-                str += "<b>" + messageId + " : "  + message + "</b>";
+                str += "<b>" + message + "</b>";
                 str += "</div><div class='flex-fill' style='font-size: small; align-self: flex-end'>";
                 str += "<br/><span>" + formatDate(createdAt) + "</span>";
                 str += "</div></div><div class='col-4'></div></div><br/>";
@@ -165,7 +167,7 @@
                 }
                 str += "<br/><span>" + formatDate(createdAt) + "</span>";
                 str += "</div><div class='alert alert-warning' style='overflow-wrap: break-word; width: fit-content; max-width: 70%; margin: 0px 0px 0px 10px;'>";
-                str += "<b>" + messageId + " : "  + message + "</b>";
+                str += "<b>" + message + "</b>";
                 str += "</div></div></div><br/>";
             }
             // append가 true이면 (새 메세지) 뒤에다 붙이고 false이면 (과거 메세지) 앞에다 붙임
@@ -206,6 +208,9 @@
             return month + "/" + day + " " + hour + ":" + minute;
         }
 
+        $("#bottom-button").on("click", function (e) {
+            $('html, body').scrollTop($('html, body').height());
+        });
     });
 </script>
 </body>

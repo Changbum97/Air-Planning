@@ -38,7 +38,6 @@
 
 <script th:inline="javascript">
     function deleteRoom(roomId) {
-        alert(1)
         $.ajax({
             type: 'DELETE',
             url: '/chat/room/' + roomId,
