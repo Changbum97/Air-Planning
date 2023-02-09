@@ -103,3 +103,7 @@ cloud:
       auto: false
     s3:
       bucket: airplanning-bucket
+
+# 아임 포트 설정
+imp_key: ${IMP_KEY}
+imp_secret: ${IMP_SECRET}

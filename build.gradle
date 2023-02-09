@@ -56,6 +56,9 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 	implementation "com.amazonaws:aws-java-sdk-s3:1.12.395"
 
+	// JSON 데이터 처리하기
+	implementation 'com.google.code.gson:gson:2.9.0'
+
 }
 
 tasks.named('test') {
