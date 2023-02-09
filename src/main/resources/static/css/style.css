@@ -40,6 +40,22 @@ body, head {
     border-radius: 45px;
 }
 
+.del-btn, .del-btn:hover, .del-btn:active, .del-btn:focus {
+    border: none;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ffbe33;
+    color: #ffffff;
+    border-radius: 45px;
+    -webkit-transition: all 1s;
+    transition: all 1s;
+}
+
+.del-btn:hover, .del-btn:active, .del-btn:focus {
+    animation: jelly 0.5s;
+}
+
 .send-btn, .send-btn:hover, .send-btn:active, .send-btn:focus {
     border: none;
     text-transform: uppercase;
@@ -87,6 +103,11 @@ body, head {
     border: 5px solid #ffbe33;
     float: left;
     position: relative;
+}
+
+.img-box2 img {
+    border-radius: 100%;
+    border: 5px solid #ffbe33;
 }
 
 .profile-img {

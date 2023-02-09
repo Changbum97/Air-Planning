@@ -6,7 +6,7 @@
 <div th:replace="fragments/header.html :: header"/>
 <div class="container px-5" align="center">
     <div class="row gx-5 justify-content-center">
-        <div class="col-lg-6">
+        <div class="col-lg-6 py-3">
             <h2>[[${roomName}]]</h2>
             <div id="chat-body" class="chatting-div">
                 <div id="msgArea" class="col"></div>
@@ -144,7 +144,7 @@
 
             if(writerId != userId){
                 str = "<div class='row'><div class='col-8 d-flex' align='left'>";
-                str += "<div class='alert alert-secondary' style='overflow-wrap: break-word; width: fit-content; max-width: 70%; margin-bottom: 0px'>";
+                str += "<div class='alert alert-secondary' style='overflow-wrap: break-word; width: fit-content; max-width: 70%; margin: 0px 10px 0px 0px;'>";
                 str += "<b>" + messageId + " : "  + message + "</b>";
                 str += "</div><div class='flex-fill' style='font-size: small; align-self: flex-end'>";
                 str += "<br/><span>" + formatDate(createdAt) + "</span>";
@@ -164,7 +164,7 @@
                     str += "<span id='span" + messageId + "' name='read-check'>읽음</span>";
                 }
                 str += "<br/><span>" + formatDate(createdAt) + "</span>";
-                str += "</div><div class='alert alert-warning' style='overflow-wrap: break-word; width: fit-content; max-width: 70%; margin-bottom: 0px'>";
+                str += "</div><div class='alert alert-warning' style='overflow-wrap: break-word; width: fit-content; max-width: 70%; margin: 0px 0px 0px 10px;'>";
                 str += "<b>" + messageId + " : "  + message + "</b>";
                 str += "</div></div></div><br/>";
             }

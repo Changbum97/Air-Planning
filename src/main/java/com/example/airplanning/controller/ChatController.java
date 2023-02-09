@@ -1,6 +1,9 @@
 package com.example.airplanning.controller;
 
+import com.example.airplanning.domain.dto.chat.ChatMessageDto;
+import com.example.airplanning.domain.dto.chat.ChatRoomDto;
 import com.example.airplanning.domain.dto.chat.CreateChatRoomRequest;
+import com.example.airplanning.domain.dto.user.UserDto;
 import com.example.airplanning.domain.entity.ChatMessage;
 import com.example.airplanning.domain.entity.ChatRoom;
 import com.example.airplanning.domain.entity.User;
@@ -16,7 +19,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,8 +42,35 @@ public class ChatController {
 
     // 채팅방 리스트 출력
     @GetMapping("/rooms")
-    public String getAllRooms(Model model, Principal principal) {
-        model.addAttribute("rooms", chatService.findMyRooms(principal.getName()));
+    public String getAllRooms(Model model, Principal principal, @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Long loginUserId = userService.findUser(principal.getName()).getId();
+        Page<ChatRoom> chatRooms = chatService.findMyRooms(loginUserId, pageable);
+
+        List<ChatRoomDto> chatRoomDtos = chatRooms.stream()
+                .map(chatRoom -> {
+                    UserDto otherUser;
+                    if(chatRoom.getUser1Id() == loginUserId) {
+                        otherUser = userService.findUserById(chatRoom.getUser2Id());
+                    } else {
+                        otherUser = userService.findUserById(chatRoom.getUser1Id());
+                    }
+                    String otherUserNickname = otherUser.getNickname();
+                    String image = otherUser.getImage();
+
+                    ChatMessage lastChatMessage = chatService.findMessageById(chatRoom.getLastMessageId());
+                    String lastMessage = lastChatMessage.getMessage();
+                    String updatedAt = chatRoom.getUpdatedAt().format(DateTimeFormatter.ofPattern("MM/dd HH:mm"));
+                    Boolean hasNew = false;
+                    // 내가 쓴 글이 아닌데 읽지 않았다면 => 새로운 메세지가 온 것으로 판단
+                    if(lastChatMessage.getWriterId() != loginUserId && lastChatMessage.getIsRead() == false) {
+                        hasNew = true;
+                    }
+                    return new ChatRoomDto(chatRoom.getId(), otherUserNickname, lastMessage, updatedAt, hasNew, image);
+                })
+                .collect(Collectors.toList());
+
+        model.addAttribute("rooms", chatRoomDtos);
         return "chat/list";
     }
 
@@ -89,5 +122,13 @@ public class ChatController {
     public Page<ChatMessage> getMoreMessages(@PathVariable Long roomId, @RequestParam Long firstMessageId,
                                              @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable) {
         return chatService.findMoreMessages(roomId, firstMessageId, pageable);
+    }
+
+    // 채팅방 삭제
+    @ResponseBody
+    @DeleteMapping("/room/{roomId}")
+    public String createChatRoom(@PathVariable Long roomId) {
+        chatService.deleteRoom(roomId);
+        return "채팅방 삭제 완료";
     }
 }

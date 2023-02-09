@@ -34,13 +34,18 @@ public class ChatService {
     @Transactional
     public void sendChatMessage(ChatMessageDto dto) {
         if(dto.getMessageType().equals("TALK")) {
-            // 읽었다는 메세지가 아니고 입장 메세지도 아니면 저장
+            // 읽었다는 메세지가 아니고 입장 메세지도 아니면 메세지 저장
             ChatMessage chatMessage = dto.toEntity(chatRoomRepository.findById(dto.getRoomId()).get());
             ChatMessage saved = chatMessageRepository.save(chatMessage);
             dto.setCreatedAt(saved.getCreatedAt());
             dto.setId(saved.getId());
             dto.setIsRead(saved.getIsRead());
-            log.info("TALK");
+
+            // 메세지 저장 후 채팅방의 lastMessageId update
+            ChatRoom chatRoom = chatRoomRepository.findById(dto.getRoomId()).get();
+            chatRoom.update(saved.getId());
+            chatRoomRepository.save(chatRoom);
+
         } else if(dto.getMessageType().equals("ENTER")) {
             // 입장이라면 본인이 작성하지 않은 글 중 읽지 않은 글들을 불러와 읽었다고 수정
             List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdAndWriterIdNotAndIsRead(dto.getRoomId(), dto.getWriterId(), false);
@@ -52,7 +57,6 @@ public class ChatService {
                     chatMessageRepository.save(beforeChatMessage);
                 }
             }
-            log.info("ENTER");
         } else {
             // 읽었다는 메세지라면 타겟 메세지만 읽었다고 수정 후 전송
             ChatMessage targetChatMessage = chatMessageRepository.findById(dto.getTargetMessageId()).get();
@@ -83,17 +87,19 @@ public class ChatService {
         chatRoomRepository.save(chatRoom);
     }
 
-    public List<ChatRoom> findMyRooms(String userName) {
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-        Long userId = user.getId();
-        return chatRoomRepository.findByUser1IdOrUser2Id(userId, userId);
+    public Page<ChatRoom> findMyRooms(Long loginUserId, Pageable pageable) {
+        return chatRoomRepository.findByUser1IdOrUser2Id(loginUserId, loginUserId, pageable);
     }
 
     public ChatRoom findRoomById(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new AppException(ErrorCode.CHAT_ROOM_NOT_FOUNDED));
         return chatRoom;
+    }
+    public ChatMessage findMessageById(Long messageId) {
+        ChatMessage chatMessage = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new AppException(ErrorCode.CHAT_MESSAGE_NOT_FOUNDED));
+        return chatMessage;
     }
 
     public List<ChatMessage> findNotReadMessages(Long roomId, Long userId) {
@@ -102,5 +108,9 @@ public class ChatService {
 
     public Page<ChatMessage> findMoreMessages(Long roomId, Long firstMessageId, Pageable pageable) {
         return chatMessageRepository.findByChatRoomIdAndIdLessThan(roomId, firstMessageId, pageable);
+    }
+
+    public void deleteRoom(Long roomId) {
+        chatRoomRepository.deleteById(roomId);
     }
 }
