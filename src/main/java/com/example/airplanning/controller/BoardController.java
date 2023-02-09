@@ -152,7 +152,8 @@ public class BoardController {
 
     //포토폴리오 상세
     @GetMapping("/portfolio/{boardId}")
-    public String portfolioDetail(@PathVariable Long boardId, Model model) {
+    public String portfolioDetail(@PathVariable Long boardId, Model model,
+                                  @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         BoardDto boardDto = boardService.portfolioDetail(boardId);
         PlannerDetailResponse response = plannerService.findByUser(boardDto.getUserName());
@@ -160,6 +161,13 @@ public class BoardController {
         log.info(boardDto.getTitle());
         model.addAttribute("planner", response);
         model.addAttribute("board", boardDto);
+
+        Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
+        Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
+        model.addAttribute("commentPage", commentPage);
+        model.addAttribute("commentCreateRequest", new CommentCreateRequest());
+        model.addAttribute("commentSize", commentSize.getTotalElements());
+
         return "boards/portfolioDetail";
     }
 }
