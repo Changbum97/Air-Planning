@@ -22,8 +22,13 @@ public class ChatRoom extends BaseEntity{
 
     private Long user1Id;
     private Long user2Id;
+    private Long lastMessageId;
 
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", orphanRemoval = true)
     @JsonIgnore
     private List<ChatMessage> chatMessages = new ArrayList<>();
+
+    public void update(Long lastMessageId) {
+        this.lastMessageId = lastMessageId;
+    }
 }

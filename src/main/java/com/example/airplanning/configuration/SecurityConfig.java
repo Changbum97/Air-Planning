@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .antMatchers("/boards/portfolio/write").hasAuthority("PLANNER")
                 .antMatchers(HttpMethod.GET, "/plans/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/plans").authenticated()
+                .antMatchers("/chat/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .exceptionHandling()

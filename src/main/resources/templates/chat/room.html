@@ -2,15 +2,18 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header.html :: head"/>
 
-<body>
+<body class="color-body">
 <div th:replace="fragments/header.html :: header"/>
-<div class="container px-5">
+<div class="container px-5" align="center">
+    <div style="position: fixed; right: 50px; bottom:80px">
+        <button class="btn fixed-btn" id="bottom-button">&#9660;</button>
+    </div>
     <div class="row gx-5 justify-content-center">
-        <div class="col-lg-8 py-5" align="center">
-            <h2>채팅방 아이디 : [[${room.Id}]]</h2>
-            <h3>접속한 유저 아이디 : [[${userId}]]</h3>
-            <div id="msgArea" class="col"></div>
-            <div class="col-6">
+        <div class="col-lg-6 py-3">
+            <h2>[[${roomName}]]</h2>
+            <div id="chat-body" class="chatting-div">
+                <div id="msgArea" class="col"></div>
+                <br/>
                 <div class="input-group mb-3">
                     <input type="text" id="msg" class="form-control">
                     <div class="input-group-append">
@@ -32,6 +35,7 @@
 
         let roomId = [[${room.id}]];
         let userId = [[${userId}]];
+        let isLoading = true;
 
         // 채팅방 입장 시 읽지 않은 메세지 전체 + 읽었던 최근 메세지 20개를 화면에 출력
         let moreMessages = [[${moreMessages}]];
@@ -42,7 +46,7 @@
             notReadMessages.reverse().forEach(function (chatMessage) {
                 makeHtml(chatMessage, false);
             });
-            $("#msgArea").prepend("<span id='temp-span'>------여기까지 읽었습니다------</span>");
+            $("#msgArea").prepend("<div align='center'><span id='temp-span'>------------ 여기까지 읽었습니다 ------------</span></div>");
             firstScrollToBottom = false;
         }
         if (moreMessages.content.length != 0) {
@@ -53,7 +57,10 @@
         // 전에 안 읽은 메세지가 없다면 채팅방 입장시 맨 아래로 스크롤
         // 있다면 여기까지 읽었습니다로 스크롤
         if(firstScrollToBottom == true) {
-            $('html, body').scrollTop($('body').height());
+            $('html, body').scrollTop($('#chat-body').height());
+            setTimeout(function () {
+                isLoading = false;
+            }, 1000);
         } else {
             $('html, body').scrollTop($("#temp-span").offset().top);
         }
@@ -85,7 +92,7 @@
                     if(content.targetMessageId == null) {
                         let content = JSON.parse(chat.body);
                         makeHtml(content, true);
-                        $('html, body').scrollTop($('body').height());
+                        $('html, body').scrollTop($('#chat-body').height());
                     } else if(content.writerId == userId) {
                         // 내가 작성한 메세지에만 읽음 출력
                         $('#span' + content.targetMessageId).text("읽음");
@@ -116,7 +123,6 @@
         });
 
         // 무한 스크롤(위로)
-        let isLoading = false;
         let noMoreMessages = moreMessages.last;
         let firstMessageId = moreMessages.content[moreMessages.content.length - 1].id;
 
@@ -125,10 +131,8 @@
                 alert("모든 메세지를 불러왔습니다");
                 isLoading = true;
                 return;
-            }
-            if($('html, body').scrollTop() == 0 && isLoading == false) {
+            }else if($('html, body').scrollTop() <= 0 && isLoading == false) {
                 getMoreMessages();
-                isLoading = true;
             }
         });
 
@@ -141,11 +145,12 @@
             let str = '';
 
             if(writerId != userId){
-                str = "<div class='col-6' id='msg" + messageId + "'>";
-                str += "<div class='alert alert-secondary'>";
-                str += "<b>" + messageId + " : " + message + "</b>";
-                str += "<br>" + createdAt;
-                str += "</div></div>";
+                str = "<div class='row'><div class='col-8 d-flex' align='left'>";
+                str += "<div class='alert alert-secondary' style='overflow-wrap: break-word; width: fit-content; max-width: 70%; margin: 0px 10px 0px 0px;'>";
+                str += "<b>" + message + "</b>";
+                str += "</div><div class='flex-fill' style='font-size: small; align-self: flex-end'>";
+                str += "<br/><span>" + formatDate(createdAt) + "</span>";
+                str += "</div></div><div class='col-4'></div></div><br/>";
 
                 // 접속 중에 새 채팅이 온 경우
                 if(append == true) {
@@ -153,16 +158,17 @@
                 }
             }
             else{
-                str = "<div class='col-6' id='msg" + messageId + "'>";
-                str += "<div class='alert alert-warning'>";
-                str += "<b>" + messageId + " : "  + message + "</b>";
-                str += "<br>" + createdAt;
+                str = "<div class='row'><div class='offset-4 col-8 d-flex' align='right'>";
+                str += "<div class='flex-fill' style='font-size: small; align-self: flex-end'>";
                 if(isRead == false) {
-                    str += "<br><span id='span" + messageId + "' name='read-check'>읽지 않음</span>";
+                    str += "<span id='span" + messageId + "' name='read-check'>읽지 않음</span>";
                 } else {
-                    str += "<br><span id='span" + messageId + "' name='read-check'>읽음</span>";
+                    str += "<span id='span" + messageId + "' name='read-check'>읽음</span>";
                 }
-                str += "</div></div>";
+                str += "<br/><span>" + formatDate(createdAt) + "</span>";
+                str += "</div><div class='alert alert-warning' style='overflow-wrap: break-word; width: fit-content; max-width: 70%; margin: 0px 0px 0px 10px;'>";
+                str += "<b>" + message + "</b>";
+                str += "</div></div></div><br/>";
             }
             // append가 true이면 (새 메세지) 뒤에다 붙이고 false이면 (과거 메세지) 앞에다 붙임
             if(append == true) {
@@ -174,21 +180,37 @@
 
         // 스크롤 시 이전 메세지 가져오는 부분
         function getMoreMessages() {
+            isLoading = true;
             $.ajax({
                 type: 'GET',
                 url: '/chat/more/' + roomId + '?firstMessageId=' + firstMessageId,
                 success: function (chatMessages) {
                     noMoreMessages = chatMessages.last;
-                    isLoading = false;
-                    let temp = $('html, body').height();
                     chatMessages.content.forEach(function (chatMessage) {
                         makeHtml(chatMessage, false);
                     });
                     firstMessageId = chatMessages.content[chatMessages.content.length - 1].id;
                 },
+            }).done(() => {
+                isLoading = false;
             })
         }
 
+        // 날짜 포맷 변환
+        function formatDate(date) {
+            let dateStr = String(date);
+
+            let month = dateStr.substring(5, 7);
+            let day = dateStr.substring(8, 10);
+            let hour = dateStr.substring(11, 13);
+            let minute = dateStr.substring(14, 16);
+
+            return month + "/" + day + " " + hour + ":" + minute;
+        }
+
+        $("#bottom-button").on("click", function (e) {
+            $('html, body').scrollTop($('html, body').height());
+        });
     });
 </script>
 </body>
