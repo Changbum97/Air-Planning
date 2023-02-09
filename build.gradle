@@ -56,6 +56,11 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 	implementation "com.amazonaws:aws-java-sdk-s3:1.12.395"
 
+	// Chatting => WebSocket, STOMP, SockJs
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.3-1'
+	implementation 'org.webjars:sockjs-client:1.5.1'
+
 	// JSON 데이터 처리하기
 	implementation 'com.google.code.gson:gson:2.9.0'
 
