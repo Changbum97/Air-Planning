@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .cors().and()
                 .authorizeRequests()
                 .antMatchers("/upload").permitAll()
+                .antMatchers("/api/order/**").permitAll()
                 .antMatchers("/api/v1/hello").authenticated()
                 .antMatchers(HttpMethod.GET, "/reviews/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/reviews").authenticated()
