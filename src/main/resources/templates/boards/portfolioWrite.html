@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: head"/>
+<body>
+<div th:replace="fragments/header.html :: header"/>
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-6 py-5">
+                <form class="form-group" th:object="${boardCreateRequest}" id="boardCreateRequest">
+                    <br/>
+                    <div>
+                        <input id = "title" type="text" placeholder="제목을 입력해주세요" th:field="*{title}">
+                        <br/>
+                        <h5>지역 : [[${planner.region}]]</h5>
+                    </div>
+                    <div>
+                        <textarea id = "content" rows="10" class="w-100" placeholder="내용을 입력해주세요" th:field="*{content}"></textarea>
+                    </div>
+                    <div>
+                        <input type="file" id ="file-input">
+                    </div>
+                    <br/>
+                    <div align="right" class="py-1">
+                        <button type="button" class="btn btn1" onclick="write_board()">등록</button>
+                    </div>
+                    <br/>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script th:inline="javascript">
+
+    let file
+
+    $("#file-input").on("change", (e) => {
+
+        let f = e.target.files[0];
+
+        //최대 용량 10MB 초과
+        if (f.size > 10 * 1024 * 1024) {
+            alert("파일은 10MB 이내로 등록 가능합니다.");
+            return;
+        }
+
+        file = f;
+
+    });
+
+    function write_board(){
+
+        let requestData = {
+            title : $("#title").val(),
+            content : $("#content").val()
+        }
+
+        let formData = new FormData();
+        formData.append("file", file);
+        formData.append("request", new Blob([JSON.stringify(requestData)], {type: "application/json"}));
+
+        $.ajax({
+            type:'POST',
+            url:'/boards/portfolio/write',
+            data: formData,
+            contentType: false, // 필수 : x-www-form-urlencoded로 파싱되는 것을 방지
+            processData: false,  // 필수: contentType을 false로 줬을 때 QueryString 자동 설정됨. 해제
+            success: function (message) {
+
+                alert(message.split("*")[0])
+                location.href = message.split("*")[1]
+
+            }
+        });
+    }
+</script>
+</body>
+</html>

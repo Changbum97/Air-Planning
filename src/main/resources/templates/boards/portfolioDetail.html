@@ -10,7 +10,7 @@
             <form class="form-group" th:object="${board}" id="board">
                 <div>
                     <div class="img-box">
-                        <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
+                        <img th:src = "${planner.image}" alt="프로필 이미지" class="medium-img">
                     </div>
                     <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
                     <h6>
@@ -21,6 +21,7 @@
                 <br/>
                 <div>
                     <h1>[[${board.title}]]</h1>
+                    <h5>지역 : [[${planner.region}]]</h5>
                 </div>
                 <div>
                         <textarea rows="10" class="w-100" readonly>[[${board.content}]]
@@ -28,10 +29,12 @@
                 </div>
                 <div style="float: left" class="py-3">
                     <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    </br>
+                    <button id = "download_file" style="display:none;" type="button" onclick="downloadURI()">Download</button>
                 </div>
                 <div align="right" class="py-1">
                     <th:block th:if="principal">
-                        <a class="btn btn1" th:href="@{/boards/{boardId}/modify (boardId=${boardId})}">수정</a>
+                        <a class="btn btn1" >수정</a>
                         <button class="btn btn1" onclick="delete_board()">삭제</button>
                     </th:block>
                 </div>
@@ -57,7 +60,7 @@
             </div>
             <hr/>
 
-            <!--                로그인 체크, 로그인 유저 정보-->
+
             <div id="loginCheck" sec:authentication="principal" hidden/>
             <div sec:authorize="isAuthenticated()" id="userName" sec:authentication="principal.username" hidden/>
 
@@ -87,6 +90,29 @@
         userName = document.getElementById("userName").innerText;
     }
 
+    window.onload = function() {
+
+        let filename = [[${board.image}]];
+
+        if (filename != null) {
+            document.getElementById("download_file").style.display = 'block';
+            $("#download_file").text(filename.split('-')[8]);
+        }
+
+    }
+
+    function downloadURI() {
+
+        var link = document.createElement("a");
+        link.download = [[${board.image}]].split('-')[8];
+        link.href = [[${board.image}]];
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        delete link;
+
+    }
+
     function isLogin() {
         if (loginCheck == "anonymousUser") {
             document.getElementsByName("updateCommentBtn").forEach(btn => btn.setAttribute("hidden", "true"));
@@ -106,7 +132,7 @@
     function getCommentPage(pageNum) {
         $.ajax({
             method: "GET",
-            url: "/comments/" + [[${board.id}]] + "/readBoardComment?page=" + pageNum,
+            url: "/comments/" + [[${board.id}]] + "/readTest?page=" + pageNum,
             dataType: "json",
             async: false,
             success: function (d) {
@@ -234,7 +260,9 @@
         output += "</ul>";
         output += "</div>";
         output += "</div>";
+        //$("#dataTableBody").html(chartHtml);
         $("#comment-list").html(output);
+        //document.getElementById('comment-list').innerHTML = output;
         document.getElementById('commentContent').value = '';
     }
 
@@ -302,72 +330,58 @@
     function createCo() {
         const content = document.getElementById("commentContent").value;
         const boardId = [[${board.id}]];
-        const commentType = "board";
 
-        if (content =="") {
-            alert("내용을 입력해주세요")
-        } else {
-            $.ajax({
-
-                type: 'post',
-                url: '/comments/create',
-                data: {
-                    "content": content,
-                    "postId": boardId,
-                    "commentType": commentType
-                },
-                success: function () {
-                    getCommentPage(globalCurrentPage - 1);
-                    paging(totalData, dataPerPage, pageCount, 1);
-                },
-                error: function (request) {
-                    const errorMessage = JSON.parse(request.responseText);
-                    if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
-                        if (confirm("로그인이 필요한 서비스입니다.\n" + "로그인 화면으로 이동하시겠습니까?")) {
-                            document.location = "/users/login"
-                        } else {
-                            document.getElementById('commentContent').value = '';
-                        }
+        $.ajax({
+            type: 'post',
+            url: '/comments/create',
+            data: {
+                "content": content,
+                "boardId": boardId,
+            },
+            success: function () {
+                getCommentPage(globalCurrentPage - 1);
+            },
+            error: function (request) {
+                const errorMessage = JSON.parse(request.responseText);
+                if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
+                    if (confirm("로그인이 필요한 서비스입니다.\n" + "로그인 화면으로 이동하시겠습니까?")) {
+                        document.location = "/users/login"
+                    } else {
+                        document.getElementById('commentContent').value = '';
                     }
                 }
-            })
-        }
+            }
+        })
     }
 
     function updateCo(id) {
         const targetCommentId = id;
         const updateCommentContent = document.getElementById("updateCommentContent" + id).value;
         const boardId = [[${board.id}]];
-        const type = "board";
-        if (updateCommentContent =="") {
-            alert("내용을 입력해주세요")
-        } else {
-            if (confirm("수정 하시겠습니까?") == true) {
-                $.ajax({
-                    type: 'post',
-                    url: '/comments/update',
-                    data: {
-                        "targetCommentId": targetCommentId,
-                        "postId": boardId,
-                        "content": updateCommentContent,
-                        "commentType": type
-                    },
-                    success: function () {
-                        getCommentPage(globalCurrentPage - 1);
-                    },
-                    error: function (request) {
-                        const errorMessage = JSON.parse(request.responseText);
-                        if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
-                            alert("댓글을 작성한 사용자만 수정할 수 있습니다.")
-                        } else if (errorMessage.result.errorCode == "BOARD_NOT_FOUND") {
-                            alert("이미 삭제된 게시글 입니다.")
-                        } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
-                            alert("이미 삭제된 댓글 입니다.")
-                        }
+        if (confirm("수정 하시겠습니까?") == true) {
+            $.ajax({
+                type: 'post',
+                url: '/comments/update',
+                data: {
+                    "targetCommentId": targetCommentId,
+                    "boardId": boardId,
+                    "content": updateCommentContent,
+                },
+                success: function () {
+                    getCommentPage(globalCurrentPage - 1);
+                },
+                error: function (request) {
+                    const errorMessage = JSON.parse(request.responseText);
+                    if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
+                        alert("댓글을 작성한 사용자만 수정할 수 있습니다.")
+                    } else if (errorMessage.result.errorCode == "BOARD_NOT_FOUND") {
+                        alert("이미 삭제된 게시글 입니다.")
+                    } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
+                        alert("이미 삭제된 댓글 입니다.")
                     }
-                })
-            } else {
-            }
+                }
+            })
+        } else {
         }
     }
 
@@ -380,11 +394,10 @@
                 url: "/comments/delete",
                 data: {
                     "targetCommentId": targetCommentId,
-                    "postId": boardId
+                    "boardId": boardId
                 },
                 success: function () {
                     getCommentPage(globalCurrentPage - 1);
-                    paging(totalData, dataPerPage, pageCount, 1);
                 },
                 error: function (request) {
                     const errorMessage = JSON.parse(request.responseText);
@@ -404,69 +417,57 @@
         const parentId = id;
         const content = document.getElementById("createCoCo" + id).value;
         const boardId = [[${board.id}]];
-        const type = "board";
-        if (content=="") {
-            alert("내용을 입력해주세요")
-        } else {
-            $.ajax({
-                type: 'post',
-                url: "/comments/createcoco",
-                data: {
-                    "parentId": parentId,
-                    "postId": boardId,
-                    "content": content,
-                    "commentType": type
-                },
-                success: function () {
-                    getCommentPage(globalCurrentPage - 1);
-                },
-                error: function (request) {
-                    const errorMessage = JSON.parse(request.responseText);
-                    if (errorMessage.result.errorCode == "BOARD_NOT_FOUND") {
-                        alert("이미 삭제된 게시글 입니다.")
-                    } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
-                        alert("이미 삭제된 댓글 입니다.")
-                    }
+        $.ajax({
+            type: 'post',
+            url: "/comments/createcoco",
+            data: {
+                "parentId": parentId,
+                "boardId": boardId,
+                "content": content
+            },
+            success: function () {
+                getCommentPage(globalCurrentPage - 1);
+            },
+            error: function (request) {
+                const errorMessage = JSON.parse(request.responseText);
+                if (errorMessage.result.errorCode == "BOARD_NOT_FOUND") {
+                    alert("이미 삭제된 게시글 입니다.")
+                } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
+                    alert("이미 삭제된 댓글 입니다.")
                 }
-            })
-        }
+            }
+        })
     }
 
     function updateCoCo(id) {
         const targetCommentId = id;
         const updateCoCommentContent = document.getElementById("updateCoCommentContent" + id).value;
         const boardId = [[${board.id}]];
-        const type = "board";
-        if (updateCoCommentContent =="") {
-            alert("내용을 입력해주세요")
-        } else {
-            if (confirm("수정 하시겠습니까?") == true) {
-                $.ajax({
-                    type: 'post',
-                    url: '/comments/update',
-                    data: {
-                        "targetCommentId": targetCommentId,
-                        "postId": boardId,
-                        "content": updateCoCommentContent,
-                        "commentType": type
-                    },
-                    success: function () {
-                        getCommentPage(globalCurrentPage - 1);
-                    },
-                    error: function (request) {
-                        const errorMessage = JSON.parse(request.responseText);
-                        if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
-                            alert("대댓글을 작성한 사용자만 수정할 수 있습니다.")
-                        } else if (errorMessage.result.errorCode == "BOARD_NOT_FOUND") {
-                            alert("이미 삭제된 게시글 입니다.")
-                        } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
-                            alert("이미 삭제된 댓글 입니다.")
-                        }
+        if (confirm("수정 하시겠습니까?") == true) {
+            $.ajax({
+                type: 'post',
+                url: '/comments/update',
+                data: {
+                    "targetCommentId": targetCommentId,
+                    "boardId": boardId,
+                    "content": updateCoCommentContent,
+                },
+                success: function () {
+                    getCommentPage(globalCurrentPage - 1);
+                },
+                error: function (request) {
+                    const errorMessage = JSON.parse(request.responseText);
+                    if (errorMessage.result.errorCode == "INVALID_PERMISSION") {
+                        alert("대댓글을 작성한 사용자만 수정할 수 있습니다.")
+                    } else if (errorMessage.result.errorCode == "BOARD_NOT_FOUND") {
+                        alert("이미 삭제된 게시글 입니다.")
+                    } else if (errorMessage.result.errorCode == "COMMENT_NOT_FOUND") {
+                        alert("이미 삭제된 댓글 입니다.")
                     }
-                })
-            } else {
+                }
+            })
+        } else {
 
-            }
         }
     }
 
