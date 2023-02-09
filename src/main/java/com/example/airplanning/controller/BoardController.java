@@ -160,6 +160,6 @@ public class BoardController {
         log.info(boardDto.getTitle());
         model.addAttribute("planner", response);
         model.addAttribute("board", boardDto);
-        return "/boards/portfolioDetail";
+        return "boards/portfolioDetail";
     }
 }
