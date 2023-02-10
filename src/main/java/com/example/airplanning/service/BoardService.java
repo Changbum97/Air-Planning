@@ -54,6 +54,10 @@ public class BoardService {
         return BoardDto.of(board);
     }
 
+    public Board view(Long id){
+        return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+    }
+
 
     // 수정
     public BoardDto modify(BoardModifyRequest modifyRequest, String userName, Long id) {
@@ -74,9 +78,6 @@ public class BoardService {
 
     }
 
-    public Board view(Long id){
-        return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-    }
 
     // 삭제
     @Transactional
@@ -102,32 +103,5 @@ public class BoardService {
         Page<BoardDto> boardDtos = BoardDto.toDtoList(board);
         return boardDtos;
     }
-
-//    @Transactional
-//    public void like(String userName, Long id) {
-//
-//        Board board = boardRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-//
-//        User user = userRepository.findByUserName(userName)
-//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-//
-//        // 좋아요 중복체크
-//        likeRepository.findByUserBoard(user, board)
-//                .ifPresent(item -> {
-//                    throw new AppException(ErrorCode.ALREADY_LIKED)});
-//
-//        likeRepository.save(Like.of(user, board));
-//        alarmRepository.save(Alarm.of(board.getUser(), AlarmType.NEW_LIKE_ON_POST,
-//                user.getId(), board.getId()));
-//
-//    }
-//
-//    public Integer likeCount(Long id) {
-//        // Board 유무 확인
-//        Board board = boardRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-//        return likeRepository.countByBoard(id);
-//    }
 
 }
