@@ -3,6 +3,7 @@ package com.example.airplanning.controller;
 import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.board.BoardModifyRequest;
+import com.example.airplanning.domain.dto.board.PortfolioModifyRequest;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
 import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
@@ -110,7 +111,15 @@ public class BoardController {
     @GetMapping("/{boardId}/delete")
     public String deleteBoard(@PathVariable Long boardId, Principal principal){
         Long boardDelete = boardService.delete(principal.getName(), boardId);
-        return "redirect:/boards/new/write";
+        log.info("delete");
+        return "boards/delete";
+    }
+
+    @GetMapping("/list")
+    public String listBoard(Pageable pageable, Model model){
+        Page<BoardDto> boardPage = boardService.boardList(pageable);
+        model.addAttribute("list", boardPage);
+        return "boards/list";
     }
 
     // 포토폴리오 작성
@@ -129,17 +138,86 @@ public class BoardController {
     public String portfolioWrite(@RequestPart(value = "request") BoardCreateRequest req,
                                  @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
 
+        Long boardId = Long.valueOf(0);
+
         try {
-            boardService.writePortfolio(req, file, principal.getName());
+            boardId = boardService.writePortfolio(req, file, principal.getName());
         } catch (AppException e) {
             if  (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
                 return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/portfolio/write";
             }
-        } catch (Exception e) { //principal 오류 (로그인 오류, 만료)
-            return "로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.*/users/login";
+        } catch (Exception e) {
+            return "error*/";
         }
 
-        return "글이 등록되었습니다.*/";
+        return "글이 등록되었습니다.*/boards/portfolio/"+boardId;
     }
-    
+
+    //포토폴리오 상세
+    @GetMapping("/portfolio/{boardId}")
+    public String portfolioDetail(@PathVariable Long boardId, Model model,
+                                  @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        BoardDto boardDto = boardService.portfolioDetail(boardId);
+        PlannerDetailResponse response = plannerService.findByUser(boardDto.getUserName());
+
+        log.info(boardDto.getTitle());
+        model.addAttribute("planner", response);
+        model.addAttribute("board", boardDto);
+
+        Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
+        Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
+        model.addAttribute("commentPage", commentPage);
+        model.addAttribute("commentCreateRequest", new CommentCreateRequest());
+        model.addAttribute("commentSize", commentSize.getTotalElements());
+
+        return "boards/portfolioDetail";
+    }
+
+    //포토폴리오 게시글 수정
+    @GetMapping("portfolio/{boardId}/modify")
+    public String portfolioModify(@PathVariable Long boardId, Model model, Principal principal){
+
+        PlannerDetailResponse response = plannerService.findByUser(principal.getName());
+        BoardDto boardDto = boardService.portfolioDetail(boardId);
+        model.addAttribute("planner", response);
+        model.addAttribute(new PortfolioModifyRequest(boardDto.getTitle(), boardDto.getContent(), boardDto.getImage()));
+        return "boards/portfolioModify";
+    }
+
+    @ResponseBody
+    @PostMapping("portfolio/{boardId}/modify")
+    public String portfolioModify(@PathVariable Long boardId, @RequestPart(value = "request") PortfolioModifyRequest req,
+                                  @RequestPart(value = "file",required = false) MultipartFile file,  Principal principal, Model model) throws IOException {
+
+        log.info(req.getImage());
+
+        try {
+            boardService.portfolioModify(req, file, principal.getName(), boardId);
+        } catch (AppException e) {
+            if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
+                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/portfolio/" + boardId;
+            } else if (e.getErrorCode().equals(ErrorCode.BOARD_NOT_FOUND)) {
+                return "게시글이 존재하지 않습니다.*/";
+            } else if (e.getErrorCode().equals(ErrorCode.INVALID_PERMISSION)) { //작성자 수정자 불일치 (혹시 버튼이 아닌 url로 접근시 제한)
+                return "작성자만 수정이 가능합니다.*/boards/portfolio/" + boardId;
+            }
+        } catch (Exception e){ //알수 없는 error
+            return "error*/";
+        }
+
+        model.addAttribute("boardId", boardId);
+        return "글 수정을 완료했습니다.*/boards/portfolio/" + boardId;
+    }
+
+    //포토폴리오 게시글 삭제
+    @ResponseBody
+    @GetMapping("portfolio/{boardId}/delete")
+    public String portfolioDelete(@PathVariable Long boardId, Principal principal){
+
+        boardService.delete(principal.getName(), boardId);
+        log.info("delete");
+
+        return "";
+    }
 }

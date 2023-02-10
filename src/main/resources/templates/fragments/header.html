@@ -161,6 +161,7 @@
               <li class="dropdown-item" href="#">리뷰 게시판</li>
             </ul>
           </li>
+          <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/points/charging">Point</a></li>
           <li sec:authorize="isAnonymous()" class="nav-item"><a class="nav-link" href="/users/login">Login</a></li>
           <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/users/logout">Logout</a></li>
         </ul>
