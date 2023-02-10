@@ -4,9 +4,12 @@ import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
+import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
 import com.example.airplanning.domain.dto.comment.CommentUpdateRequest;
+import com.example.airplanning.domain.entity.Comment;
 import com.example.airplanning.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,6 +22,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/api/comment")
 @RequiredArgsConstructor
+@Slf4j
 public class CommentRestController {
 
     private final CommentService commentService;
@@ -27,7 +31,15 @@ public class CommentRestController {
     @PostMapping("/{postId}/create")
     public Response<CommentDto> createComment (@PathVariable Long postId, @ApiIgnore @AuthenticationPrincipal UserDetail userDetail, CommentCreateRequest request) {
         // 로그인 정보 말고, 임시로 6번 유저 댓글로 설정
+        log.info("컨트롤러 접근");
         CommentDto commentDto = commentService.create(postId, 6L, request);
+        return Response.success(commentDto);
+    }
+
+    // 대댓글 작성
+    @PostMapping("/{postId}/create/{parentCommentId}")
+    public Response<CommentDto> createCoComment(@PathVariable Long postId, @PathVariable Long parentCommentId, CommentCreateRequest request, @ApiIgnore @AuthenticationPrincipal UserDetail userDetail) {
+        CommentDto commentDto = commentService.createCoComment(postId, parentCommentId, 6L, request );
         return Response.success(commentDto);
     }
 
@@ -59,5 +71,12 @@ public class CommentRestController {
     public Response<Page<CommentDto>> readCommentPage (@PathVariable Long postId, String commentType, @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<CommentDto> commentDtoPage = commentService.readPage(postId, commentType, pageable);
         return Response.success(commentDtoPage);
+    }
+
+    // 게시글 에서 부모댓글(대댓글 제외)만 조회 + 부모 댓글이 가짓 대댓글까지 조회
+    @GetMapping("/{postId}/readparentonly")
+    public Response<Page<CommentDtoWithCoCo>> readParentCommentOnly (@PathVariable Long postId, @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(postId, pageable);
+        return Response.success(commentPage);
     }
 }

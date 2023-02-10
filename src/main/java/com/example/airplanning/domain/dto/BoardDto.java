@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import org.springframework.data.domain.Page;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,7 +19,9 @@ public class BoardDto {
     private String userName;    // 로그인 ID
     private String title;       // 제목
     private String content;     // 내용
+    private String image;       //파일 경로
     private LocalDateTime createdAt; // 등록 날짜
+    private Integer likeCnt;    // 좋아요 개수
 
     @Enumerated(EnumType.STRING)
     private Category category;
@@ -29,10 +32,22 @@ public class BoardDto {
                 .userName(board.getUser().getUserName())
                 .title(board.getTitle())
                 .content(board.getContent())
+                .image(board.getImage())
                 .createdAt(board.getCreatedAt())
                 .category(board.getCategory())
+                .likeCnt(board.getLikes().size())
                 .build();
     }
 
+    public static Page<BoardDto> toDtoList(Page<Board> boards){
+        Page<BoardDto> boardDtoList = boards.map(m -> BoardDto.builder()
+                .id(m.getId())
+                .title(m.getTitle())
+                .content(m.getContent())
+                .userName(m.getUser().getUserName())
+                .createdAt(m.getCreatedAt())
+                .build());
+        return boardDtoList;
+    }
 
 }

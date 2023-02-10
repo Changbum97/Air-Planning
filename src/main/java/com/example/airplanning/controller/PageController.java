@@ -16,7 +16,7 @@ public class PageController {
         return "boards/write";
     }
 
-    @GetMapping("/boards/list")
+    @GetMapping("/board/list")
     public String boardList() {
         return "boards/list";
     }

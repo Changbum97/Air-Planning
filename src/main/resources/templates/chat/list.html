@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body class="color-body">
+<div th:replace="fragments/header.html :: header"/>
+<div class="container px-5">
+    <div class="row gx-5 justify-content-center">
+        <div class="col-lg-6 py-3" align="center">
+            <h2>채팅방 리스트</h2>
+            <div class="chatting-div">
+                <div th:each="room : ${rooms}">
+                    <div style="height: 80px; border-bottom: solid 1px gray; width: 90%" class="row">
+                        <div class="img-box2 col-2" align="right" style="margin-top: 10px; margin-bottom: 10px" th:onclick="|location.href='@{/chat/room/{roomId} (roomId=${room.id})}'|">
+                            <img th:src = "${room.image}" class="medium-img">
+                        </div>
+                        <div class="col-4" align="left" style="margin: 10px 0px;" th:onclick="|location.href='@{/chat/room/{roomId} (roomId=${room.id})}'|">
+                            <div style="height: fit-content; max-height: 30px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap">[[${room.otherUserNickname}]]</div>
+                            <div style="margin-top: 10px; height: fit-content; max-height: 30px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap">[[${room.lastMessage}]]</div>
+                        </div>
+                        <div class="col-3" align="right" style="margin: 10px 0px;" th:onclick="|location.href='@{/chat/room/{roomId} (roomId=${room.id})}'|">
+                            <div style="height: fit-content">
+                                <span th:if="${room.hasNew == true}" style="background-color: red; color: white; padding: 0px 5px;">New</span>
+                                <span th:unless="${room.hasNew == true}">&nbsp;</span>
+                            </div>
+                            <div style="margin-top: 10px; height: fit-content">[[${room.updatedAt}]]</div>
+                        </div>
+                        <div class="col-3" style="margin: 18px 0px;">
+                            <button class="btn del-btn" type="button" th:onclick="'javascript:deleteRoom(' + ${room.id} + ');'">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script th:inline="javascript">
+    function deleteRoom(roomId) {
+        $.ajax({
+            type: 'DELETE',
+            url: '/chat/room/' + roomId,
+            success: function () {
+                alert("채팅방이 삭제되었습니다.");
+                location.reload();
+            }
+        });
+    }
+</script>
+
+</html>

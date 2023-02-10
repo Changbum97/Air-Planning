@@ -8,6 +8,10 @@ import com.example.airplanning.service.MyPageService;
 import com.example.airplanning.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/users/mypage")
@@ -117,5 +122,89 @@ public class MyPageController {
 
         return "변경이 완료되었습니다.*/mypage/"+userId;
     }
+
+    //마이페이지 여행중
+    @ResponseBody
+    @GetMapping("/{userId}/trip/progress")
+    //size max = 2000, 진짜 Integer.Max로 하려면 configuration필요
+    public List<MyPagePlanResponse> getProgressPlan(@PageableDefault(size = Integer.MAX_VALUE, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                    @PathVariable Long userId, Principal principal) {
+
+        Page<MyPagePlanResponse> planDtos = myPageService.getProgressPlan(pageable, principal.getName());
+        return planDtos.getContent();
+    }
+
+    //마이페이지 여행완료
+    @ResponseBody
+    @GetMapping("/{userId}/trip/finish")
+    public List<MyPagePlanResponse> getFinishPlan(@PageableDefault(size = Integer.MAX_VALUE, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                  @PathVariable Long userId, Principal principal) {
+        Page<MyPagePlanResponse> planDtos = myPageService.getFinishPlan(pageable, principal.getName());
+        return planDtos.getContent();
+    }
+
+
+    //마이페이지 내가 쓴 글
+    @ResponseBody
+    @GetMapping("/{userId}/my/boards")
+    public List<MyPageBoardResponse> getMyBoard(@PageableDefault(size = Integer.MAX_VALUE, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                @PathVariable Long userId, Principal principal)  {
+
+        Page<MyPageBoardResponse> boardDtos = myPageService.getMyBoard(pageable, principal.getName());
+        return boardDtos.getContent();
+
+    }
+
+    //마이페이지 내가 쓴 리뷰
+    @ResponseBody
+    @GetMapping("/{userId}/my/reviews")
+    public List<MyPageReviewResponse> getMyReview(@PageableDefault(size = Integer.MAX_VALUE, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                  @PathVariable Long userId, Principal principal) {
+        Page<MyPageReviewResponse> reviewDtos = myPageService.getMyReview(pageable, principal.getName());
+        return reviewDtos.getContent();
+
+    }
+
+    //마이페이지 내가 쓴 댓글
+    @ResponseBody
+    @GetMapping("/{userId}/my/comments")
+    public List<MyPageCommentResponse> getMyComment(@PageableDefault(size = Integer.MAX_VALUE, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                    @PathVariable Long userId, Principal principal) {
+        Page<MyPageCommentResponse> commentDtos = myPageService.getMyComment(pageable, principal.getName());
+        return commentDtos.getContent();
+
+    }
+
+
+    //마이페이지 내가 좋아요 한 게시글
+    @ResponseBody
+    @GetMapping("/{userId}/like/boards")
+    public List<MyPageBoardResponse> getLikeBoard(@PageableDefault(size = Integer.MAX_VALUE, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                  @PathVariable Long userId, Principal principal) {
+        Page<MyPageBoardResponse> boardDtos = myPageService.getLikeBoard(pageable, principal.getName());
+        return boardDtos.getContent();
+
+    }
+
+    //마이페이지 내가 좋아요 한 리뷰
+    @ResponseBody
+    @GetMapping("/{userId}/like/reviews")
+    public List<MyPageReviewResponse> getLikeReview(@PageableDefault(size=Integer.MAX_VALUE, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                    @PathVariable Long userId, Principal principal) {
+        Page<MyPageReviewResponse> reviewDtos = myPageService.getLikeReview(pageable, principal.getName());
+        return reviewDtos.getContent();
+
+    }
+
+    //마이페이지 내가 좋아요 한 플래너
+    @ResponseBody
+    @GetMapping("/{userId}/like/planners")
+    public List<MyPagePlannerResponse> getLikePlanner(@PageableDefault(size=Integer.MAX_VALUE, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                      @PathVariable Long userId, Principal principal) {
+        Page<MyPagePlannerResponse> boardDtos = myPageService.getLikePlanner(pageable, principal.getName());
+        return boardDtos.getContent();
+
+    }
+
 
 }

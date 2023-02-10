@@ -1,5 +1,6 @@
 package com.example.airplanning.repository;
 
+import com.example.airplanning.domain.dto.AlarmResponse;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class EmitterRepository {
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final Map<Long, AlarmResponse> eventCache = new ConcurrentHashMap<>();
 
     public SseEmitter save(Long emitterId, SseEmitter sseEmitter) {
         emitters.put(emitterId, sseEmitter);

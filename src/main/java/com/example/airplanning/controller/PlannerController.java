@@ -20,6 +20,6 @@ public class PlannerController {
     public String detail(@PathVariable Long plannerId, Model model) {
         PlannerDetailResponse response = plannerService.findById(plannerId);
         model.addAttribute("planner", response);
-        return "/users/planner";
+        return "users/planner";
     }
 }

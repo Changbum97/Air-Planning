@@ -12,18 +12,20 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PlannerDetailResponse {
 
+    private Long id;
     private String userName;
+    private String image;
     private Double star;            // 별점 총 합 / 리뷰 개수
-    private String country;         // 자신있는 국가
     private String region;          // 자신있는 지역
     private String description;     // 자기 소개
 
     public static PlannerDetailResponse of(Planner planner) {
         return PlannerDetailResponse.builder()
+                .id(planner.getId())
                 .userName(planner.getUser().getUserName())
+                .image(planner.getUser().getImage())
                 .star((double)planner.getStarSum() / planner.getReviewCount())
-                .country(planner.getCountry())
-                .region(planner.getRegion())
+                .region(planner.getRegion().getRegion1() +" "+ planner.getRegion().getRegion2())
                 .description(planner.getDescription())
                 .build();
     }

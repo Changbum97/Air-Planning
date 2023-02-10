@@ -32,7 +32,7 @@ public class ReviewService {
         log.info("저장 시작");
         Review savedReview = reviewRepository.save(request.toEntity(user));
         log.info("저장 완료");
-        alarmService.send(user, AlarmType.REVIEW_ALARM, "/");
+        alarmService.send(user, AlarmType.REVIEW_ALARM, "/", savedReview.getTitle());
         return savedReview.getId();
     }
 

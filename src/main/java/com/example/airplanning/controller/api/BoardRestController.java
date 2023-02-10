@@ -9,6 +9,10 @@ import com.example.airplanning.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import org.springframework.security.core.Authentication;
@@ -48,8 +52,6 @@ public class BoardRestController {
     }
 
 
-
-
     // 삭제
     @DeleteMapping("/{boardid}/delete")
     public Response<BoardResponse> delete(@PathVariable Long id, Principal principal) {
@@ -59,6 +61,21 @@ public class BoardRestController {
     }
 
     // Post 리스트
+    @GetMapping
+    public Response<Page<BoardDto>> list(@PageableDefault(sort = "createdAt",size = 20,direction = Sort.Direction.DESC) Pageable pageable){
+        Page<BoardDto> boardDto = boardService.boardList(pageable);
+        return Response.success(boardDto);
+    }
+
+    // 상세
+    @DeleteMapping("/{boardid}/detail")
+    public Response<BoardDto> detail(@PathVariable Long id, Principal principal) {
+        String userName = principal.getName();
+       BoardDto boardDto = boardService.detail(id);
+        return Response.success(boardDto);
+    }
+
+
 
 
 
@@ -79,3 +96,4 @@ public class BoardRestController {
     }
 
 }
+
