@@ -16,8 +16,9 @@ public class BoardDto {
     private String userName;    // 로그인 ID
     private String title;       // 제목
     private String content;     // 내용
-    private String image; //파일 경로
+    private String image;       //파일 경로
     private LocalDateTime createdAt; // 등록 날짜
+    private Integer likeCnt;    // 좋아요 개수
 
     public static BoardDto of (Board board){
         return BoardDto.builder()
@@ -27,6 +28,7 @@ public class BoardDto {
                 .content(board.getContent())
                 .image(board.getImage())
                 .createdAt(board.getCreatedAt())
+                .likeCnt(board.getLikes().size())
                 .build();
     }
 

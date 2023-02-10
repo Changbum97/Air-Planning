@@ -12,6 +12,7 @@ import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.BoardService;
 import com.example.airplanning.service.CommentService;
+import com.example.airplanning.service.LikeService;
 import com.example.airplanning.service.PlannerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ public class BoardController {
     private final BoardService boardService;
     private final CommentService commentService;
     private final PlannerService plannerService;
+    private final LikeService likeService;
 
     @ResponseBody
     @PostMapping("")
@@ -58,7 +60,8 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public String detailBoard(@PathVariable Long boardId, Model model, @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+    public String detailBoard(@PathVariable Long boardId, Model model, Principal principal,
+                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
         BoardDto boardDto = boardService.detail(boardId);
         model.addAttribute("board", boardDto);
 
@@ -67,6 +70,12 @@ public class BoardController {
         model.addAttribute("commentPage", commentPage);
         model.addAttribute("commentCreateRequest", new CommentCreateRequest());
         model.addAttribute("commentSize", commentSize.getTotalElements());
+
+        if(principal != null) {
+            model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
+        } else {
+            model.addAttribute("checkLike", false);
+        }
         return "boards/detail";
     }
 
@@ -161,5 +170,11 @@ public class BoardController {
         model.addAttribute("planner", response);
         model.addAttribute("board", boardDto);
         return "/boards/portfolioDetail";
+    }
+
+    @PostMapping("/{boardId}/like")
+    @ResponseBody
+    public String changeLike(@PathVariable Long boardId, Principal principal) {
+        return likeService.changeLike(boardId, principal.getName());
     }
 }
