@@ -1,7 +1,11 @@
 package com.example.airplanning.domain.dto;
 
 import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.enum_class.Category;
 import lombok.*;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,6 +20,9 @@ public class BoardDto {
     private String content;     // 내용
     private LocalDateTime createdAt; // 등록 날짜
 
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
     public static BoardDto of (Board board){
         return BoardDto.builder()
                 .id(board.getId())
@@ -23,6 +30,9 @@ public class BoardDto {
                 .title(board.getTitle())
                 .content(board.getContent())
                 .createdAt(board.getCreatedAt())
+                .category(board.getCategory())
                 .build();
     }
+
+
 }
