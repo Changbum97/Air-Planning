@@ -82,7 +82,7 @@
         success: function (d) {
           AlarmList = d
           console.log(AlarmList);
-          if (AlarmList.size() != 0) {
+          if (AlarmList != "") {
             displayAlarm();
           }
         }
