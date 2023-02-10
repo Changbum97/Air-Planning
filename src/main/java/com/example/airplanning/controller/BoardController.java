@@ -99,21 +99,23 @@ public class BoardController {
     @GetMapping("/rankUpWrite")
     public String rankUpWrite(Model model) {
         model.addAttribute(new BoardCreateRequest());
-        return "boards/write";
+        return "boards/rankUpWrite";
     }
+
     @ResponseBody
     @PostMapping("/rankUpWrite")
     public String rankUpWrite(BoardCreateRequest createRequest, Principal principal){
-        boardService.write(createRequest, principal.getName());
+        boardService.rankUpWrite(createRequest, principal.getName());
         return "redirect:/boards/rankUp/{boardId}";
     }
 
     // 플래너신청조회
     @GetMapping("/rankUp/{boardId}")
-    public String rankUpDetail(@PathVariable Long boardId, Model model){
+    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model){
         BoardDto boardDto = boardService.rankUpDetail(boardId);
         model.addAttribute("board", boardDto);
-        return "/boards/rankUpDetail";
+        model.addAttribute("userName", principal.getName());
+        return "boards/rankUpDetail";
     }
 
     @ResponseBody
@@ -235,4 +237,28 @@ public class BoardController {
     public String changeLike(@PathVariable Long boardId, Principal principal) {
         return likeService.changeLike(boardId, principal.getName());
     }
+
+    @GetMapping("/rankUp/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, Model model){
+        Board board = boardService.update(boardId);
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+        return "boards/rankUpdate";
+    }
+
+    @PostMapping("/rankUp/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
+        boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
+        model.addAttribute("boardId", boardId);
+        return "redirect:/boards/rankUp/{boardId}";
+    }
+
+    @ResponseBody
+    @GetMapping("/rankUp/delete/{boardId}")
+    public String rankDelete(@PathVariable Long boardId, Principal principal){
+        boardService.rankDelete(boardId, principal.getName());
+        log.info("delete");
+
+        return "";
+    }
+
 }

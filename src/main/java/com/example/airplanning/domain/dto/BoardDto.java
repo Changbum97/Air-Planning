@@ -1,9 +1,12 @@
 package com.example.airplanning.domain.dto;
 
 import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.enum_class.Category;
 import lombok.*;
-import org.springframework.data.domain.Page;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import org.springframework.data.domain.Page;
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,6 +23,9 @@ public class BoardDto {
     private LocalDateTime createdAt; // 등록 날짜
     private Integer likeCnt;    // 좋아요 개수
 
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
     public static BoardDto of (Board board){
         return BoardDto.builder()
                 .id(board.getId())
@@ -28,6 +34,7 @@ public class BoardDto {
                 .content(board.getContent())
                 .image(board.getImage())
                 .createdAt(board.getCreatedAt())
+                .category(board.getCategory())
                 .likeCnt(board.getLikes().size())
                 .build();
     }
