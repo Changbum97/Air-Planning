@@ -29,7 +29,8 @@ public enum ErrorCode {
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DB에러"),
     FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드 에러"),
 
-    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "정상적이지 않은 요청입니다");
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "정상적이지 않은 요청입니다"),
+    AlARM_NOT_FOUND(HttpStatus.NOT_FOUND, "알람을 찾을 수 없습니다.");
 
     private HttpStatus status;
     private String message;

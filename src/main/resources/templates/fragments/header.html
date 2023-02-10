@@ -20,22 +20,116 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
   <!-- sse test -->
-  <script>
+  <script th:inline="javascript">
+    let AlarmList;
+
+    function displayAlarm() {
+      console.log("알람보여주기 진입 완료")
+      let output = ""
+      output += "<div class=\"dropdown\">\n" +
+              "        <a class=\"btn btn-secondary dropdown-toggle\" href=\"#\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n" +
+              "          <i class=\"bi bi-bell-fill\"></i>\n" +
+              "        </a>\n" +
+              "        <ul class=\"dropdown-menu\">\n";
+      for (let i in AlarmList ) {
+        output +="<li>\n";
+        if (AlarmList[i].type == "COMMENT_ALARM") {
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+"에 댓글이 달렸습니다.</a>\n" +
+                  "<hr class=\"dropdown-divider\">\n" +
+                  "</li>\n";
+        } else if (AlarmList[i].type == "REQUEST_PLAN_ALARM") {
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+" 플랜 요청이 들어왔습니다.</a>\n" +
+                  "<hr class=\"dropdown-divider\">\n" +
+                  "</li>\n";
+        } else if (AlarmList[i].type == "ACCEPTED_PLAN_ALARM") {
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+" 플랜 요청이 수락되었습니다.</a>\n" +
+                  "<hr class=\"dropdown-divider\">\n" +
+                  "</li>\n";
+        } else if (AlarmList[i].type == "REFUSED_PLAN_ALARM") {
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+" 플랜 요청이 거절되었습니다.</a>\n" +
+                  "<hr class=\"dropdown-divider\">\n" +
+                  "</li>\n";
+        } else if (AlarmList[i].type == "REVIEW_ALARM") {
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+" 리뷰가 작성되었습니다.</a>\n" +
+                  "<hr class=\"dropdown-divider\">\n" +
+                  "</li>\n";
+        } else if (AlarmList[i].type == "CHANGE_ROLE_ALARM") {
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>등급이 변경되었습니다.</a>\n" +
+                  "<hr class=\"dropdown-divider\">\n" +
+                  "</li>\n";
+        } else if (AlarmList[i].type == "REQUEST_CHANGE_ROLE_ALARM") {
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+" 등급 변경 신청이 발생했습니다.</a>\n" +
+                  "<hr class=\"dropdown-divider\">\n" +
+                  "</li>\n";
+        } else if (AlarmList[i].type == "CHATTING_ALARM") {
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>채팅이 왔습니다.</a>\n" +
+                  "<hr class=\"dropdown-divider\">\n" +
+                  "</li>\n";
+        }
+      }
+      output += "</ul>" +
+              "</div>"
+      $("#dropdown").html(output);
+    }
+
     $(document).ready(function () {
 
-      let eventSource = new EventSource("/sub");
+      let eventSource = new EventSource("/alarm/sub");
+
+      $.ajax({
+        method: "GET",
+        url:"/alarm/getList",
+        success: function (d) {
+          AlarmList = d
+          console.log(AlarmList);
+          if (AlarmList.size() != 0) {
+            displayAlarm();
+          }
+        }
+      })
 
       eventSource.addEventListener("Alarm", function (event) {
+
+        $.ajax({
+          method: "GET",
+          url:"/alarm/getList",
+          success: function (d) {
+            AlarmList = d
+            console.log(AlarmList);
+            displayAlarm();
+          }
+        })
+
         let message = JSON.parse(event.data);
         toastr.options.positionClass = "toast-bottom-right";
-        toastr.options.onclick = function () { location.href=message.targetUrl }
-        toastr.info(message.alarmMessage)
+        toastr.options.onclick = function () {
+          $.ajax({
+            method: "GET",
+            url:"/alarm/check/"+message.id,
+            success: function () {
+              location.href=message.targetUrl;
+              eventSource.close()
+            }
+          })
+        }
+        toastr.info(message.title+" "+message.alarmMessage)
       })
 
       eventSource.addEventListener("error", function(event) {
         eventSource.close()
       })
     })
+
+    function alarmCheck(alarmId) {
+      $.ajax({
+        method: "GET",
+        url:"/alarm/check/"+alarmId,
+        async: false,
+        success: function () {
+        }
+      })
+
+    }
   </script>
 </head>
 
@@ -52,6 +146,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container px-5">
       <a class="navbar-brand" href="/">Air Planning</a>
+      <div id = "dropdown"><!--알림 드롭다운--></div>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -74,5 +169,6 @@
   </nav>
 
 </div>
+
 </body>
 </html>

@@ -42,12 +42,12 @@ public class CommentService2 {
             Board board = boardRepository.findById(request.getPostId())
                     .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
             commentRepository2.save(request.toBoardCommentEntity(user, board));
-            alarmService.send(board.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId());
+            alarmService.send(board.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId(), board.getTitle());
         } else {
             Review review = reviewRepository.findById(request.getPostId())
                     .orElseThrow(()->new AppException(ErrorCode.REVIEW_NOT_FOUND));
             commentRepository2.save(request.toReviewCommentEntity(user, review));
-            alarmService.send(review.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId());
+            alarmService.send(review.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId(), review.getTitle());
         }
     }
 
@@ -127,15 +127,15 @@ public class CommentService2 {
                     .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
             commentRepository2.save(request.toBoardCoCommentEntity(user, board, parentComment));
             // 알람 발송
-            alarmService.send(board.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId());
-            alarmService.send(parentComment.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId());
+            alarmService.send(board.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId(), board.getTitle());
+            alarmService.send(parentComment.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId(), board.getTitle());
         } else {
             Review review = reviewRepository.findById(request.getPostId())
                     .orElseThrow(()->new AppException(ErrorCode.REVIEW_NOT_FOUND));
             commentRepository2.save(request.toReviewCoCommentEntity(user, review, parentComment));
             // 알람 발송
-            alarmService.send(review.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId());
-            alarmService.send(parentComment.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId());
+            alarmService.send(review.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId(), review.getTitle());
+            alarmService.send(parentComment.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId(), review.getTitle());
         }
     }
 
