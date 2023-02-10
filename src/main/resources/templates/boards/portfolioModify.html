@@ -6,23 +6,29 @@
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
             <div class="col-lg-6 py-5">
-                <form class="form-group" th:object="${boardCreateRequest}" id="boardCreateRequest">
+                <form class="form-group" th:object="${portfolioModifyRequest}" id="portfolioModifyRequest">
                     <br/>
                     <div>
-                        <input id = "title" type="text" placeholder="제목을 입력해주세요" th:field="*{title}">
+                        <input id = "title" type="text" th:field="*{title}">
                         <br/>
                         <h5>지역 : [[${planner.region}]]</h5>
                     </div>
                     <div>
-                        <textarea id = "content" rows="10" class="w-100" placeholder="내용을 입력해주세요" th:field="*{content}"></textarea>
+                        <textarea id = "content" rows="10" class="w-100" th:field="*{content}"></textarea>
                     </div>
                     <div>
-                        <input type="file" id ="file-input">
-                        <button type="button" id = "input-delete" style="background: none; color:red;" onclick="delete_input()">X</button>
+                        <span id ="file-input" style="display:none;">
+                            <input type="file" id = "file-select">
+                            <button type="button" id = "input-delete" style="background: none; color:red;" onclick="delete_input()">X</button>
+                        </span>
+                        <span id = "origin-file" style="display:none;">
+                            <span id = "file-name" rows="1"></span>
+                            <button type="button" id = "file-delete" style="background: none; color:red;" onclick="delete_file()">X</button>
+                        </span>
                     </div>
                     <br/>
                     <div align="right" class="py-1">
-                        <button type="button" class="btn btn1" onclick="write_board()">등록</button>
+                        <button type="button" class="btn btn1" onclick="modify_board()">수정</button>
                     </div>
                     <br/>
                 </form>
@@ -32,7 +38,29 @@
 
 <script th:inline="javascript">
 
-    let file
+    let file;
+    let originFile = "";
+
+    window.onload = function() {
+
+        let filename = [[${portfolioModifyRequest.image}]];
+
+        if (filename != null && originFile != "changed") {
+            document.getElementById("origin-file").style.display = 'block';
+            document.getElementById("file-name").innerHTML = filename.split('-')[8];
+        }
+
+        if (filename == null || originFile == "changed") {
+            document.getElementById("file-input").style.display = 'block';
+        }
+
+    }
+
+    function delete_file() {
+        originFile = "changed"
+        document.getElementById("origin-file").style.display = 'none';
+        document.getElementById("file-input").style.display = 'block';
+    }
 
     function delete_input() {
 
@@ -42,15 +70,15 @@
 
         if ( (navigator.appName == 'Netscape' && navigator.userAgent.search('Trident') != -1) || (agent.indexOf("msie") != -1) ){
             // ie 일때 input[type=file] init.
-            $("#file-input").replaceWith( $("#file-input").clone(true) );
+            $("#file-select").replaceWith( $("#file-select").clone(true) );
         } else {
             //other browser 일때 input[type=file] init.
-            $("#file-input").val("");
+            $("#file-select").val("");
         }
 
     }
 
-    $("#file-input").on("change", (e) => {
+    $("#file-select").on("change", (e) => {
 
         let f = e.target.files[0];
 
@@ -64,11 +92,14 @@
 
     });
 
-    function write_board(){
+    function modify_board(){
+
+        let boardId = [[${boardId}]];
 
         let requestData = {
             title : $("#title").val(),
-            content : $("#content").val()
+            content : $("#content").val(),
+            image : originFile
         }
 
         let formData = new FormData();
@@ -77,7 +108,7 @@
 
         $.ajax({
             type:'POST',
-            url:'/boards/portfolio/write',
+            url:'/boards/portfolio/'+boardId+'/modify',
             data: formData,
             contentType: false, // 필수 : x-www-form-urlencoded로 파싱되는 것을 방지
             processData: false,  // 필수: contentType을 false로 줬을 때 QueryString 자동 설정됨. 해제

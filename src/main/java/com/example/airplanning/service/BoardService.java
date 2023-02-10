@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardModifyRequest;
+import com.example.airplanning.domain.dto.board.PortfolioModifyRequest;
 import com.example.airplanning.domain.entity.Alarm;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Like;
@@ -120,6 +121,10 @@ public class BoardService {
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
+        if (board.getImage() != null) {
+            deleteFile(board.getImage());
+        }
+
         boardRepository.deleteById(id);
         return id;
 
@@ -160,7 +165,7 @@ public class BoardService {
 
     //포토폴리오 작성
     @Transactional
-    public void writePortfolio(BoardCreateRequest req, MultipartFile file, String username) throws IOException {
+    public Long writePortfolio(BoardCreateRequest req, MultipartFile file, String username) throws IOException {
 
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
@@ -179,6 +184,49 @@ public class BoardService {
                 .image(changedFile)
                 .build();
 
+        boardRepository.save(board);
+
+        return board.getId();
+
+    }
+
+    //포토폴리오 수정
+    @Transactional
+    public void portfolioModify(PortfolioModifyRequest req, MultipartFile file, String username, Long boardId) throws IOException {
+
+        //AccessDeniedHandler에서 막혔을 듯
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        //혹시 모를 버튼이 아닌 url 접근을 막기 위해
+        if (!Objects.equals(board.getUser().getUserName(), user.getUserName())) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        String changedFile = null;
+
+        //만약 기존 게시글에 파일이 있던 경우
+        if (board.getImage() !=  null) {
+            if (req.getImage().equals("changed")) { //파일 변경시
+                if (file != null) { // 파일을 다른 파일로 교체한 경우
+                    changedFile = uploadFile(file);
+                    deleteFile(board.getImage()); //기존 파일 삭제
+                } else { //파일 삭제한 경우
+                    deleteFile(board.getImage()); //기존 파일 삭제
+                }
+            } else { //파일 변경이 없던 경우
+                changedFile = board.getImage();
+            }
+        } else { //기존 파일이 없던 경우
+            if (file != null) { //새 파일 업로드
+                changedFile = uploadFile(file);
+            }
+        }
+
+        board.modify(req.getTitle(), req.getContent(), changedFile);
         boardRepository.save(board);
 
     }
@@ -225,5 +273,6 @@ public class BoardService {
     private String generateFileName(MultipartFile file) {
         return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
     }
+
 
 }
