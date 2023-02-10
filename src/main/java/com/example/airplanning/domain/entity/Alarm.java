@@ -19,8 +19,7 @@ public class Alarm extends BaseEntity{
     private Long id;
 
     private String targetUrl;       // 알람 클릭 시 이동할 URL
-
-    private boolean isChecked;  // 알람 확인 여부
+    private String title;
 
     //@Enumerated(EnumType.STRING)
     private AlarmType alarmType;    // 알람 타입 (플래너가 신청 받았을때, 플래너가 신청을 수락/거절 했을 때, 채팅이 왔을 때, 리뷰가 달렸을 때,

@@ -22,6 +22,9 @@ spring:
     database: mysql
     hibernate:
       ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate.enable_lazy_load_no_trans: true
 
   # 소셜 로그인 Google
   security:
@@ -103,6 +106,11 @@ cloud:
       auto: false
     s3:
       bucket: airplanning-bucket
+
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: TRACE
+    com.zaxxer.hikari: TRACE
 
 # 아임 포트 설정
 imp_key: ${IMP_KEY}
