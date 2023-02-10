@@ -10,11 +10,11 @@
             <form class="form-group" th:object="${planCreateRequest}" id="planCreateRequest">
                 <br/>
                 <div>
-                    <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
+                    <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요" style="width: 80%">
                 </div>
                 <br/>
                 <div>
-                    <textarea th:field="*{content}" rows="10" class="w-100" placeholder="내용을 입력해주세요" style="resize: none;"></textarea>
+                    <textarea th:field="*{content}" rows="10" cols="80" class="w-100" placeholder="내용을 입력해주세요" style="resize: none; width: 80%;"></textarea>
                 </div>
 
                 <br/>

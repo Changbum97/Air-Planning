@@ -2,6 +2,7 @@ package com.example.airplanning.service;
 
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
+import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
 import com.example.airplanning.domain.dto.comment.CommentUpdateRequest;
 import com.example.airplanning.domain.dto.myPage.MyPageCommentResponse;
 import com.example.airplanning.domain.entity.Board;
@@ -16,6 +17,8 @@ import com.example.airplanning.repository.CommentRepository;
 import com.example.airplanning.repository.ReviewRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.descriptor.web.ApplicationParameter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -34,6 +38,9 @@ public class CommentService {
     private final UserRepository userRepository;
 
     public CommentDto create (Long postId, Long userId, CommentCreateRequest request) {
+        log.info("서비스에도 정상적으로 요청이..");
+        log.info(request.getCommentType());
+        log.info(request.getContent());
         // 댓글을 단 유저 존재 유무 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
@@ -53,6 +60,31 @@ public class CommentService {
         return CommentDto.of(savedComment);
     }
 
+    public CommentDto createCoComment (Long postId, Long parentCommentId, Long userId, CommentCreateRequest request) {
+        // user 존재 유무 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        // parent comment 존재 유무 확인
+        Comment comment = commentRepository.findById(parentCommentId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+        Comment savedCoComment = null;
+
+        // 코멘트 타입에 따른 post 존재 유무 확인
+        if (request.getCommentType().equals(CommentType.BOARD_COMMENT.name())) {
+            Board board = boardRepository.findById(postId)
+                    .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+            savedCoComment = commentRepository.save(request.toBoardCoCommentEntity(user, board, comment));
+        } else {
+            Review review = reviewRepository.findById(postId)
+                    .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+            savedCoComment = commentRepository.save(request.toReviewCoCommentEntity(user, review, comment));
+        }
+
+        return CommentDto.ofCo(savedCoComment);
+    }
+
     public CommentDto read (Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
@@ -69,7 +101,7 @@ public class CommentService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
         if (comment.getUser().getId() == userId) {
-            comment.update(request);
+            comment.update(request.getContent());
             Comment updatedComment = commentRepository.save(comment);
 
             return CommentDto.of(updatedComment);
@@ -108,6 +140,15 @@ public class CommentService {
 
         return new PageImpl<>(commentPage.stream()
                 .map(Comment ->CommentDto.of(Comment))
+                .collect(Collectors.toList()));
+    }
+
+    public Page<CommentDtoWithCoCo> readBoardParentCommentOnly (Long boardId, Pageable pageable) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        Page<Comment> commentPage = commentRepository.findByBoardAndParentIsNull(board, pageable);
+        return new PageImpl<>(commentPage.stream()
+                .map(Comment ->CommentDtoWithCoCo.of(Comment))
                 .collect(Collectors.toList()));
     }
 }

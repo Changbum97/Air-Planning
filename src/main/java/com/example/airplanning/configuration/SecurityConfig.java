@@ -2,6 +2,7 @@ package com.example.airplanning.configuration;
 
 import com.example.airplanning.configuration.login.CustomOauth2UserService;
 import com.example.airplanning.configuration.login.UserDetail;
+import com.example.airplanning.domain.enum_class.UserRole;
 import com.example.airplanning.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -40,6 +43,7 @@ public class SecurityConfig {
 
     private final CustomOauth2UserService customOauth2UserService;
     private final UserService userService;
+    private final AccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
@@ -58,11 +62,19 @@ public class SecurityConfig {
                 .cors().and()
                 .authorizeRequests()
                 .antMatchers("/upload").permitAll()
+                .antMatchers("/api/order/**").permitAll()
                 .antMatchers("/api/v1/hello").authenticated()
                 .antMatchers(HttpMethod.GET, "/reviews/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/reviews").authenticated()
                 .antMatchers(HttpMethod.GET, "/users/set-nickname").authenticated()
+                .antMatchers("/boards/portfolio/write").hasAuthority("PLANNER")
+                .antMatchers(HttpMethod.GET, "/plans/write").authenticated()
+                .antMatchers(HttpMethod.POST, "/plans").authenticated()
+                .antMatchers("/chat/**").authenticated()
                 .anyRequest().permitAll()
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler)
                 .and()
 
                 // 폼 로그인 시작

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ReviewDto {
 
+    private Long id;
     private Integer star;       // 별점
     private String title;       // 리뷰 제목
     private String content;     // 리뷰 내용
@@ -24,6 +25,7 @@ public class ReviewDto {
 
     public static ReviewDto of(Review review) {
         return ReviewDto.builder()
+                .id(review.getId())
                 .star(review.getStar())
                 .title(review.getTitle())
                 .content(review.getContent())

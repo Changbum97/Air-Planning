@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-6 py-5">
+                <form class="form-group" th:object="${board}" id="board">
+                    <div>
+                        <div class="img-box">
+                            <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
+                        </div>
+                        <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
+                        <h6>
+                            <img src="/assets/images/eyes.svg" class="little-img"> 200
+                            <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
+                        </h6>
+                    </div>
+                    <br/>
+                    <div>
+                        <h1>[[${board.title}]]</h1>
+                    </div>
+                    <div>
+                        <textarea rows="10" class="w-100" readonly>[[${board.content}]]
+                        </textarea>
+                    </div>
+                    <div style="float: left" class="py-3">
+                        <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    </div>
+                    <div align="right" class="py-1">
+                        <th:block th:if="principal">
+                            <a class="btn btn1" th:href="@{/boards/{boardId}/modify (boardId=${boardId})}">수정</a>
+                            <button class="btn btn1">삭제</button>
+                        </th:block>
+                    </div>
+                    <br/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

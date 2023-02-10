@@ -81,4 +81,12 @@ public class User extends BaseEntity{
             this.role = UserRole.BLACKLIST;
         }
     }
+
+    public void chargingPoint(Integer chargeAmount) {
+        this.point += chargeAmount;
+    }
+
+    public void updatePoint(Integer point){
+        this.point = point;
+    }
 }
