@@ -66,6 +66,10 @@ public class BoardService {
         return BoardDto.of(board);
     }
 
+    public Board view(Long id){
+        return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+    }
+
 
     // 수정
     public BoardDto modify(BoardModifyRequest modifyRequest, String userName, Long id) {

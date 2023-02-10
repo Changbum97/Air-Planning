@@ -19,13 +19,14 @@
                             <th>제목</th>
                             <th>작성자</th>
                             <th>작성일자</th>
-<!--                            <th>좋아요</th>-->
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="board : ${list}" th:onclick="">
                             <td th:text="${board.id}"></td>
-                            <td th:text="${board.title}"></td>
+                            <td>
+                                <a th:text="${board.title}" th:href="@{/boards/{boardId} (boardId=${board.id})}"></a>
+                            </td>
                             <td th:text="${board.userName}"></td>
                             <td th:text="${board.createdAt}"></td>
                         </tr>
