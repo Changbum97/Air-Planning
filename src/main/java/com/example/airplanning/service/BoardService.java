@@ -274,5 +274,4 @@ public class BoardService {
         return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
     }
 
-
 }

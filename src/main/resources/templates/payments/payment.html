@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="https://service.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+<!-- swal 적용 -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<body>
+<div th:replace="fragments/header.html :: header"/>
+
+
+<div class="card-body bg-white mt-0 shadow" style="text-align: center">
+    <p style="font-weight: bold">충전 금액을 선택해주세요.</p>
+    <label class="box-radio-input"><input type="radio" name="cp_item" value="500"><span>500원</span></label>
+    <label class="box-radio-input"><input type="radio" name="cp_item" value="5000"><span>5,000원</span></label>
+    <label class="box-radio-input"><input type="radio" name="cp_item" value="10000"><span>10,000원</span></label>
+    <label class="box-radio-input"><input type="radio" name="cp_item" value="15000"><span>15,000원</span></label>
+    <label class="box-radio-input"><input type="radio" name="cp_item" value="20000"><span>20,000원</span></label>
+    <p  style="color: #ac2925; margin-top: 30px">최소 충전금액은 5,000원이며 <br/>최대 충전금액은 20,000원 입니다.</p>
+    <button type="button" class="btn btn1" onclick="set_data()">충 전 하 기</button>
+</div>
+
+</body>
+</html>
+
+<script th:inline="javascript">
+
+    function set_data() {
+
+        console.log($('input[type=radio]:checked').val());
+        const data = {
+            amount: $('input[name="cp_item"]:checked').val(),
+            userName: [[${user.userName}]],
+            userPoint: [[${user.point}]],
+            email: [[${user.email}]],
+        }
+
+        if(!$('input[type=radio]:checked').val()){
+            alert('충전하실 금액을 선택해주세요.')
+            $('input[type=radio]:checked').focus();
+            return false;
+        }
+
+        point(data);
+    }
+
+    function point(data) {
+
+        console.log(data);
+
+        var IMP = window.IMP; // 생략가능
+        IMP.init('imp65631871');
+        IMP.request_pay({
+            pg: 'html5_inicis',
+            pay_method: 'card',
+            merchant_uid: 'merchant_' + new Date().getTime(),
+            name: 'Air-Planning 포인트 충전', //결제창에서 보여질 이름
+            amount: data.amount, //가격
+            buyer_name: data.userName,
+            buyer_tel: "010-0000-0000",
+            buyer_email: data.email,
+        },
+            function (rsp) { // callback
+                if (rsp.success) {
+                    console.log(rsp.imp_uid);
+                    data.imp_uid = rsp.imp_uid; // 고유 ID
+                    data.merchant_uid = rsp.merchant_uid; // 거래 ID
+                    // 결제 성공 시 검증 로직
+                    paymentComplete(data);
+                } else {
+                    var msg = '결제에 실패하였습니다';
+                    console.log(rsp.error_msg);
+                    msg += '\n 에러 내용 : ' + rsp.error_msg;
+                    alert(msg);
+                }
+            });
+    }
+
+    function paymentComplete(data) {
+        // 최종 결제 정보 서버로 넘기기
+        $.ajax({
+            url:"/api/order/payment/complete",
+            method: "POST",
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+        }).done(function (result) { // 성공 응답 메세지 담아서 view로 보내줌
+            swal({
+                text: '결제가 완료되었습니다.',
+                closeOnClickOutside: false
+            }) // 에러 메세지 창 닫으면 실행될 함수
+                .then(function () {
+                    location.replace("/");
+                })
+        }).fail(function (result) { // 실패 응답 메세지 담아서 view로 보내줌
+
+            var responseText = result.responseText;
+            var message = responseText.split('\"')[13];
+            console.log(message);
+            alert(message);
+            location.replace("/")
+        });
+    }
+</script>
+

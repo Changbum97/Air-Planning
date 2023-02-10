@@ -67,19 +67,15 @@ public class BoardRestController {
         return Response.success(boardDto);
     }
 
-//    // 좋아요 누르기
-//    @PostMapping("/{boardid}/dolikes")
-//    public Response<String> like(@PathVariable Long id,  Principal principal) {
-//        Long dolike = boardService.like("test", id);
-//        return Response.success("좋아요를 눌렀습니다.");
-//    }
-//
-//    // 좋아요 count
-//    @GetMapping("/{boardid}/getlikes")
-//    public Response<Long> likeCount(@PathVariable Long id) {
-//        Integer likeCount = boardService.likeCount(id);
-//        return Response.success(likeCount);
-//    }
+    // 상세
+    @DeleteMapping("/{boardid}/detail")
+    public Response<BoardDto> detail(@PathVariable Long id, Principal principal) {
+        String userName = principal.getName();
+       BoardDto boardDto = boardService.detail(id);
+        return Response.success(boardDto);
+    }
+
+
 
 
 
