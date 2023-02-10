@@ -45,4 +45,11 @@ public class Board extends BaseEntity {
         this.content = content;
     }
 
+    // 수정 + 파일 수정
+    public void modify(String title, String content, String image){
+        this.title = title;
+        this.content = content;
+        this.image = image;
+    }
+
 }

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PlannerDetailResponse {
 
+    private Long id;
     private String userName;
     private String image;
     private Double star;            // 별점 총 합 / 리뷰 개수
@@ -20,6 +21,7 @@ public class PlannerDetailResponse {
 
     public static PlannerDetailResponse of(Planner planner) {
         return PlannerDetailResponse.builder()
+                .id(planner.getId())
                 .userName(planner.getUser().getUserName())
                 .image(planner.getUser().getImage())
                 .star((double)planner.getStarSum() / planner.getReviewCount())
