@@ -43,14 +43,15 @@
 
     window.onload = function() {
 
-        let filename = [[${portfolioModifyRequest.image}]];
+        let filepath = [[${portfolioModifyRequest.image}]];
 
-        if (filename != null && originFile != "changed") {
+        if (filepath != null && originFile != "changed") {
+            let filename = filepath.substr(filepath.indexOf(filepath.split('-')[8]));
             document.getElementById("origin-file").style.display = 'block';
-            document.getElementById("file-name").innerHTML = filename.split('-')[8];
+            document.getElementById("file-name").innerHTML = filename;
         }
 
-        if (filename == null || originFile == "changed") {
+        if (filepath == null || originFile == "changed") {
             document.getElementById("file-input").style.display = 'block';
         }
 
