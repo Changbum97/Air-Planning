@@ -6,7 +6,7 @@
 <div th:replace="fragments/header.html :: header"/>
 <div class="container px-5">
     <div class="row gx-5 justify-content-center">
-        <th:block class="col-lg-6 py-5">
+        <div class="col-lg-6 py-5">
             <form class="form-group" th:object="${board}" id="board">
                 <div>
                     <div class="img-box">
@@ -15,7 +15,7 @@
                     <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
                     <h6>
                         <img src="/assets/images/eyes.svg" class="little-img"> 200
-                        <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
+                        <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> <span id="like-cnt-span">[[${board.likeCnt}]]</span>
                     </h6>
                 </div>
                 <br/>
@@ -23,8 +23,8 @@
                     <h1>[[${board.title}]]</h1>
                 </div>
                 <div>
-                        <textarea rows="10" class="w-100" readonly>[[${board.content}]]
-                        </textarea>
+                    <textarea rows="10" class="w-100" readonly>[[${board.content}]]
+                    </textarea>
                 </div>
                 <div style="float: left" class="py-3">
                     <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
@@ -35,13 +35,12 @@
                         <button class="btn btn1" onclick="delete_board()">삭제</button>
                     </th:block>
                 </div>
-                <br/>
             </form>
-            <div>
-                <button class="btn icon-btn">
+            <div align="center" style="margin-top: 10px">
+                <button th:if="${checkLike == false}" class="btn icon-btn" onclick="changeLike()" type="button">
                     <img src="/assets/images/empty-hearts.svg" class="little-img">
                 </button>
-                <button class="btn icon-btn">
+                <button th:if="${checkLike == true}" class="btn icon-btn" onclick="changeLike()" type="button">
                     <img src="/assets/images/fill-hearts.svg" class="little-img">
                 </button>
             </div>
@@ -68,12 +67,28 @@
             <ul id="pagingul" class="pagination justify-content-center">
                 <!-- 페이징 버튼 -->
             </ul>
-        </th:block>
+        </div>
     </div>
 </div>
 </div>
 
 <script th:inline="javascript">
+
+    function changeLike() {
+        $.ajax({
+            type: 'POST',
+            url: '/boards/' + [[${board.id}]] + '/like',
+            success: function (message) {
+                alert(message);
+                location.reload();
+            }
+        });
+    }
+</script>
+
+<script th:inline="javascript">
+
+    // 댓글 관련
 
     let totalData; //총 데이터 수
     let dataPerPage = 10; //한 페이지에 나타낼 글 수
