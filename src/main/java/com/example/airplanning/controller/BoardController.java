@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -61,8 +64,29 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     public String detailBoard(@PathVariable Long boardId, Model model, Principal principal,
-                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
-        BoardDto boardDto = boardService.detail(boardId);
+                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                              HttpServletRequest request, HttpServletResponse response){
+
+        Cookie oldCookie = null;
+        Cookie[] cookies = request.getCookies();
+        Boolean addView = true;
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if(cookie.getName().equals("boardView")) {
+                    oldCookie = cookie;
+                    break;
+                }
+            }
+        }
+        if(oldCookie != null && oldCookie.getValue().equals(boardId.toString())) {
+                addView = false;
+        } else {
+            Cookie newCookie = new Cookie("boardView", boardId.toString());
+            newCookie.setMaxAge(60 * 60);   // 한 시간
+            response.addCookie(newCookie);
+        }
+
+        BoardDto boardDto = boardService.detail(boardId, addView);
         model.addAttribute("board", boardDto);
 
         Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);

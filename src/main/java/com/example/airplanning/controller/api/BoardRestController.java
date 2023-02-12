@@ -24,14 +24,6 @@ public class BoardRestController {
 
     private final BoardService boardService;
 
-    // Post 1개 조회
-    @GetMapping("/{boardid}")
-    public Response<BoardDto> findById(@PathVariable Long id) {
-        BoardDto boardDto =  boardService.detail(id);
-        return Response.success(boardDto);
-    }
-
-
     // 등록
     @PostMapping("")
     public Response<String> writeBoard(BoardCreateRequest createRequest, Principal principal){

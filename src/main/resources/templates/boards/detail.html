@@ -14,8 +14,8 @@
                     </div>
                     <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
                     <h6>
-                        <img src="/assets/images/eyes.svg" class="little-img"> 200
-                        <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> <span id="like-cnt-span">[[${board.likeCnt}]]</span>
+                        <img src="/assets/images/eyes.svg" class="little-img"> [[${board.views}]]
+                        <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> [[${board.likeCnt}]]
                     </h6>
                 </div>
                 <br/>
@@ -99,6 +99,7 @@
             });
         }
     }
+
 </script>
 
 <script th:inline="javascript">

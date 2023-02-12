@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
@@ -56,9 +57,15 @@ public class BoardService {
 
         return boardDto;
     }
-    
-    public BoardDto detail(Long id) {
+
+    @Transactional
+    public BoardDto detail(Long id, Boolean addView) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        if(addView) {
+            board.addViews();
+        }
+
         return BoardDto.of(board);
     }
 
