@@ -40,6 +40,40 @@ body, head {
     border-radius: 45px;
 }
 
+.del-btn, .del-btn:hover, .del-btn:active, .del-btn:focus {
+    border: none;
+    text-transform: uppercase;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ffbe33;
+    color: #ffffff;
+    border-radius: 45px;
+    -webkit-transition: all 1s;
+    transition: all 1s;
+}
+
+.del-btn:hover, .del-btn:active, .del-btn:focus {
+    animation: jelly 0.5s;
+}
+
+.fixed-btn, .fixed-btn:hover, .fixed-btn:active, .fixed-btn:focus {
+    border: none;
+    text-transform: uppercase;
+    display: inline-block;
+    background-color: gray;
+    height: 50px;
+    width: 50px;
+    margin-right: 30px;
+    color: #ffffff;
+    border-radius: 100%;
+    -webkit-transition: all 1s;
+    transition: all 1s;
+}
+
+.fixed-btn:hover, .fixed-btn:active, .fixed-btn:focus {
+    animation: jelly 0.5s;
+}
+
 .send-btn, .send-btn:hover, .send-btn:active, .send-btn:focus {
     border: none;
     text-transform: uppercase;
@@ -87,6 +121,11 @@ body, head {
     border: 5px solid #ffbe33;
     float: left;
     position: relative;
+}
+
+.img-box2 img {
+    border-radius: 100%;
+    border: 5px solid #ffbe33;
 }
 
 .profile-img {
@@ -227,6 +266,14 @@ body, head {
     text-align: center;
 }
 
+.chatting-div {
+    width: 100%;
+    background-color: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
 .join-form {
     position: absolute;
     width: 500px;
@@ -312,4 +359,38 @@ body, head {
     text-align: left;
     color: red;
     margin-top: 5px;
+}
+
+/*결제창 css*/
+.box-radio-input input[type="radio"] {
+    display: none;
+}
+
+.box-radio-input input[type="radio"] + span {
+    display: inline-block;
+    border-radius : 9px;
+    width: 90px;
+    height: 30px;
+    padding-top: 3px;
+    box-sizing: border-box;
+    border: 1px solid #dfdfdf;
+    background-color: #ffffff;
+    text-align: center;
+    cursor: pointer;
+}
+
+.box-radio-input input[type="radio"]:checked + span {
+    background-color: #96d1cf;
+    color: #ffffff;
+}
+
+#all{
+    margin: auto;
+    margin-top: 60px;
+    width: 600px;
+    padding: 30px;
+    background:#fff;
+    border-radius:30px;
+    box-sizing:border-box;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }

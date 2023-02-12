@@ -1,13 +1,16 @@
 package com.example.airplanning.repository;
 
 import com.example.airplanning.domain.entity.Point;
+import com.example.airplanning.domain.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
 
 public interface PointRepository extends JpaRepository<Point, Long> {
+
+    Page<Point> findAllByUser(User user, Pageable pageable);
+
+
 
 }

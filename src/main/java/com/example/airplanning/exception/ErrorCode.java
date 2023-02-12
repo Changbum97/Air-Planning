@@ -25,16 +25,19 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글이 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰가 없습니다."),
     CHAT_ROOM_NOT_FOUNDED(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다."),
+    CHAT_MESSAGE_NOT_FOUNDED(HttpStatus.NOT_FOUND, "메지를 찾을 수 없습니다."),
 
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DB에러"),
     FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드 에러"),
 
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "정상적이지 않은 요청입니다"),
+    AlARM_NOT_FOUND(HttpStatus.NOT_FOUND, "알람을 찾을 수 없습니다."),
 
     INVALID_POINT(HttpStatus.NOT_FOUND,"이미 취소 처리된 거래입니다."),
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND,"존재하지 않는 거래입니다."),
     INVALID_ORDER(HttpStatus.BAD_REQUEST, "결제를 취소하셨습니다."),
-    INVALID_ORDER_TOTAL_POINT(HttpStatus.BAD_REQUEST,"잘못된 결제 금액입니다.")
+    INVALID_ORDER_TOTAL_POINT(HttpStatus.BAD_REQUEST,"잘못된 결제 금액입니다."),
+    INVALID_LACK_OF_POINT(HttpStatus.BAD_REQUEST,"포인트가 부족합니다.")
     ;
 
     private HttpStatus status;
