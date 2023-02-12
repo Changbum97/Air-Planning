@@ -1,4 +1,4 @@
-package com.example.airplanning.domain.dto;
+package com.example.airplanning.domain.dto.board;
 
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.enum_class.Category;
@@ -17,9 +17,10 @@ import java.time.LocalDateTime;
 public class BoardDto {
     private Long id;
     private String userName;    // 로그인 ID
+    private String nickname;    // 작성자 닉네임
     private String title;       // 제목
     private String content;     // 내용
-    private String image;       //파일 경로
+    private String image;       // 파일 경로
     private LocalDateTime createdAt; // 등록 날짜
     private Integer likeCnt;    // 좋아요 개수
 
@@ -30,6 +31,7 @@ public class BoardDto {
         return BoardDto.builder()
                 .id(board.getId())
                 .userName(board.getUser().getUserName())
+                .nickname(board.getUser().getNickname())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .image(board.getImage())
@@ -45,6 +47,7 @@ public class BoardDto {
                 .title(m.getTitle())
                 .content(m.getContent())
                 .userName(m.getUser().getUserName())
+                .nickname(m.getUser().getNickname())
                 .createdAt(m.getCreatedAt())
                 .build());
         return boardDtoList;
