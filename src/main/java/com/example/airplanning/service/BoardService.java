@@ -3,20 +3,13 @@ package com.example.airplanning.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.example.airplanning.domain.dto.board.BoardCreateRequest;
-import com.example.airplanning.domain.dto.BoardDto;
-import com.example.airplanning.domain.dto.board.BoardModifyRequest;
-import com.example.airplanning.domain.dto.board.PortfolioModifyRequest;
-import com.example.airplanning.domain.entity.Alarm;
+import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.entity.Board;
-import com.example.airplanning.domain.entity.Like;
 import com.example.airplanning.domain.entity.User;
-import com.example.airplanning.domain.enum_class.AlarmType;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
-import com.example.airplanning.repository.LikeRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,12 +41,12 @@ public class BoardService {
 
 
     @Transactional
-    public BoardDto write(BoardCreateRequest boardCreateRequest, String username) {
+    public BoardDto write(BoardCreateRequest boardCreateRequest, String userName) {
 
-        User user = userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("게시글 작성 권한이 없습니다."));
-        User userEntity = userRepository.findByUserName(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED, String.format("%s not founded", username)));
-        Board savedBoardEntity = boardRepository.save(boardCreateRequest.toEntity(userEntity));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED, String.format("%s not founded", userName)));
+        Board savedBoardEntity = boardRepository.save(boardCreateRequest.toEntity(user));
 
         BoardDto boardDto = BoardDto.builder()
                 .id(savedBoardEntity.getId())
@@ -130,10 +123,9 @@ public class BoardService {
 
     }
 
-    public Page<BoardDto> boardList(Pageable pageable){
+    public Page<BoardListResponse> boardList(Pageable pageable){
         Page<Board> board = boardRepository.findAllByCategory(Category.FREE, pageable);
-        Page<BoardDto> boardDtos = BoardDto.toDtoList(board);
-        return boardDtos;
+        return BoardListResponse.toDtoList(board);
     }
 
 //    @Transactional

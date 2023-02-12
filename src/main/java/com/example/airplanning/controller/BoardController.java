@@ -1,9 +1,6 @@
 package com.example.airplanning.controller;
 
-import com.example.airplanning.domain.dto.BoardDto;
-import com.example.airplanning.domain.dto.board.BoardCreateRequest;
-import com.example.airplanning.domain.dto.board.BoardModifyRequest;
-import com.example.airplanning.domain.dto.board.PortfolioModifyRequest;
+import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
 import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
@@ -21,10 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +26,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Set;
 
 
 @Controller
@@ -47,15 +39,18 @@ public class BoardController {
     private final PlannerService plannerService;
     private final LikeService likeService;
 
-    @ResponseBody
-    @PostMapping("")
-    public String writeBoard(BoardCreateRequest createRequest, Principal principal){
-        boardService.write(createRequest, principal.getName());
-        return "redirect:/boards/{boardId}";
+    @GetMapping("/list")
+    public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable, Model model){
+        Page<BoardListResponse> boardPage = boardService.boardList(pageable);
+        model.addAttribute("list", boardPage);
+        System.out.println(boardPage.getNumber());
+        System.out.println(boardPage.getTotalPages());
+
+        return "boards/list";
     }
 
-    @GetMapping("/new/write")
-    public String writeBoard(Model model) {
+    @GetMapping("/write")
+    public String writeBoardPage(Model model) {
         model.addAttribute(new BoardCreateRequest());
         return "boards/write";
     }
@@ -122,13 +117,6 @@ public class BoardController {
         Long boardDelete = boardService.delete(principal.getName(), boardId);
         log.info("delete");
         return "boards/delete";
-    }
-
-    @GetMapping("/list")
-    public String listBoard(Pageable pageable, Model model){
-        Page<BoardDto> boardPage = boardService.boardList(pageable);
-        model.addAttribute("list", boardPage);
-        return "boards/list";
     }
 
     // 포토폴리오 작성

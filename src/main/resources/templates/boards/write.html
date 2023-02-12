@@ -34,10 +34,11 @@
     function write_board(){
         $.ajax({
             type:'POST',
-            url:'/boards',
+            url:'/api/boards',
             data:$('#boardCreateRequest').serialize(),
             success: function (data){
                 console.log(data); //응답 body부분 데이터
+                location.href = '/boards/list';
             }
         });
     }

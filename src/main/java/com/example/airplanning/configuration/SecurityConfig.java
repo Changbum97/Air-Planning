@@ -64,6 +64,8 @@ public class SecurityConfig {
                 .antMatchers("/upload").permitAll()
                 .antMatchers("/api/order/**").permitAll()
                 .antMatchers("/api/v1/hello").authenticated()
+                .antMatchers(HttpMethod.GET, "/boards/write").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/boards/write").authenticated()
                 .antMatchers(HttpMethod.GET, "/reviews/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/reviews").authenticated()
                 .antMatchers(HttpMethod.GET, "/users/set-nickname").authenticated()
