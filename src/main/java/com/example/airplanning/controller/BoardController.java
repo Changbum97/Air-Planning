@@ -40,11 +40,15 @@ public class BoardController {
     private final LikeService likeService;
 
     @GetMapping("/list")
-    public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable, Model model){
-        Page<BoardListResponse> boardPage = boardService.boardList(pageable);
+    public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+                            Model model,
+                            @RequestParam(required = false) String searchType,
+                            @RequestParam(required = false) String keyword){
+
+
+        Page<BoardListResponse> boardPage = boardService.boardList(pageable, searchType, keyword);
         model.addAttribute("list", boardPage);
-        System.out.println(boardPage.getNumber());
-        System.out.println(boardPage.getTotalPages());
+        model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
 
         return "boards/list";
     }

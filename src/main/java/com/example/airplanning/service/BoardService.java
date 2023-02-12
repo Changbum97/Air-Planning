@@ -123,8 +123,21 @@ public class BoardService {
 
     }
 
-    public Page<BoardListResponse> boardList(Pageable pageable){
-        Page<Board> board = boardRepository.findAllByCategory(Category.FREE, pageable);
+    public Page<BoardListResponse> boardList(Pageable pageable, String searchType, String keyword){
+        Page<Board> board;
+
+        if(searchType == null) {
+            board = boardRepository.findAllByCategory(Category.FREE, pageable);
+        } else {
+            // 글 제목으로 검색
+            if (searchType.equals("TITLE")) {
+                board = boardRepository.findByCategoryAndTitleContains(Category.FREE, keyword, pageable);
+            }
+            // 작성자 닉네임으로 검색
+            else {
+                board = boardRepository.findByCategoryAndUserNicknameContains(Category.FREE, keyword, pageable);
+            }
+        }
         return BoardListResponse.toDtoList(board);
     }
 
