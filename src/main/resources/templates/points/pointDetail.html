@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: head"/>
+
+<!-- iamport.payment.js -->
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+<!-- swal 적용 -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+<div class="container px-5">
+    <div class="row gx-5 justify-content-center">
+        <p></p>
+            <h3>결제 내역 상세</h3>
+            <h5>Air-Planning에서의 포인트 충전 상세 내역을 확인하실 수 있습니다.</h5>
+
+            <table class="table list-table table-hover text-center">
+                <thead>
+                <tr>
+                    <th>결제자</th>
+                    <th>결제 가격</th>
+                    <th>결제 일자</th>
+                    <th>결제 상태</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="points : ${point}">
+                    <td th:text="${user.nickname} + '(' + ${user.userName} + ')'"></td>
+                    <td th:text="${points.amount} + '원'"></td>
+                    <td th:text="${points.createdAt}"></td>
+                    <td th:text="${points.pointStatus}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+
+
+
+        <div class="frame" style="text-align: right">
+            <button class="btn btn1" onclick="cancel()">결제 취소하기</button>
+            <button type="button" class="btn btn1" th:onclick="|location.href= '@{/points/list}'|">결제 목록으로 가기</button>
+        </div>
+
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function cancel() {
+        if ([[${point.pointStatus}]] == 'POINT_CANCEL') {
+            alert('이미 취소된 결제입니다.');
+            return false;
+        }
+        if (confirm("정말 취소하시겠습니까?") == true) {
+            const data = {
+                imp_uid: [[${point.impUid}]],
+                pointId: [[${point.pointId}]],
+            };
+
+            cancelPayment(data);
+
+            function cancelPayment(data) {
+                $.ajax({
+                    url: "/api/order/payment/cancel",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    dataType: "json"
+                }).done(function () {
+                    swal({
+                        text: '결제 취소가 완료되었습니다.',
+                        closeOnClickOutside: false
+                    })
+                        .then(function () {
+                            location.replace("/points/list")
+                        })
+                }).fail(function (result) {
+                    console.log(result);
+                    var responseText = result.responseText;
+                    console.log(responseText);
+                    var message = responseText.split('\"')[13];
+                    console.log(message);
+                    alert(message);
+                    location.replace("/points/list")
+                });
+            }
+        } else {
+            return;
+        }
+    }
+
+</script>
+
+</body>
+</html>

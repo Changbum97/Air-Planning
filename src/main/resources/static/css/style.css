@@ -360,3 +360,37 @@ body, head {
     color: red;
     margin-top: 5px;
 }
+
+/*결제창 css*/
+.box-radio-input input[type="radio"] {
+    display: none;
+}
+
+.box-radio-input input[type="radio"] + span {
+    display: inline-block;
+    border-radius : 9px;
+    width: 90px;
+    height: 30px;
+    padding-top: 3px;
+    box-sizing: border-box;
+    border: 1px solid #dfdfdf;
+    background-color: #ffffff;
+    text-align: center;
+    cursor: pointer;
+}
+
+.box-radio-input input[type="radio"]:checked + span {
+    background-color: #96d1cf;
+    color: #ffffff;
+}
+
+#all{
+    margin: auto;
+    margin-top: 60px;
+    width: 600px;
+    padding: 30px;
+    background:#fff;
+    border-radius:30px;
+    box-sizing:border-box;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}

@@ -9,10 +9,10 @@
 <body>
 <div th:replace="fragments/header.html :: header"/>
 
+<br/>
 
-<div class="card-body bg-white mt-0 shadow" style="text-align: center">
+<div id="all" style="text-align: center">
     <p style="font-weight: bold">충전 금액을 선택해주세요.</p>
-    <label class="box-radio-input"><input type="radio" name="cp_item" value="500"><span>500원</span></label>
     <label class="box-radio-input"><input type="radio" name="cp_item" value="5000"><span>5,000원</span></label>
     <label class="box-radio-input"><input type="radio" name="cp_item" value="10000"><span>10,000원</span></label>
     <label class="box-radio-input"><input type="radio" name="cp_item" value="15000"><span>15,000원</span></label>
@@ -71,7 +71,7 @@
                 } else {
                     var msg = '결제에 실패하였습니다';
                     console.log(rsp.error_msg);
-                    msg += '\n 에러 내용 : ' + rsp.error_msg;
+                    msg += '\n 실패 이유 : ' + rsp.error_msg;
                     alert(msg);
                 }
             });

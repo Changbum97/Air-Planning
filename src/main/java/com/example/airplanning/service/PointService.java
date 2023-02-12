@@ -1,7 +1,7 @@
 package com.example.airplanning.service;
 
 import com.example.airplanning.domain.dto.point.PointCancelResponse;
-import com.example.airplanning.domain.dto.point.PointRequest;
+import com.example.airplanning.domain.dto.point.PointInfoResponse;
 import com.example.airplanning.domain.dto.point.PointResponse;
 import com.example.airplanning.domain.dto.point.PointVo;
 import com.example.airplanning.domain.entity.Point;
@@ -12,6 +12,8 @@ import com.example.airplanning.repository.PointRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class PointService {
 
     private final PointRepository pointRepository;
     private final UserRepository userRepository;
+
 
     //해당 유저가 보유한 포인트 확인
     @Transactional(readOnly = true)
@@ -63,30 +66,29 @@ public class PointService {
         return user.getPoint() + amount;
     }
 
-    // 결제 취소 시 포인트 -
-    public Integer minusPoint(User user, Integer amount){
+    // 결제 취소 시, 포인트 사용 시 포인트 -
+    // planService에서도 사용
+    public static Integer minusPoint(User user, Integer amount){
         return user.getPoint() - amount;
     }
 
 
     // 포인트 결제 내역 상세 조회
     @Transactional(readOnly = true)
-    public PointResponse getOrderDetail(String userName, Long pointId) {
-        User user = getUser(userName);
-        Point point = getPoint(pointId);
-        validateUser(user, point);
-        return PointResponse.of(point);
-    }
+    public PointInfoResponse getOrderDetail(String userName, Long pointId) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(()-> new AppException(ErrorCode.INVALID_PERMISSION));
 
-    //해당 결제 내역이 있는지 확인
-    public Point getPoint(Long pointId){
-        return pointRepository.findById(pointId)
+        Point point = pointRepository.findById(pointId)
                 .orElseThrow(()-> new AppException(ErrorCode.ORDER_NOT_FOUND));
+
+        validateUser(user, point);
+        return PointInfoResponse.toDto(point);
     }
 
     //해당 유저가 존재하는 지 확인
     public User getUser(String userName) {
-        return userRepository.findById(Long.parseLong(userName)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        return userRepository.findByUserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
     }
 
     // 포인트 결제 유저와 로그인 유저가 동일한 지 확인.
@@ -119,7 +121,16 @@ public class PointService {
         return PointCancelResponse.of(point);
     }
 
+    @Transactional(readOnly = true)
+    public Page<PointInfoResponse> orderList(String userName, Pageable pageable){
 
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(()-> new AppException(ErrorCode.INVALID_PERMISSION));
+
+        Page<Point> points = pointRepository.findAllByUser(user, pageable);
+
+        return PointInfoResponse.toList(points);
+    }
 
 // view service
 
