@@ -324,4 +324,20 @@ public class BoardService {
         return id;
     }
 
+    // 유저 신고 작성
+    public Board reportWrite(ReportCreateRequest reportCreateRequest, String userName) {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        Board board = boardRepository.save(reportCreateRequest.toEntity(user));
+
+        return Board.builder()
+                .id(board.getId())
+                .category(Category.REPORT)
+                .title(reportCreateRequest.getTitle())
+                .content(reportCreateRequest.getContent())
+                .build();
+
+    }
+
 }

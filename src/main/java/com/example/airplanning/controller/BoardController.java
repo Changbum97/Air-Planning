@@ -253,4 +253,18 @@ public class BoardController {
         return "";
     }
 
+    // 유저 신고 작성
+    @GetMapping("/report/write")
+    public String reportWritePage(Model model) {
+        model.addAttribute(new ReportCreateRequest());
+        return "boards/reportWrite";
+    }
+
+    @PostMapping("/report/write")
+    public String reportWrite(ReportCreateRequest reportCreateRequest, Principal principal){
+        boardService.reportWrite(reportCreateRequest, principal.getName());
+        return "redirect:/boards/list";
+    }
+
+
 }
