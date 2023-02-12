@@ -73,25 +73,28 @@ public class BoardController {
 
         if(principal != null) {
             model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
+
+            // 로그인 유저가 글 작성자라면 수정, 삭제 버튼 출력
+            if(principal.getName().equals(boardDto.getUserName())) {
+                model.addAttribute("isWriter", true);
+            }
+
         } else {
             model.addAttribute("checkLike", false);
         }
         return "boards/detail";
     }
 
-
     @GetMapping("/{boardId}/modify")
-    public String modifyBoardPage(@PathVariable Long boardId, Model model){
+    public String modifyBoardPage(@PathVariable Long boardId, Model model, Principal principal){
         Board board = boardService.view(boardId);
+        if (!board.getUser().getUserName().equals(principal.getName())) {
+            model.addAttribute("msg", "작성자만 수정가능합니다.");
+            model.addAttribute("nextPage", "/boards/" + boardId);
+            return "error/redirect";
+        }
         model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
         return "boards/modify";
-    }
-
-    @PostMapping("/{boardId}/modify")
-    public String modifyBoard(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
-        boardService.modify(boardModifyRequest, principal.getName(), boardId);
-        model.addAttribute("boardId", boardId);
-        return "redirect:/boards/{boardId}";
     }
 
     // 플래너등급신청
@@ -115,14 +118,6 @@ public class BoardController {
         model.addAttribute("board", boardDto);
         model.addAttribute("userName", principal.getName());
         return "boards/rankUpDetail";
-    }
-
-    @ResponseBody
-    @GetMapping("/{boardId}/delete")
-    public String deleteBoard(@PathVariable Long boardId, Principal principal){
-        Long boardDelete = boardService.delete(principal.getName(), boardId);
-        log.info("delete");
-        return "boards/delete";
     }
 
     // 포토폴리오 작성

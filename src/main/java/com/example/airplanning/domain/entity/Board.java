@@ -31,11 +31,11 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "board", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)   //게시글 삭제시 댓글도 함께 삭제
+    @OneToMany(mappedBy = "board", fetch = FetchType.EAGER, orphanRemoval = true)   //게시글 삭제시 댓글도 함께 삭제
     @OrderBy("id asc") // 댓글 정렬
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", orphanRemoval = true)
     private List<Like> likes;
 
     

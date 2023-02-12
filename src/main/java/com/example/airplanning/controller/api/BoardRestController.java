@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
@@ -35,37 +36,23 @@ public class BoardRestController {
     @PostMapping("")
     public Response<String> writeBoard(BoardCreateRequest createRequest, Principal principal){
         boardService.write(createRequest, principal.getName());
-        return Response.success("글 등록에 성공했습니다.");
+        return Response.success("글 등록이 완료되었습니다.");
     }
-
 
     // 수정
-    @PutMapping("/{boardId}/modify")
-    public Response<BoardResponse> update(@PathVariable Long id, @RequestBody BoardModifyRequest boardModifyRequest, Principal principal){
-        String userName = principal.getName();
-        BoardDto boardDto = boardService.modify(boardModifyRequest, "test", id);
-        return Response.success(new BoardResponse("포스트 수정이 완료되었습니다.", boardDto.getId()));
+    @PutMapping("/{boardId}")
+    public Response<String> update(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal){
+        boardService.modify(boardModifyRequest, principal.getName(), boardId);
+        return Response.success("글 수정이 완료되었습니다.");
     }
-
 
     // 삭제
-    @DeleteMapping("/{boardid}/delete")
-    public Response<BoardResponse> delete(@PathVariable Long id, Principal principal) {
-        String userName = principal.getName();
-        Long boardDelete = boardService.delete("test", id);
-        return Response.success(new BoardResponse("포스트 삭제가 완료되었습니다.", boardDelete));
+    @DeleteMapping("/{boardId}")
+    public Response<String> delete(@PathVariable Long boardId, Principal principal) {
+
+        boardService.delete(principal.getName(), boardId);
+        return Response.success("글 삭제가 완료되었습니다.");
     }
-
-    // 상세
-    @DeleteMapping("/{boardid}/detail")
-    public Response<BoardDto> detail(@PathVariable Long id, Principal principal) {
-        String userName = principal.getName();
-       BoardDto boardDto = boardService.detail(id);
-        return Response.success(boardDto);
-    }
-
-
-
 
 
     // 플래너 신청 등록

@@ -119,7 +119,7 @@ public class BoardService {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
-        if (!Objects.equals(board.getUser().getUserName(),userName)){
+        if (!Objects.equals(board.getUser().getUserName(), user.getUserName())){
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
