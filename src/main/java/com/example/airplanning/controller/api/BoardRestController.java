@@ -4,6 +4,7 @@ package com.example.airplanning.controller.api;
 import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.board.BoardDto;
 import com.example.airplanning.domain.dto.board.*;
+import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +84,15 @@ public class BoardRestController {
         BoardDto boardDto = boardService.rankUpDetail(boardId);
         return Response.success(boardDto);
     }
+
+    // 유저 신고 작성
+    @PostMapping("/reportWrite/{boardId}")
+    public Response<BoardResponse>reportWrite(@RequestBody ReportCreateRequest reportCreateRequest, Principal principal) {
+        String userName = principal.getName();
+        Board board = boardService.reportWrite(reportCreateRequest, "test");
+        return Response.success(new BoardResponse("신고가 완료되었습니다.", board.getId()));
+    }
+
 
 }
 
