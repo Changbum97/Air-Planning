@@ -3,20 +3,15 @@ package com.example.airplanning.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.example.airplanning.domain.dto.board.BoardCreateRequest;
-import com.example.airplanning.domain.dto.BoardDto;
-import com.example.airplanning.domain.dto.board.BoardModifyRequest;
-import com.example.airplanning.domain.dto.board.PortfolioModifyRequest;
-import com.example.airplanning.domain.entity.Alarm;
+import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.domain.entity.Like;
 import com.example.airplanning.domain.entity.User;
-import com.example.airplanning.domain.enum_class.AlarmType;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
-import com.example.airplanning.repository.LikeRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,12 +43,12 @@ public class BoardService {
 
 
     @Transactional
-    public BoardDto write(BoardCreateRequest boardCreateRequest, String username) {
+    public BoardDto write(BoardCreateRequest boardCreateRequest, String userName) {
 
-        User user = userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("게시글 작성 권한이 없습니다."));
-        User userEntity = userRepository.findByUserName(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED, String.format("%s not founded", username)));
-        Board savedBoardEntity = boardRepository.save(boardCreateRequest.toEntity(userEntity));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED, String.format("%s not founded", userName)));
+        Board savedBoardEntity = boardRepository.save(boardCreateRequest.toEntity(user));
 
         BoardDto boardDto = BoardDto.builder()
                 .id(savedBoardEntity.getId())
@@ -90,13 +85,20 @@ public class BoardService {
     public Board view(Long id){
         return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
     }
-    
-    public BoardDto rankUpWrite(BoardCreateRequest boardCreateRequest, String userName) {
-        User userEntity = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-        Board board= boardRepository.save(boardCreateRequest.toEntity(userEntity));
 
-        return BoardDto.of(board);
+    @Transactional
+    public void rankUpWrite(BoardCreateRequest boardCreateRequest, String userName) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        Board board = Board.builder()
+                .user(user)
+                .category(Category.RANK_UP)
+                .title(boardCreateRequest.getTitle())
+                .content(boardCreateRequest.getContent())
+                .build();
+
+        boardRepository.save(board);
     }
 
 
@@ -130,10 +132,22 @@ public class BoardService {
 
     }
 
-    public Page<BoardDto> boardList(Pageable pageable){
-        Page<Board> board = boardRepository.findAllByCategory(Category.FREE, pageable);
-        Page<BoardDto> boardDtos = BoardDto.toDtoList(board);
-        return boardDtos;
+    public Page<BoardListResponse> boardList(Pageable pageable, String searchType, String keyword){
+        Page<Board> board;
+
+        if(searchType == null) {
+            board = boardRepository.findAllByCategory(Category.FREE, pageable);
+        } else {
+            // 글 제목으로 검색
+            if (searchType.equals("TITLE")) {
+                board = boardRepository.findByCategoryAndTitleContains(Category.FREE, keyword, pageable);
+            }
+            // 작성자 닉네임으로 검색
+            else {
+                board = boardRepository.findByCategoryAndUserNicknameContains(Category.FREE, keyword, pageable);
+            }
+        }
+        return BoardListResponse.toDtoList(board);
     }
 
 //    @Transactional
@@ -272,6 +286,58 @@ public class BoardService {
 
     private String generateFileName(MultipartFile file) {
         return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+    }
+
+    public Board update(Long boardId){
+        return boardRepository.findById(boardId).
+                orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+    }
+
+    public BoardDto rankUpdate(BoardModifyRequest modifyRequest, String userName, Long boardId) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        if (!Objects.equals(board.getUser().getUserName(), user.getUserName())) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        board.modify(modifyRequest.getTitle(), modifyRequest.getContent());
+        boardRepository.save(board);
+        return BoardDto.of(board);
+
+    }
+
+    @Transactional
+    public Long rankDelete(Long id, String userName){
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(()->new AppException(ErrorCode.INVALID_PERMISSION));
+        Board board = boardRepository.findById(id)
+                .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        if (board.getUser().getUserName() != user.getUserName()){
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        boardRepository.deleteById(id);
+        return id;
+    }
+
+    // 유저 신고 작성
+    public Board reportWrite(ReportCreateRequest reportCreateRequest, String userName) {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        Board board = boardRepository.save(reportCreateRequest.toEntity(user));
+
+        return Board.builder()
+                .id(board.getId())
+                .category(Category.REPORT)
+                .title(reportCreateRequest.getTitle())
+                .content(reportCreateRequest.getContent())
+                .build();
+
     }
 
 }

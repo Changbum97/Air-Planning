@@ -34,11 +34,10 @@
     function write_board(){
         $.ajax({
             type:'POST',
-            url:'/api/boards',
+            url:'/boards/rankUpWrite',
             data:$('#boardCreateRequest').serialize(),
             success: function (data){
                 console.log(data); //응답 body부분 데이터
-                location.href = '/boards/list';
             }
         });
     }
