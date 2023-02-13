@@ -78,6 +78,17 @@
 
 <script th:inline="javascript">
 
+    function changeLike() {
+        $.ajax({
+            type: 'POST',
+            url: '/boards/' + [[${board.id}]] + '/like',
+            success: function (message) {
+                alert(message);
+                location.reload();
+            }
+        });
+    }
+
     let totalData; //총 데이터 수
     let dataPerPage = 10; //한 페이지에 나타낼 글 수
     let pageCount = 5; //페이징에 나타낼 페이지 수
