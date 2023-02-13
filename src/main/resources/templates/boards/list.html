@@ -6,7 +6,8 @@
 <div th:replace="fragments/header.html :: header"/>
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
-            <div class="col-lg-8 py-5" align="center">
+            <div class="col-lg-8 py-3" align="center">
+                <h2>자유게시판</h2><br/>
                 <form class="form-group" style="height: 70px;" th:object="${boardSearchRequest}" th:method="get"
                       th:action="|@{/boards/list/(searchType=*{searchType}, keyword=*{getKeyword})}|">
                     <select th:field="*{searchType}" style="height: 40px;">
