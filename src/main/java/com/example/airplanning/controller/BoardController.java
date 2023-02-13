@@ -120,7 +120,6 @@ public class BoardController {
             if(principal.getName().equals(boardDto.getUserName())) {
                 model.addAttribute("isWriter", true);
             }
-
         } else {
             model.addAttribute("checkLike", false);
         }
@@ -230,15 +229,44 @@ public class BoardController {
 
     //포토폴리오 상세
     @GetMapping("/portfolio/{boardId}")
-    public String portfolioDetail(@PathVariable Long boardId, Model model,
-                                  @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String portfolioDetail(@PathVariable Long boardId, Model model, Principal principal,
+                                  @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                  HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 
-        BoardDto boardDto = boardService.portfolioDetail(boardId);
+        Cookie oldCookie = null;
+        Cookie[] cookies = httpServletRequest.getCookies();
+        Boolean addView = true;
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if(cookie.getName().equals("portfolioView")) {
+                    oldCookie = cookie;
+                    break;
+                }
+            }
+        }
+        if(oldCookie != null && oldCookie.getValue().equals(boardId.toString())) {
+            addView = false;
+        } else {
+            Cookie newCookie = new Cookie("portfolioView", boardId.toString());
+            newCookie.setMaxAge(60 * 60);   // 한 시간
+            httpServletResponse.addCookie(newCookie);
+        }
+
+        BoardDto boardDto = boardService.portfolioDetail(boardId, addView);
         PlannerDetailResponse response = plannerService.findByUser(boardDto.getUserName());
 
-        log.info(boardDto.getTitle());
         model.addAttribute("planner", response);
         model.addAttribute("board", boardDto);
+
+        if (principal != null) {
+            model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
+            // 로그인 유저가 글 작성자라면 수정, 삭제 버튼 출력
+            if(principal.getName().equals(boardDto.getUserName())) {
+                model.addAttribute("isWriter", true);
+            }
+        } else {
+            model.addAttribute("checkLike", false);
+        }
 
         Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
         Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
@@ -254,7 +282,7 @@ public class BoardController {
     public String portfolioModify(@PathVariable Long boardId, Model model, Principal principal){
 
         PlannerDetailResponse response = plannerService.findByUser(principal.getName());
-        BoardDto boardDto = boardService.portfolioDetail(boardId);
+        BoardDto boardDto = boardService.portfolioDetail(boardId, false);
         model.addAttribute("planner", response);
         model.addAttribute(new BoardModifyRequest(boardDto.getTitle(), boardDto.getContent(), boardDto.getImage()));
         return "boards/portfolioModify";

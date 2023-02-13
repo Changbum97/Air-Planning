@@ -6,12 +6,13 @@
 <div th:replace="fragments/header.html :: header"/>
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
-            <div class="col-lg-8 py-5" align="center">
+            <div class="col-lg-8 py-3" align="center">
+                <h2>포트폴리오</h2><br/>
                 <form class="form-group" style="height: 70px;" th:object="${boardSearchRequest}" th:method="get"
                       th:action="|@{/boards/portfolio/list/(searchType=*{searchType}, keyword=*{getKeyword})}|">
                     <select th:field="*{searchType}" style="height: 40px;">
                         <option th:value="TITLE">제목</option>
-                        <option th:value="NICKNAME">작성자</option>
+                        <option th:value="NICKNAME">플래너</option>
                     </select>
                     <input type="text" th:field="*{keyword}" placeholder="키워드를 입력해주세요" class="w-50 search-input">
                     <button class="icon-btn" onclick="search()"><img src="/assets/images/search.svg" class="little-img"></button>
@@ -20,7 +21,7 @@
                     <thead>
                         <tr>
                             <th style="width: 45%">제목</th>
-                            <th style="width: 35%">작성자</th>
+                            <th style="width: 35%">플래너</th>
                             <th style="width: 20%">작성일자</th>
                         </tr>
                     </thead>

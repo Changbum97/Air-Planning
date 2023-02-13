@@ -6,7 +6,10 @@
 <div th:replace="fragments/header.html :: header"/>
 <div class="container px-5">
   <div class="row gx-5 justify-content-center">
-    <div class="col-lg-6 py-5">
+    <div class="col-lg-6 py-3">
+      <div align="center">
+        <h2>리뷰 게시판</h2><br/>
+      </div>
       <form class="form-group" th:action="@{/reviews/{reviewId}/update (reviewId=${reviewId})}" th:object="${reviewUpdateRequest}" method="post">
         <br/>
         <div>
