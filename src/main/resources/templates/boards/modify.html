@@ -7,7 +7,7 @@
 <div class="container px-5">
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-6 py-5">
-      <form class="form-group" th:action="@{/boards/{boardId}/modify (boardId=${boardId})}" th:object="${boardModifyRequest}" method="post">
+      <form class="form-group" th:object="${boardModifyRequest}" id="boardModifyRequest">
         <br/>
         <div>
           <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
@@ -18,30 +18,30 @@
         </div>
         <br/>
         <div align="center" class="py-1">
-         <input type="submit" class="btn btn1" th:value="저장"/>
+          <button type="button" class="btn btn1" onclick="modify()">수정</button>
         </div>
         <br/>
       </form>
     </div>
   </div>
 </div>
-<!--
+
   <script th:inline="javascript">
 
-    function edit(){
+    function modify(){
       let boardId = [[${boardId}]];
 
       $.ajax({
-        type : 'POST',
-        url : '/boards/'+boardId+'modify',
+        type : 'PUT',
+        url : '/api/boards/' + boardId,
         data : $('#boardModifyRequest').serialize(),
         success: function (){
-          location.href="/"
+          location.href="/boards/" + boardId;
         }
       });
     }
 
-  </script>-->
+  </script>
 
 </body>
 </html>

@@ -23,6 +23,7 @@ public class BoardDto {
     private String image;       // 파일 경로
     private LocalDateTime createdAt; // 등록 날짜
     private Integer likeCnt;    // 좋아요 개수
+    private Integer views;      // 조회수
 
     @Enumerated(EnumType.STRING)
     private Category category;
@@ -38,6 +39,7 @@ public class BoardDto {
                 .createdAt(board.getCreatedAt())
                 .category(board.getCategory())
                 .likeCnt(board.getLikes().size())
+                .views(board.getViews())
                 .build();
     }
 

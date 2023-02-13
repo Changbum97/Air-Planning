@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -61,8 +64,29 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     public String detailBoard(@PathVariable Long boardId, Model model, Principal principal,
-                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
-        BoardDto boardDto = boardService.detail(boardId);
+                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                              HttpServletRequest request, HttpServletResponse response){
+
+        Cookie oldCookie = null;
+        Cookie[] cookies = request.getCookies();
+        Boolean addView = true;
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if(cookie.getName().equals("boardView")) {
+                    oldCookie = cookie;
+                    break;
+                }
+            }
+        }
+        if(oldCookie != null && oldCookie.getValue().equals(boardId.toString())) {
+                addView = false;
+        } else {
+            Cookie newCookie = new Cookie("boardView", boardId.toString());
+            newCookie.setMaxAge(60 * 60);   // 한 시간
+            response.addCookie(newCookie);
+        }
+
+        BoardDto boardDto = boardService.detail(boardId, addView);
         model.addAttribute("board", boardDto);
 
         Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
@@ -73,25 +97,28 @@ public class BoardController {
 
         if(principal != null) {
             model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
+
+            // 로그인 유저가 글 작성자라면 수정, 삭제 버튼 출력
+            if(principal.getName().equals(boardDto.getUserName())) {
+                model.addAttribute("isWriter", true);
+            }
+
         } else {
             model.addAttribute("checkLike", false);
         }
         return "boards/detail";
     }
 
-
     @GetMapping("/{boardId}/modify")
-    public String modifyBoardPage(@PathVariable Long boardId, Model model){
+    public String modifyBoardPage(@PathVariable Long boardId, Model model, Principal principal){
         Board board = boardService.view(boardId);
+        if (!board.getUser().getUserName().equals(principal.getName())) {
+            model.addAttribute("msg", "작성자만 수정가능합니다.");
+            model.addAttribute("nextPage", "/boards/" + boardId);
+            return "error/redirect";
+        }
         model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
         return "boards/modify";
-    }
-
-    @PostMapping("/{boardId}/modify")
-    public String modifyBoard(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
-        boardService.modify(boardModifyRequest, principal.getName(), boardId);
-        model.addAttribute("boardId", boardId);
-        return "redirect:/boards/{boardId}";
     }
 
     // 플래너등급신청
@@ -115,14 +142,6 @@ public class BoardController {
         model.addAttribute("board", boardDto);
         model.addAttribute("userName", principal.getName());
         return "boards/rankUpDetail";
-    }
-
-    @ResponseBody
-    @GetMapping("/{boardId}/delete")
-    public String deleteBoard(@PathVariable Long boardId, Principal principal){
-        Long boardDelete = boardService.delete(principal.getName(), boardId);
-        log.info("delete");
-        return "boards/delete";
     }
 
     // 포토폴리오 작성
