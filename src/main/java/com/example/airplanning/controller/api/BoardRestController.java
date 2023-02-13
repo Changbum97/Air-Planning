@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.security.Principal;
 import org.springframework.security.core.Authentication;
 import springfox.documentation.annotations.ApiIgnore;
@@ -45,10 +47,10 @@ public class BoardRestController {
 
     // 수정
     @PutMapping("/{boardId}/modify")
-    public Response<BoardResponse> update(@PathVariable Long id, @RequestBody BoardModifyRequest boardModifyRequest, Principal principal){
+    public Response<BoardResponse> update(@PathVariable Long id, @RequestBody BoardModifyRequest boardModifyRequest, Principal principal) throws IOException {
         String userName = principal.getName();
-        BoardDto boardDto = boardService.modify(boardModifyRequest, "test", id);
-        return Response.success(new BoardResponse("포스트 수정이 완료되었습니다.", boardDto.getId()));
+        boardService.modify(boardModifyRequest, null, userName, id);
+        return Response.success(new BoardResponse("포스트 수정이 완료되었습니다.", id));
     }
 
 

@@ -10,7 +10,7 @@
             <form class="form-group" th:object="${board}" id="board">
                 <div>
                     <div class="img-box">
-                        <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
+                        <img th:src= "${profile}" alt="프로필 이미지" class="medium-img">
                     </div>
                     <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
                     <h6>
@@ -26,11 +26,12 @@
                     <textarea rows="10" class="w-100" readonly>[[${board.content}]]
                     </textarea>
                 </div>
+                <button id = "download_file" style="display:none;" type="button" onclick="downloadURI()">Download</button>
                 <div style="float: left" class="py-3">
                     <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
                 </div>
                 <div align="right" class="py-1">
-                    <th:block th:if="principal">
+                    <th:block>
                         <a class="btn btn1" th:href="@{/boards/{boardId}/modify (boardId=${boardId})}">수정</a>
                         <button class="btn btn1" onclick="delete_board()">삭제</button>
                     </th:block>
@@ -73,6 +74,29 @@
 </div>
 
 <script th:inline="javascript">
+
+    window.onload = function() {
+
+        let filepath = [[${board.image}]];
+        if (filepath != null) {
+            let filename = filepath.substring(96);
+            document.getElementById("download_file").style.display = 'block';
+            $("#download_file").text(filename);
+        }
+
+    }
+
+    function downloadURI() {
+
+        var link = document.createElement("a");
+        link.download = [[${board.image}]].split('-')[8];
+        link.href = [[${board.image}]];
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        delete link;
+
+    }
 
     function changeLike() {
         $.ajax({

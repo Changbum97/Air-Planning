@@ -6,17 +6,12 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.BoardModifyRequest;
-import com.example.airplanning.domain.dto.board.PortfolioModifyRequest;
-import com.example.airplanning.domain.entity.Alarm;
 import com.example.airplanning.domain.entity.Board;
-import com.example.airplanning.domain.entity.Like;
 import com.example.airplanning.domain.entity.User;
-import com.example.airplanning.domain.enum_class.AlarmType;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
-import com.example.airplanning.repository.LikeRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,30 +56,10 @@ public class BoardService {
 
         return boardDto;
     }
-    
+
     public BoardDto detail(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
         return BoardDto.of(board);
-    }
-
-
-    // 수정
-    public BoardDto modify(BoardModifyRequest modifyRequest, String userName, Long id) {
-
-        Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-
-        if (!Objects.equals(board.getUser().getUserName(), user.getUserName())) {
-            throw new AppException(ErrorCode.INVALID_PERMISSION);
-        }
-
-        board.modify(modifyRequest.getTitle(), modifyRequest.getContent());
-        boardRepository.save(board);
-        return BoardDto.of(board);
-
     }
 
     public Board view(Long id){
@@ -163,9 +138,9 @@ public class BoardService {
 //        return likeRepository.countByBoard(id);
 //    }
 
-    //포토폴리오 작성
+    //포토폴리오 작성 + 자유게시판 작성
     @Transactional
-    public Long writePortfolio(BoardCreateRequest req, MultipartFile file, String username) throws IOException {
+    public Long writeWithFile(BoardCreateRequest req, MultipartFile file, String username, Category category) throws IOException {
 
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
@@ -176,23 +151,15 @@ public class BoardService {
             changedFile = uploadFile(file);
         }
 
-        Board board = Board.builder()
-                .user(user)
-                .category(Category.PORTFOLIO)
-                .title(req.getTitle())
-                .content(req.getContent())
-                .image(changedFile)
-                .build();
-
+        Board board = req.toEntity(user, changedFile, category);
         boardRepository.save(board);
 
         return board.getId();
-
     }
 
     //포토폴리오 수정
     @Transactional
-    public void portfolioModify(PortfolioModifyRequest req, MultipartFile file, String username, Long boardId) throws IOException {
+    public void modify(BoardModifyRequest req, MultipartFile file, String username, Long boardId) throws IOException {
 
         //AccessDeniedHandler에서 막혔을 듯
         User user = userRepository.findByUserName(username)

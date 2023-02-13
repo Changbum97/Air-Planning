@@ -69,6 +69,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/users/set-nickname").authenticated()
                 .antMatchers("/boards/portfolio/write").hasAuthority("PLANNER")
                 .antMatchers("/boards/portfolio/**").authenticated()
+                .antMatchers( "/boards/write").authenticated()
+                .antMatchers( HttpMethod.POST,"/boards/**").authenticated()
                 .antMatchers(HttpMethod.GET, "/plans/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/plans").authenticated()
                 .antMatchers("/chat/**").authenticated()
