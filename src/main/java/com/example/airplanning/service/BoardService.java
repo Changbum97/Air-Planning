@@ -63,6 +63,10 @@ public class BoardService {
     public BoardDto detail(Long id, Boolean addView) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
 
+        if (!board.getCategory().name().equals("FREE")) {
+            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
+        }
+
         if(addView) {
             board.addViews();
         }
@@ -94,6 +98,9 @@ public class BoardService {
     public BoardDto rankUpDetail(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        if (!board.getCategory().name().equals("RANK_UP")) {
+            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
+        }
         return BoardDto.of(board);
     }
     
@@ -249,6 +256,10 @@ public class BoardService {
     public BoardDto portfolioDetail(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        if (!board.getCategory().name().equals("PORTFOLIO")) {
+            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
+        }
         return BoardDto.of(board);
     }
 
