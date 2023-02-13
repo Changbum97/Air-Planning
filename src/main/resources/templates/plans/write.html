@@ -10,6 +10,7 @@
             <form class="form-group" th:object="${planCreateRequest}" id="planCreateRequest">
                 <br/>
                 <div>
+                    <input th:field="*{plannerId}" th:value="*{plannerId}" hidden>
                     <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요" style="width: 80%">
                 </div>
                 <br/>
@@ -28,6 +29,8 @@
 </div>
 
 <script th:inline="javascript">
+    console.log([[${planCreateRequest.plannerId}]])
+
     function write_plan(){
         $.ajax({
             type:'POST',
@@ -35,6 +38,7 @@
             data:$('#planCreateRequest').serialize(),
             success: function (data){
                 console.log(data); //응답 body부분 데이터
+                location.href='/planners/'+[[${planCreateRequest.plannerId}]]
             }
         });
     }
