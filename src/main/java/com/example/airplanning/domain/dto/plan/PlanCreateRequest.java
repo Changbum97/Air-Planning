@@ -27,7 +27,7 @@ public class PlanCreateRequest {
                 .planner(planner)
                 .title(title)
                 .content(content)
-                .planType(PlanType.WAITING)
+                .planType(PlanType.FINISH)
                 .isReviewed(false)
                 .build();
     }
