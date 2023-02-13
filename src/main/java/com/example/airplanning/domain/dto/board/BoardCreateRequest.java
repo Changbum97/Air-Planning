@@ -23,6 +23,7 @@ public class BoardCreateRequest {
                 .title(this.title)
                 .content(this.content)
                 .category(Category.FREE)
+                .views(0)
                 .build();
     }
 }
