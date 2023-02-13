@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+<div class="container px-5">
+  <div class="row gx-5 justify-content-center">
+    <div class="col-lg-6 py-5">
+      <form class="form-group" th:action="@{/reviews/{reviewId}/update (reviewId=${reviewId})}" th:object="${reviewUpdateRequest}" method="post">
+        <br/>
+        <div>
+          <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
+        </div>
+        <br/>
+        <div>
+          <h4 class="d-flex">별점 : &nbsp;
+            <div class="star-ratings">
+              <div class="star-ratings-base space-x-2 text-lg" style="position: relative">
+                                <span >★★★★★
+                                    <span class="star-ratings-fill" style="pointer-events: none; position: absolute;">★★★★★</span>
+                                    <input th:field="*{star}" type="range" class="star-input" oninput="drawStar(this)" value="1" step="1" min="1" max="5">
+                                </span>
+              </div>
+            </div>
+          </h4>
+        </div>
+        <br/>
+        <div>
+          <textarea th:field="*{content}" rows="10" class="w-100" placeholder="내용을 입력해주세요" style="resize: none;"></textarea>
+        </div>
+
+        <br/>
+        <div align="center" class="py-1">
+          <input type="submit" class="btn btn1" th:value="저장" />
+        </div>
+        <br/>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  function drawStar(target) {
+    document.getElementsByClassName('star-ratings-fill').item(0).style.width = `${target.value * 20}%`
+  }
+</script>
+</body>
+</html>

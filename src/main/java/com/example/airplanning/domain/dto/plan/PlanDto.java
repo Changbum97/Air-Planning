@@ -40,7 +40,7 @@ public class PlanDto {
                 .planType(plan.getPlanType())
                 .userRole(plan.getUser().getRole())
                 .createdAt(plan.getCreatedAt())
-                .plannerName("test")
+                .plannerName(plan.getPlanner().getUser().getUserName())
                 .build();
     }
 
@@ -52,7 +52,7 @@ public class PlanDto {
                 .userName(plan.getUser().getUserName())
                 .planType(plan.getPlanType())
                 .createdAt(plan.getCreatedAt())
-                .plannerName("test_planner")
+                .plannerName(plan.getPlanner().getUser().getUserName())
                 .build());
         return planDtos;
     }

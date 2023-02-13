@@ -2,11 +2,14 @@ package com.example.airplanning.service;
 
 import com.example.airplanning.domain.dto.plan.*;
 import com.example.airplanning.domain.entity.Plan;
+import com.example.airplanning.domain.entity.Planner;
 import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.enum_class.AlarmType;
 import com.example.airplanning.domain.enum_class.UserRole;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.PlanRepository;
+import com.example.airplanning.repository.PlannerRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,12 +25,21 @@ public class PlanService {
     private final PlanRepository planRepository;
     private final UserRepository userRepository;
 
+    private final PlannerRepository plannerRepository;
+
+    private final AlarmService alarmService;
+
     public PlanDto create(PlanCreateRequest planCreateRequest, String userName){
 
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(()->new AppException(ErrorCode.INVALID_PERMISSION));
 
-        Plan plan = planRepository.save(planCreateRequest.toEntity(user));
+        Planner planner = plannerRepository.findById(planCreateRequest.getPlannerId())
+                .orElseThrow(()->new AppException(ErrorCode.PLANNER_NOT_FOUNDED));
+
+        Plan plan = planRepository.save(planCreateRequest.toEntity(user, planner));
+
+        alarmService.send(planner.getUser(), AlarmType.REQUEST_PLAN_ALARM, "/plans/"+plan.getId(), plan.getTitle());
 
         return PlanDto.of(plan);
 
@@ -111,6 +123,8 @@ public class PlanService {
 
         planRepository.save(plan);
 
+        alarmService.send(plan.getUser(), AlarmType.REFUSED_PLAN_ALARM, "/plans/"+plan.getId(), plan.getTitle());
+
         return PlanResponse.of(plan);
     }
 
@@ -129,6 +143,8 @@ public class PlanService {
         plan.acceptPlan(plan.getPlanType());
 
         planRepository.save(plan);
+
+        alarmService.send(plan.getUser(), AlarmType.ACCEPTED_PLAN_ALARM, "/plans/"+plan.getId(), plan.getTitle());
 
         return PlanResponse.of(plan);
     }
