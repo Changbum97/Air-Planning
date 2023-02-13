@@ -1,19 +1,24 @@
 package com.example.airplanning.controller;
 
 import com.example.airplanning.configuration.login.UserDetail;
+import com.example.airplanning.domain.dto.board.BoardCreateRequest;
+import com.example.airplanning.domain.dto.board.BoardModifyRequest;
 import com.example.airplanning.domain.dto.review.ReviewCreateRequest;
 import com.example.airplanning.domain.dto.review.ReviewDto;
 import com.example.airplanning.domain.dto.review.ReviewUpdateRequest;
 import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Principal;
 
 @Controller
@@ -32,22 +37,25 @@ public class ReviewController {
 
     @ResponseBody
     @PostMapping("")
-    public String writeReview(ReviewCreateRequest request, Principal principal) {
-        reviewService.write(request, principal.getName());
+    public String writeReview(@RequestPart(value = "request") ReviewCreateRequest request,
+                              @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
+        reviewService.write(request, file, principal.getName());
         return "리뷰 작성 성공";
     }
 
     @GetMapping("/{reviewId}/update")
     public String updateReviewPage(@PathVariable Long reviewId, Model model) {
         Review review = reviewService.findById(reviewId);
-        model.addAttribute(new ReviewUpdateRequest(review.getTitle(), review.getContent(), review.getStar()));
+        model.addAttribute(new ReviewUpdateRequest(review.getTitle(), review.getContent(), review.getStar(), review.getImage()));
         return "reviews/update";
     }
 
+    @ResponseBody
     @PostMapping("/{reviewId}/update")
-    public String updateReview(@PathVariable Long reviewId, ReviewUpdateRequest request, Principal principal) {
-        Long updatedReviewId = reviewService.update(reviewId, request, principal.getName());
-        return "redirect:/reviews/{reviewId}";
+    public String updateReview(@PathVariable Long reviewId, @RequestPart(value = "request") ReviewUpdateRequest request,
+                               @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
+        Long updatedReviewId = reviewService.update(reviewId, request, file, principal.getName());
+        return "";
     }
 
     @GetMapping("/{reviewId}")
