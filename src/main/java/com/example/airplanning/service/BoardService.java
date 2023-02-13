@@ -246,9 +246,13 @@ public class BoardService {
     }
 
     // 포토폴리오 상세 조회
-    public BoardDto portfolioDetail(Long boardId) {
+    @Transactional
+    public BoardDto portfolioDetail(Long boardId, Boolean addView) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        if(addView) {
+            board.addViews();
+        }
         return BoardDto.of(board);
     }
 

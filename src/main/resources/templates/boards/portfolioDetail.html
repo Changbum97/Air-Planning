@@ -40,11 +40,11 @@
                 </div>
                 <br/>
             </form>
-            <div>
-                <button class="btn icon-btn">
+            <div align="center" style="margin-top: 10px">
+                <button th:if="${checkLike == false}" class="btn icon-btn" onclick="changeLike()" type="button">
                     <img src="/assets/images/empty-hearts.svg" class="little-img">
                 </button>
-                <button class="btn icon-btn">
+                <button th:if="${checkLike == true}" class="btn icon-btn" onclick="changeLike()" type="button">
                     <img src="/assets/images/fill-hearts.svg" class="little-img">
                 </button>
             </div>
