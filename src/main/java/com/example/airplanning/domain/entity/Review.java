@@ -1,5 +1,6 @@
 package com.example.airplanning.domain.entity;
 
+import com.example.airplanning.domain.dto.review.ReviewUpdateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,9 +32,15 @@ public class Review extends BaseEntity{
     @JoinColumn(name = "planner_id")
     private Planner planner;    // 리뷰를 받은 플래너
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "review")
     private List<Like> likes;
+
+    public void update(ReviewUpdateRequest request) {
+        this.title = request.getTitle();
+        this.content = request.getContent();
+        this.star = request.getStar();
+    }
 }

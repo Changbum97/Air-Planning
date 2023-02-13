@@ -98,9 +98,9 @@
         };
 
         document.getElementById('trip/finish').onclick = function(){
-            listTitle = "<tr><th>id</th><th>제목</th><th>상태</th><th>작성일</th></tr>";
+            listTitle = "<tr><th>id</th><th>제목</th><th>상태</th><th>작성일</th><th>리뷰</th></tr>";
             listComponent = new Array('id', 'title', 'planType', 'createdAt');
-            getList("trip/finish")
+            getList2("trip/finish")
         };
 
 
@@ -210,7 +210,6 @@
             paging(totalData, dataPerPage, pageCount, 1);
 
         }
-
         //현재 페이지(currentPage)와 페이지당 글 개수(dataPerPage) 반영
         function displayData(currentPage, dataPerPage) {
 
@@ -242,7 +241,68 @@
             $("#list-content").html(chartHtml);
         }
 
-        //페이징 표시 함수
+        function getList2(buttonId) {
+
+            pageSort = buttonId;
+
+            $.ajax({ // ajax로 데이터 가져오기
+                method: "GET",
+                url: '/users/mypage/'+userId+'/' + pageSort,
+                dataType: "json",
+                async: false,
+                success: function (d) {
+                    //totalData(총 데이터 수) 구하기
+                    totalData = d.length;
+                    //데이터 대입
+                    dataList = d;
+                    console.log(dataList)
+                }
+            });
+
+            //글 목록 표시 호출 (테이블 생성)
+            displayData2(1, dataPerPage);
+
+            //페이징 표시 호출
+            paging(totalData, dataPerPage, pageCount, 1);
+        }
+
+        function displayData2(currentPage, dataPerPage) {
+
+            let chartHtml = "";
+
+            //Number로 변환하지 않으면 아래에서 +를 할 경우 스트링 결합이 되어버림..
+            currentPage = Number(currentPage);
+            dataPerPage = Number(dataPerPage);
+
+            for (
+                let i = (currentPage - 1) * dataPerPage;
+                i < (currentPage - 1) * dataPerPage + dataPerPage;
+                i++
+            ) {
+                if (i < totalData) {
+                    chartHtml += "<tr><td>"
+                    for(const n of listComponent) {
+                        chartHtml += dataList[i][n] + "</td><td>";
+                    }
+                    if (!dataList[i].reviewed) {
+                        chartHtml += "<button id=\"commentCreateBtn\" class=\"btn del-btn\" onclick=\"location.href='/reviews/write/"+dataList[i].id+"'\">작성</button>"
+                    } else {
+                        chartHtml += "<button id=\"commentCreateBtn\" class=\"btn del-btn\" disabled>작성 완료</button>"
+                    }
+
+                    //chartHtml.replace(/<\/td><td>,$/,'');
+                    chartHtml += "</td></tr>"
+                    //chartHtml += "</td> <a href = \""++" \" ></tr>";
+                } else {
+                    break;
+                }
+            }
+
+            $("#list-title").html(listTitle);
+            $("#list-content").html(chartHtml);
+        }
+
+            //페이징 표시 함수
         function paging(totalData, dataPerPage, pageCount, currentPage) {
             console.log("currentPage : " + currentPage);
 
@@ -298,7 +358,11 @@
                 //페이징 표시 재호출
                 paging(totalData, dataPerPage, pageCount, selectedPage);
                 //글 목록 표시 재호출
-                displayData(selectedPage, dataPerPage);
+                if (pageSort == "trip/finish") {
+                    displayData2(globalCurrentPage, dataPerPage)
+                } else {
+                    displayData(globalCurrentPage, dataPerPage);
+                }
             });
         }
 
@@ -308,7 +372,13 @@
 
             //전역 변수에 담긴 globalCurrent 값을 이용하여 페이지 이동없이 글 표시개수 변경
             paging(totalData, dataPerPage, pageCount, globalCurrentPage);
-            displayData(globalCurrentPage, dataPerPage);
+            if (pageSort == "trip/finish") {
+                console.log(pageSort)
+                displayData2(globalCurrentPage, dataPerPage)
+            } else {
+                console.log(pageSort)
+                displayData(globalCurrentPage, dataPerPage);
+            }
         });
 
     </script>

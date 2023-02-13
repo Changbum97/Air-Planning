@@ -6,17 +6,17 @@
 <div th:replace="fragments/header.html :: header"/>
 <div class="container px-5">
     <div class="row gx-5 justify-content-center">
-        <th:block class="col-lg-6 py-5">
+        <div class="col-lg-6 py-5">
             <form class="form-group" th:object="${board}" id="board">
                 <div>
                     <div class="img-box">
                         <img th:src = "${planner.image}" alt="프로필 이미지" class="medium-img">
                     </div>
+                    <a style="float: right" class="btn btn1" th:href="@{/planners/{plannerId} (plannerId=${planner.id})}">플래너 페이지</a>
                     <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
                     <h6>
-                        <img src="/assets/images/eyes.svg" class="little-img"> 200
-                        <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
-                        <a class="btn btn1" th:href="@{/planners/{plannerId} (plannerId=${planner.id})}">플래너 페이지</a>
+                        <img src="/assets/images/eyes.svg" class="little-img"> [[${board.views}]]
+                        <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> [[${board.likeCnt}]]
                     </h6>
                 </div>
                 <br/>
@@ -71,7 +71,7 @@
             <ul id="pagingul" class="pagination justify-content-center">
                 <!-- 페이징 버튼 -->
             </ul>
-        </th:block>
+        </div>
     </div>
 </div>
 </div>

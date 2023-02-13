@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,6 +25,9 @@ public class Board extends BaseEntity {
     private String content;     // 글 내용
     private String image;       // 이미지 URL
 
+    @ColumnDefault(value = "0")
+    private Integer views;      // 조회수
+
     @Enumerated(EnumType.STRING)
     private Category category;  // 카테고리 (자유게시판, 등업게시판, 포트폴리오 게시판)
 
@@ -31,11 +35,11 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "board", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)   //게시글 삭제시 댓글도 함께 삭제
+    @OneToMany(mappedBy = "board", fetch = FetchType.EAGER, orphanRemoval = true)   //게시글 삭제시 댓글도 함께 삭제
     @OrderBy("id asc") // 댓글 정렬
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "board")
+    @OneToMany(mappedBy = "board", orphanRemoval = true)
     private List<Like> likes;
 
     
@@ -50,6 +54,11 @@ public class Board extends BaseEntity {
         this.title = title;
         this.content = content;
         this.image = image;
+    }
+
+    // 조회수 증가
+    public void addViews() {
+        this.views ++;
     }
 
 }

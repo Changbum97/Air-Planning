@@ -25,6 +25,8 @@ public class Plan extends BaseEntity {
     private String title;
     private String content;
 
+    private boolean isReviewed;
+
     @Enumerated(EnumType.STRING)
     private PlanType planType;
 
@@ -36,6 +38,9 @@ public class Plan extends BaseEntity {
     @JoinColumn(name = "planner_id")
     private Planner planner;
 
+    public void reviewedPlan() {
+        this.isReviewed = true;
+    }
     public void update(String title, String content){
         this.title = title;
         this.content = content;

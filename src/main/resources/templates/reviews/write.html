@@ -10,6 +10,7 @@
             <form class="form-group" th:object="${reviewCreateRequest}" id="reviewCreateRequest">
                 <br/>
                 <div>
+                    <input th:field="*{planId}" th:value="*{planId}" hidden>
                     <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
                 </div>
                 <br/>

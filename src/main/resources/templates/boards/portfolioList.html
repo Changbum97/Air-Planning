@@ -8,7 +8,7 @@
         <div class="row gx-5 justify-content-center">
             <div class="col-lg-8 py-5" align="center">
                 <form class="form-group" style="height: 70px;" th:object="${boardSearchRequest}" th:method="get"
-                      th:action="|@{/boards/list/(searchType=*{searchType}, keyword=*{getKeyword})}|">
+                      th:action="|@{/boards/portfolio/list/(searchType=*{searchType}, keyword=*{getKeyword})}|">
                     <select th:field="*{searchType}" style="height: 40px;">
                         <option th:value="TITLE">제목</option>
                         <option th:value="NICKNAME">작성자</option>
@@ -25,7 +25,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="board : ${list}" th:onclick="|location.href='@{/boards/{boardId} (boardId=${board.id})}'|">
+                    <tr th:each="board : ${list}" th:onclick="|location.href='@{/boards/portfolio/{boardId} (boardId=${board.id})}'|">
                             <td style="width: 45%" th:text="${board.title}"></td>
                             <td style="width: 35%" th:text="${board.nickname}"></td>
                             <td style="width: 20%" th:text="${board.createdAt}"></td>
@@ -33,7 +33,7 @@
                     </tbody>
                 </table>
                 <div align="right" class="py-1">
-                    <button class="btn btn1" type="button" onclick="location.href='/boards/write'">등록</button>
+                    <button class="btn btn1" type="button" onclick="location.href='/boards/portfolio/write'">등록</button>
                 </div>
                 <br/>
                 <ul id = "paging-ul" class="pagination justify-content-center">
@@ -94,7 +94,7 @@
         }
 
         function makeUrl(page) {
-            let url = "/boards/list?page=" + page;
+            let url = "/boards/portfolio/list?page=" + page;
 
             // 검색 햇으면 다음 URL에도 추가
             if(window.location.href.includes("searchType")) {

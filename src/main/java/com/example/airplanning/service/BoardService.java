@@ -3,10 +3,11 @@ package com.example.airplanning.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.example.airplanning.domain.dto.board.BoardCreateRequest;
 import com.example.airplanning.domain.dto.BoardDto;
-import com.example.airplanning.domain.dto.board.BoardModifyRequest;
+import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.entity.Plan;
+import com.example.airplanning.domain.entity.Like;
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.exception.AppException;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
@@ -43,12 +45,12 @@ public class BoardService {
 
 
     @Transactional
-    public BoardDto write(BoardCreateRequest boardCreateRequest, String username) {
+    public BoardDto write(BoardCreateRequest boardCreateRequest, String userName) {
 
-        User user = userRepository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException("게시글 작성 권한이 없습니다."));
-        User userEntity = userRepository.findByUserName(username)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED, String.format("%s not founded", username)));
-        Board savedBoardEntity = boardRepository.save(boardCreateRequest.toEntity(userEntity));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED, String.format("%s not founded", userName)));
+        Board savedBoardEntity = boardRepository.save(boardCreateRequest.toEntity(user));
 
         BoardDto boardDto = BoardDto.builder()
                 .id(savedBoardEntity.getId())
@@ -57,21 +59,34 @@ public class BoardService {
         return boardDto;
     }
 
-    public BoardDto detail(Long id) {
+    @Transactional
+    public BoardDto detail(Long id, Boolean addView) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        if(addView) {
+            board.addViews();
+        }
+
         return BoardDto.of(board);
     }
 
     public Board view(Long id){
         return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
     }
-    
-    public BoardDto rankUpWrite(BoardCreateRequest boardCreateRequest, String userName) {
-        User userEntity = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-        Board board= boardRepository.save(boardCreateRequest.toEntity(userEntity));
 
-        return BoardDto.of(board);
+    @Transactional
+    public void rankUpWrite(BoardCreateRequest boardCreateRequest, String userName) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        Board board = Board.builder()
+                .user(user)
+                .category(Category.RANK_UP)
+                .title(boardCreateRequest.getTitle())
+                .content(boardCreateRequest.getContent())
+                .build();
+
+        boardRepository.save(board);
     }
 
 
@@ -92,7 +107,7 @@ public class BoardService {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
-        if (!Objects.equals(board.getUser().getUserName(),userName)){
+        if (!Objects.equals(board.getUser().getUserName(), user.getUserName())){
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
@@ -105,10 +120,22 @@ public class BoardService {
 
     }
 
-    public Page<BoardDto> boardList(Pageable pageable){
-        Page<Board> board = boardRepository.findAllByCategory(Category.FREE, pageable);
-        Page<BoardDto> boardDtos = BoardDto.toDtoList(board);
-        return boardDtos;
+    public Page<BoardListResponse> boardList(Pageable pageable, String searchType, String keyword){
+        Page<Board> board;
+
+        if(searchType == null) {
+            board = boardRepository.findAllByCategory(Category.FREE, pageable);
+        } else {
+            // 글 제목으로 검색
+            if (searchType.equals("TITLE")) {
+                board = boardRepository.findByCategoryAndTitleContains(Category.FREE, keyword, pageable);
+            }
+            // 작성자 닉네임으로 검색
+            else {
+                board = boardRepository.findByCategoryAndUserNicknameContains(Category.FREE, keyword, pageable);
+            }
+        }
+        return BoardListResponse.toDtoList(board);
     }
 
 //    @Transactional
@@ -138,6 +165,26 @@ public class BoardService {
 //        return likeRepository.countByBoard(id);
 //    }
 
+    // 포트폴리오 리스트
+    public Page<BoardListResponse> portfolioList(Pageable pageable, String searchType, String keyword){
+        Page<Board> board;
+
+        if(searchType == null) {
+            board = boardRepository.findAllByCategory(Category.PORTFOLIO, pageable);
+        } else {
+            // 글 제목으로 검색
+            if (searchType.equals("TITLE")) {
+                board = boardRepository.findByCategoryAndTitleContains(Category.PORTFOLIO, keyword, pageable);
+            }
+            // 작성자 닉네임으로 검색
+            else {
+                board = boardRepository.findByCategoryAndUserNicknameContains(Category.PORTFOLIO, keyword, pageable);
+            }
+        }
+        return BoardListResponse.toDtoList(board);
+    }
+
+
     //포토폴리오 작성 + 자유게시판 작성
     @Transactional
     public Long writeWithFile(BoardCreateRequest req, MultipartFile file, String username, Category category) throws IOException {
@@ -151,7 +198,15 @@ public class BoardService {
             changedFile = uploadFile(file);
         }
 
-        Board board = req.toEntity(user, changedFile, category);
+        //Board board = req.toEntity(user, changedFile, category);
+        Board board = Board.builder()
+                .user(user)
+                .category(Category.PORTFOLIO)
+                .title(req.getTitle())
+                .content(req.getContent())
+                .image(changedFile)
+                .views(0)
+                .build();
         boardRepository.save(board);
 
         return board.getId();
@@ -239,6 +294,58 @@ public class BoardService {
 
     private String generateFileName(MultipartFile file) {
         return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+    }
+
+    public Board update(Long boardId){
+        return boardRepository.findById(boardId).
+                orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+    }
+
+    public BoardDto rankUpdate(BoardModifyRequest modifyRequest, String userName, Long boardId) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        if (!Objects.equals(board.getUser().getUserName(), user.getUserName())) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        board.modify(modifyRequest.getTitle(), modifyRequest.getContent());
+        boardRepository.save(board);
+        return BoardDto.of(board);
+
+    }
+
+    @Transactional
+    public Long rankDelete(Long id, String userName){
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(()->new AppException(ErrorCode.INVALID_PERMISSION));
+        Board board = boardRepository.findById(id)
+                .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        if (board.getUser().getUserName() != user.getUserName()){
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        boardRepository.deleteById(id);
+        return id;
+    }
+
+    // 유저 신고 작성
+    public Board reportWrite(ReportCreateRequest reportCreateRequest, String userName) {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        Board board = boardRepository.save(reportCreateRequest.toEntity(user));
+
+        return Board.builder()
+                .id(board.getId())
+                .category(Category.REPORT)
+                .title(reportCreateRequest.getTitle())
+                .content(reportCreateRequest.getContent())
+                .build();
+
     }
 
 }

@@ -96,6 +96,11 @@
                 alert(message.split("*")[0])
                 location.href = message.split("*")[1]
 
+/*            url:'/api/boards',
+            data:$('#boardCreateRequest').serialize(),
+            success: function (data){
+                console.log(data); //응답 body부분 데이터
+                location.href = '/boards/list';*/
             }
         });
     }

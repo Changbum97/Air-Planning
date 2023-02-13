@@ -1,8 +1,7 @@
 package com.example.airplanning.controller;
 
 import com.example.airplanning.domain.dto.BoardDto;
-import com.example.airplanning.domain.dto.board.BoardCreateRequest;
-import com.example.airplanning.domain.dto.board.BoardModifyRequest;
+import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
 import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
@@ -24,6 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -59,18 +61,51 @@ public class BoardController {
 
     }
 
+    @GetMapping("/list")
+    public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+                            Model model,
+                            @RequestParam(required = false) String searchType,
+                            @RequestParam(required = false) String keyword){
+
+
+        Page<BoardListResponse> boardPage = boardService.boardList(pageable, searchType, keyword);
+        model.addAttribute("list", boardPage);
+        model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
+
+        return "boards/list";
+    }
+
     @GetMapping("/write")
-    public String writeBoard(Model model) {
+    public String writeBoardPage(Model model) {
         model.addAttribute(new BoardCreateRequest());
         return "boards/write";
     }
 
     @GetMapping("/{boardId}")
     public String detailBoard(@PathVariable Long boardId, Model model, Principal principal,
-                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
-        BoardDto boardDto = boardService.detail(boardId);
-        String profile = userService.userProfile(boardDto.getUserName());
+                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                              HttpServletRequest request, HttpServletResponse response){
 
+        Cookie oldCookie = null;
+        Cookie[] cookies = request.getCookies();
+        Boolean addView = true;
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if(cookie.getName().equals("boardView")) {
+                    oldCookie = cookie;
+                    break;
+                }
+            }
+        }
+        if(oldCookie != null && oldCookie.getValue().equals(boardId.toString())) {
+                addView = false;
+        } else {
+            Cookie newCookie = new Cookie("boardView", boardId.toString());
+            newCookie.setMaxAge(60 * 60);   // 한 시간
+            response.addCookie(newCookie);
+        }
+
+        BoardDto boardDto = boardService.detail(boardId, addView);
         model.addAttribute("board", boardDto);
         model.addAttribute("profile", profile);
 
@@ -82,18 +117,16 @@ public class BoardController {
 
         if(principal != null) {
             model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
+
+            // 로그인 유저가 글 작성자라면 수정, 삭제 버튼 출력
+            if(principal.getName().equals(boardDto.getUserName())) {
+                model.addAttribute("isWriter", true);
+            }
+
         } else {
             model.addAttribute("checkLike", false);
         }
         return "boards/detail";
-    }
-
-
-    @GetMapping("/{boardId}/modify")
-    public String modifyBoardPage(@PathVariable Long boardId, Model model){
-        BoardDto board = boardService.detail(boardId);
-        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
-        return "boards/modify";
     }
 
     @ResponseBody
@@ -117,43 +150,56 @@ public class BoardController {
         return "글 수정을 완료했습니다.*/boards/" + boardId;
     }
 
+    @GetMapping("/{boardId}/modify")
+    public String modifyBoardPage(@PathVariable Long boardId, Model model, Principal principal){
+        Board board = boardService.view(boardId);
+        if (!board.getUser().getUserName().equals(principal.getName())) {
+            model.addAttribute("msg", "작성자만 수정가능합니다.");
+            model.addAttribute("nextPage", "/boards/" + boardId);
+            return "error/redirect";
+        }
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+        return "boards/modify";
+    }
+
     // 플래너등급신청
     @GetMapping("/rankUpWrite")
     public String rankUpWrite(Model model) {
         model.addAttribute(new BoardCreateRequest());
-        return "boards/write";
+        return "boards/rankUpWrite";
     }
+
     @ResponseBody
     @PostMapping("/rankUpWrite")
     public String rankUpWrite(BoardCreateRequest createRequest, Principal principal){
-        boardService.write(createRequest, principal.getName());
+        boardService.rankUpWrite(createRequest, principal.getName());
         return "redirect:/boards/rankUp/{boardId}";
     }
 
     // 플래너신청조회
     @GetMapping("/rankUp/{boardId}")
-    public String rankUpDetail(@PathVariable Long boardId, Model model){
+    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model){
         BoardDto boardDto = boardService.rankUpDetail(boardId);
         model.addAttribute("board", boardDto);
-        return "/boards/rankUpDetail";
+        model.addAttribute("userName", principal.getName());
+        return "boards/rankUpDetail";
     }
 
-    @ResponseBody
-    @GetMapping("/{boardId}/delete")
-    public String deleteBoard(@PathVariable Long boardId, Principal principal){
-        Long boardDelete = boardService.delete(principal.getName(), boardId);
-        log.info("delete");
-        return "boards/delete";
-    }
+    // 포트폴리오 리스트
+    @GetMapping("/portfolio/list")
+    public String portfolioList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+                            Model model,
+                            @RequestParam(required = false) String searchType,
+                            @RequestParam(required = false) String keyword){
 
-    @GetMapping("/list")
-    public String listBoard(Pageable pageable, Model model){
-        Page<BoardDto> boardPage = boardService.boardList(pageable);
+        Page<BoardListResponse> boardPage = boardService.portfolioList(pageable, searchType, keyword);
         model.addAttribute("list", boardPage);
-        return "boards/list";
+        model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
+
+        return "boards/portfolioList";
     }
 
-    // 포토폴리오 작성
+    // 포트폴리오 작성
     @GetMapping("/portfolio/write")
     public String portfolioWrite(Model model, Principal principal) {
 
@@ -256,4 +302,42 @@ public class BoardController {
     public String changeLike(@PathVariable Long boardId, Principal principal) {
         return likeService.changeLike(boardId, principal.getName());
     }
+
+    @GetMapping("/rankUp/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, Model model){
+        Board board = boardService.update(boardId);
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+        return "boards/rankUpdate";
+    }
+
+    @PostMapping("/rankUp/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
+        boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
+        model.addAttribute("boardId", boardId);
+        return "redirect:/boards/rankUp/{boardId}";
+    }
+
+    @ResponseBody
+    @GetMapping("/rankUp/delete/{boardId}")
+    public String rankDelete(@PathVariable Long boardId, Principal principal){
+        boardService.rankDelete(boardId, principal.getName());
+        log.info("delete");
+
+        return "";
+    }
+
+    // 유저 신고 작성
+    @GetMapping("/report/write")
+    public String reportWritePage(Model model) {
+        model.addAttribute(new ReportCreateRequest());
+        return "boards/reportWrite";
+    }
+
+    @PostMapping("/report/write")
+    public String reportWrite(ReportCreateRequest reportCreateRequest, Principal principal){
+        boardService.reportWrite(reportCreateRequest, principal.getName());
+        return "redirect:/boards/list";
+    }
+
+
 }

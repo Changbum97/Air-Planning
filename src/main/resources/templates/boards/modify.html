@@ -29,6 +29,7 @@
         <br/>
         <div align="center" class="py-1">
           <button type="button" class="btn btn1" onclick="modify_board()">수정</button>
+          <!--<button type="button" class="btn btn1" onclick="modify()">수정</button>-->
         </div>
         <br/>
       </form>
@@ -133,6 +134,22 @@
     });
   }
 </script>
+<!--  <script th:inline="javascript">
+
+    function modify(){
+      let boardId = [[${boardId}]];
+
+      $.ajax({
+        type : 'PUT',
+        url : '/api/boards/' + boardId,
+        data : $('#boardModifyRequest').serialize(),
+        success: function (){
+          location.href="/boards/" + boardId;
+        }
+      });
+    }
+
+  </script> -->
 
 </body>
 </html>
