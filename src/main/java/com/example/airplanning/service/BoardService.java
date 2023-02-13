@@ -184,6 +184,26 @@ public class BoardService {
 //        return likeRepository.countByBoard(id);
 //    }
 
+    // 포트폴리오 리스트
+    public Page<BoardListResponse> portfolioList(Pageable pageable, String searchType, String keyword){
+        Page<Board> board;
+
+        if(searchType == null) {
+            board = boardRepository.findAllByCategory(Category.PORTFOLIO, pageable);
+        } else {
+            // 글 제목으로 검색
+            if (searchType.equals("TITLE")) {
+                board = boardRepository.findByCategoryAndTitleContains(Category.PORTFOLIO, keyword, pageable);
+            }
+            // 작성자 닉네임으로 검색
+            else {
+                board = boardRepository.findByCategoryAndUserNicknameContains(Category.PORTFOLIO, keyword, pageable);
+            }
+        }
+        return BoardListResponse.toDtoList(board);
+    }
+
+
     //포토폴리오 작성
     @Transactional
     public Long writePortfolio(BoardCreateRequest req, MultipartFile file, String username) throws IOException {
@@ -203,6 +223,7 @@ public class BoardService {
                 .title(req.getTitle())
                 .content(req.getContent())
                 .image(changedFile)
+                .views(0)
                 .build();
 
         boardRepository.save(board);

@@ -144,7 +144,21 @@ public class BoardController {
         return "boards/rankUpDetail";
     }
 
-    // 포토폴리오 작성
+    // 포트폴리오 리스트
+    @GetMapping("/portfolio/list")
+    public String portfolioList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+                            Model model,
+                            @RequestParam(required = false) String searchType,
+                            @RequestParam(required = false) String keyword){
+
+        Page<BoardListResponse> boardPage = boardService.portfolioList(pageable, searchType, keyword);
+        model.addAttribute("list", boardPage);
+        model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
+
+        return "boards/portfolioList";
+    }
+
+    // 포트폴리오 작성
     @GetMapping("/portfolio/write")
     public String portfolioWrite(Model model, Principal principal) {
 
