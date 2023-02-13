@@ -10,7 +10,7 @@
             <form class="form-group" th:object="${board}" id="board">
                 <div>
                     <div class="img-box">
-                        <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
+                        <img th:src="${board.userImage}" alt="프로필 이미지" class="medium-img">
                     </div>
                     <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
                     <h6>
