@@ -7,5 +7,6 @@ import lombok.*;
 public class BoardModifyRequest {
     private String title;
     private String content;
+    private String image;
 }
 

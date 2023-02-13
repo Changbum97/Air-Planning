@@ -28,15 +28,14 @@
                         <textarea rows="10" class="w-100" readonly>[[${board.content}]]
                         </textarea>
                 </div>
+                <button id = "download_file" style="display:none;" type="button" onclick="downloadURI()">Download</button>
                 <div style="float: left" class="py-3">
                     <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
-                    </br>
-                    <button id = "download_file" style="display:none;" type="button" onclick="downloadURI()">Download</button>
                 </div>
                 <div align="right" class="py-1">
                     <th:block th:if="${#authentication.principal.username} == ${board.userName}">
                         <a class="btn btn1" th:href="@{/boards/portfolio/{boardId}/modify (boardId=${boardId})}">수정</a>
-                        <button class="btn btn1" onclick="delete_board()">삭제</button>
+                        <button class="btn btn1" type = "button" onclick="delete_board()">삭제</button>
                     </th:block>
                 </div>
                 <br/>
@@ -93,11 +92,11 @@
 
     window.onload = function() {
 
-        let filename = [[${board.image}]];
-
-        if (filename != null) {
+        let filepath = [[${board.image}]];
+        if (filepath != null) {
+            let filename = filepath.substr(96);
             document.getElementById("download_file").style.display = 'block';
-            $("#download_file").text(filename.split('-')[8]);
+            $("#download_file").text(filename);
         }
 
     }

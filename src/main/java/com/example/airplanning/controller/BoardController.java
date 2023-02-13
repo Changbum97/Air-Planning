@@ -1,17 +1,16 @@
 package com.example.airplanning.controller;
 
+import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
 import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
 import com.example.airplanning.domain.dto.planner.PlannerDetailResponse;
 import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
-import com.example.airplanning.service.BoardService;
-import com.example.airplanning.service.CommentService;
-import com.example.airplanning.service.LikeService;
-import com.example.airplanning.service.PlannerService;
+import com.example.airplanning.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,9 +37,29 @@ import java.security.Principal;
 public class BoardController {
 
     private final BoardService boardService;
+    private final UserService userService;
     private final CommentService commentService;
     private final PlannerService plannerService;
     private final LikeService likeService;
+
+    @ResponseBody
+    @PostMapping("/write")
+    public String writeBoard(@RequestPart(value = "request") BoardCreateRequest req,
+                             @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
+
+        try {
+            boardService.writeWithFile(req, file, principal.getName(), Category.FREE);
+        } catch (AppException e) {
+            if  (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
+                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/write";
+            }
+        } catch (Exception e) {
+            return "error*/";
+        }
+
+        return "글이 등록되었습니다.*/boards/list";
+
+    }
 
     @GetMapping("/list")
     public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
@@ -88,6 +107,7 @@ public class BoardController {
 
         BoardDto boardDto = boardService.detail(boardId, addView);
         model.addAttribute("board", boardDto);
+        model.addAttribute("profile", profile);
 
         Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
         Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
@@ -107,6 +127,27 @@ public class BoardController {
             model.addAttribute("checkLike", false);
         }
         return "boards/detail";
+    }
+
+    @ResponseBody
+    @PostMapping("/{boardId}/modify")
+    public String modifyBoard(@PathVariable Long boardId, @RequestPart(value = "request") BoardModifyRequest req,
+                              @RequestPart(value = "file",required = false) MultipartFile file,  Principal principal, Model model) throws IOException {
+        try {
+            boardService.modify(req, file, principal.getName(), boardId);
+        } catch (AppException e) {
+            if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
+                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/" + boardId;
+            } else if (e.getErrorCode().equals(ErrorCode.BOARD_NOT_FOUND)) {
+                return "게시글이 존재하지 않습니다.*/";
+            } else if (e.getErrorCode().equals(ErrorCode.INVALID_PERMISSION)) { //작성자 수정자 불일치 (혹시 버튼이 아닌 url로 접근시 제한)
+                return "작성자만 수정이 가능합니다.*/boards/" + boardId;
+            }
+        } catch (Exception e){ //알수 없는 error
+            return "error*/";
+        }
+
+        return "글 수정을 완료했습니다.*/boards/" + boardId;
     }
 
     @GetMapping("/{boardId}/modify")
@@ -177,7 +218,7 @@ public class BoardController {
         Long boardId = Long.valueOf(0);
 
         try {
-            boardId = boardService.writePortfolio(req, file, principal.getName());
+            boardId = boardService.writeWithFile(req, file, principal.getName(),Category.PORTFOLIO);
         } catch (AppException e) {
             if  (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
                 return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/portfolio/write";
@@ -217,19 +258,19 @@ public class BoardController {
         PlannerDetailResponse response = plannerService.findByUser(principal.getName());
         BoardDto boardDto = boardService.portfolioDetail(boardId);
         model.addAttribute("planner", response);
-        model.addAttribute(new PortfolioModifyRequest(boardDto.getTitle(), boardDto.getContent(), boardDto.getImage()));
+        model.addAttribute(new BoardModifyRequest(boardDto.getTitle(), boardDto.getContent(), boardDto.getImage()));
         return "boards/portfolioModify";
     }
 
     @ResponseBody
     @PostMapping("portfolio/{boardId}/modify")
-    public String portfolioModify(@PathVariable Long boardId, @RequestPart(value = "request") PortfolioModifyRequest req,
+    public String portfolioModify(@PathVariable Long boardId, @RequestPart(value = "request") BoardModifyRequest req,
                                   @RequestPart(value = "file",required = false) MultipartFile file,  Principal principal, Model model) throws IOException {
 
         log.info(req.getImage());
 
         try {
-            boardService.portfolioModify(req, file, principal.getName(), boardId);
+            boardService.modify(req, file, principal.getName(), boardId);
         } catch (AppException e) {
             if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
                 return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/portfolio/" + boardId;
@@ -242,7 +283,6 @@ public class BoardController {
             return "error*/";
         }
 
-        model.addAttribute("boardId", boardId);
         return "글 수정을 완료했습니다.*/boards/portfolio/" + boardId;
     }
 

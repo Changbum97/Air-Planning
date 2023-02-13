@@ -15,6 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -35,7 +37,7 @@ public class BoardRestController {
     // 수정
     @PutMapping("/{boardId}")
     public Response<String> update(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal){
-        boardService.modify(boardModifyRequest, principal.getName(), boardId);
+        boardService.modify(boardModifyRequest, null, principal.getName(), boardId);
         return Response.success("글 수정이 완료되었습니다.");
     }
 

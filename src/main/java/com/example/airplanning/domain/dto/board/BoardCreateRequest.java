@@ -26,4 +26,14 @@ public class BoardCreateRequest {
                 .views(0)
                 .build();
     }
+
+    public Board toEntity(User user, String image, Category category){
+        return Board.builder()
+                .user(user)
+                .title(this.title)
+                .content(this.content)
+                .image(image)
+                .category(category)
+                .build();
+    }
 }
