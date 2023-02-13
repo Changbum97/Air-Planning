@@ -34,6 +34,8 @@ public class BoardCreateRequest {
                 .content(this.content)
                 .image(image)
                 .category(category)
+                .image(image)
+                .views(0)
                 .build();
     }
 }

@@ -1,6 +1,5 @@
 package com.example.airplanning.controller;
 
-import com.example.airplanning.domain.dto.BoardDto;
 import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
@@ -42,25 +41,6 @@ public class BoardController {
     private final PlannerService plannerService;
     private final LikeService likeService;
 
-    @ResponseBody
-    @PostMapping("/write")
-    public String writeBoard(@RequestPart(value = "request") BoardCreateRequest req,
-                             @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
-
-        try {
-            boardService.writeWithFile(req, file, principal.getName(), Category.FREE);
-        } catch (AppException e) {
-            if  (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
-                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/write";
-            }
-        } catch (Exception e) {
-            return "error*/";
-        }
-
-        return "글이 등록되었습니다.*/boards/list";
-
-    }
-
     @GetMapping("/list")
     public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
                             Model model,
@@ -79,6 +59,25 @@ public class BoardController {
     public String writeBoardPage(Model model) {
         model.addAttribute(new BoardCreateRequest());
         return "boards/write";
+    }
+
+    @ResponseBody
+    @PostMapping("/write")
+    public String writeBoard(@RequestPart(value = "request") BoardCreateRequest req,
+                             @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
+
+        try {
+            boardService.writeWithFile(req, file, principal.getName(), Category.FREE);
+        } catch (AppException e) {
+            if  (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
+                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/write";
+            }
+        } catch (Exception e) {
+            return "error*/";
+        }
+
+        return "글이 등록되었습니다.*/boards/list";
+
     }
 
     @GetMapping("/{boardId}")
@@ -107,7 +106,6 @@ public class BoardController {
 
         BoardDto boardDto = boardService.detail(boardId, addView);
         model.addAttribute("board", boardDto);
-        model.addAttribute("profile", profile);
 
         Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
         Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
@@ -132,7 +130,7 @@ public class BoardController {
     @ResponseBody
     @PostMapping("/{boardId}/modify")
     public String modifyBoard(@PathVariable Long boardId, @RequestPart(value = "request") BoardModifyRequest req,
-                              @RequestPart(value = "file",required = false) MultipartFile file,  Principal principal, Model model) throws IOException {
+                              @RequestPart(value = "file",required = false) MultipartFile file,  Principal principal) {
         try {
             boardService.modify(req, file, principal.getName(), boardId);
         } catch (AppException e) {
@@ -158,7 +156,7 @@ public class BoardController {
             model.addAttribute("nextPage", "/boards/" + boardId);
             return "error/redirect";
         }
-        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
         return "boards/modify";
     }
 
@@ -306,7 +304,7 @@ public class BoardController {
     @GetMapping("/rankUp/update/{boardId}")
     public String rankUpdate(@PathVariable Long boardId, Model model){
         Board board = boardService.update(boardId);
-        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+//        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
         return "boards/rankUpdate";
     }
 
