@@ -1,6 +1,7 @@
 package com.example.airplanning.service;
 
 import com.example.airplanning.domain.dto.review.ReviewCreateRequest;
+import com.example.airplanning.domain.dto.review.ReviewListResponse;
 import com.example.airplanning.domain.dto.review.ReviewUpdateRequest;
 import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.domain.entity.Planner;
@@ -15,6 +16,8 @@ import com.example.airplanning.repository.ReviewRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,21 @@ public class ReviewService {
 
     // 알람 테스트
     private final AlarmService alarmService;
+
+    public Page<ReviewListResponse> reviewList(Pageable pageable, String searchType, String keyword) {
+        Page<Review> reviews;
+
+        if (searchType == null) {
+            reviews = reviewRepository.findAll(pageable);
+        } else {
+            if (searchType.equals("TITLE")) {
+                reviews = reviewRepository.findAllByTitleContains(keyword, pageable);
+            } else {
+                reviews = reviewRepository.findAllByPlannerUserNicknameContains(keyword, pageable);
+            }
+        }
+        return reviews.map(review -> ReviewListResponse.of(review));
+    }
 
 
     @Transactional

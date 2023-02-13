@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-8 py-5" align="center">
+                <form class="form-group" style="height: 70px;" th:object="${reviewSearchRequest}" th:method="get"
+                      th:action="|@{/reviews/list/(searchType=*{searchType}, keyword=*{getKeyword})}|">
+                    <select th:field="*{searchType}" style="height: 40px;">
+                        <option th:value="TITLE">제목</option>
+                        <option th:value="NICKNAME">플래너</option>
+                    </select>
+                    <input type="text" th:field="*{keyword}" placeholder="키워드를 입력해주세요" class="w-50 search-input">
+                    <button class="icon-btn" onclick="search()"><img src="/assets/images/search.svg" class="little-img"></button>
+                </form>
+                <table class="table list-table table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th style="width: 45%">제목</th>
+                            <th style="width: 35%">플래너</th>
+                            <th style="width: 20%">작성일자</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="review : ${list}" th:onclick="|location.href='@{/reviews/{reviewId} (reviewId=${review.id})}'|">
+                            <td style="width: 45%" th:text="${review.title}"></td>
+                            <td style="width: 35%" th:text="${review.pNickname}"></td>
+                            <td style="width: 20%" th:text="${review.createdAt}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br/>
+                <ul id = "paging-ul" class="pagination justify-content-center">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // 화면 호출 시 페이징 버튼 생성 및 출력
+        window.onload = function () {
+            let nowPage = [[${list.getNumber()}]] + 1;
+            let totalPage = [[${list.getTotalPages()}]];
+
+            let firstPage;            // 화면에 출력될 첫 페이지
+
+            for (let i = nowPage ; i >= 1 ; i --) {
+                if(i % 5 == 1) {
+                    firstPage = i;
+                    break;
+                }
+            }
+
+            let lastPage;           // 화면에 출력될 마지막 페이지
+            let nextButton;         // 다음 버튼
+            if (firstPage + 4 >= totalPage) {
+                lastPage = totalPage;
+                nextButton = false;
+            }
+            else {
+                lastPage = firstPage + 4;
+                nextButton = true;
+            }
+
+            let previousButton;     // 이전 버튼
+            if (firstPage == 1) previousButton = false;
+            else previousButton = true;
+
+            // HTML 생성
+            let pageHtml = "";
+            if (previousButton == true) {
+
+                pageHtml += "<li><a class='page-link' href='" + makeUrl(firstPage - 1) +  "' id='prev'> 이전 </a></li>";
+            }
+
+            for (let i = firstPage; i <= lastPage; i++) {
+                if (i == nowPage) {
+                    pageHtml += "<li class='page-item active'><a class= 'page-link'>" + i + "</a></li>";
+                } else {
+                    pageHtml += "<li class='page-item'><a class= 'page-link' href='" + makeUrl(i) + "'>" + i + "</a></li>";
+                }
+            }
+
+            if (nextButton == true) {
+                pageHtml += "<li><a class='page-link' href='" + makeUrl(lastPage + 1) +  "' id='prev'> 다음 </a></li>";
+            }
+
+            $("#paging-ul").html(pageHtml);
+        }
+
+        function makeUrl(page) {
+            let url = "/reviews/list?page=" + page;
+
+            // 검색 햇으면 다음 URL에도 추가
+            if(window.location.href.includes("searchType")) {
+                url += "&searchType=" + [[${reviewSearchRequest.searchType}]];
+                url += "&keyword=" + [[${reviewSearchRequest.keyword}]];
+            }
+
+            return url;
+        }
+
+    </script>
+</body>
+</html>

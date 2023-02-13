@@ -1,12 +1,14 @@
 package com.example.airplanning.controller;
 
 import com.example.airplanning.configuration.login.UserDetail;
-import com.example.airplanning.domain.dto.review.ReviewCreateRequest;
-import com.example.airplanning.domain.dto.review.ReviewDto;
-import com.example.airplanning.domain.dto.review.ReviewUpdateRequest;
+import com.example.airplanning.domain.dto.review.*;
 import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,19 @@ import java.security.Principal;
 public class ReviewController {
 
     private final ReviewService reviewService;
+
+    @GetMapping("/list")
+    public String listReview(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                             Model model,
+                             @RequestParam(required = false) String searchType,
+                             @RequestParam(required = false) String keyword) {
+
+        Page<ReviewListResponse> reviewPage = reviewService.reviewList(pageable, searchType, keyword);
+        model.addAttribute("list", reviewPage);
+        model.addAttribute("reviewSearchRequest", new ReviewSearchRequest(searchType, keyword));
+
+        return "reviews/list";
+    }
 
     @GetMapping("/write/{planId}")
     public String writeReviewPage(Model model, @PathVariable Long planId) {
