@@ -190,7 +190,8 @@ public class BoardController {
 
     // 플래너신청조회
     @GetMapping("/rankUp/{boardId}")
-    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model){
+    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model,
+                               @AuthenticationPrincipal UserDetail userDetail){
         RankUpDetailResponse rankUpDetailResponse = boardService.rankUpDetail(boardId);
         model.addAttribute("board", rankUpDetailResponse);
         model.addAttribute("userName", principal.getName());
