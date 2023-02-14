@@ -3,6 +3,7 @@ package com.example.airplanning.controller;
 import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.plan.PlanCreateRequest;
 import com.example.airplanning.domain.dto.plan.PlanDto;
+import com.example.airplanning.domain.dto.plan.PlanPaymentRequest;
 import com.example.airplanning.domain.dto.plan.PlanUpdateRequest;
 import com.example.airplanning.domain.dto.user.UserDto;
 import com.example.airplanning.domain.entity.Plan;
@@ -45,7 +46,7 @@ public class PlanController {
         PlanDto planDto = planService.detail(planId, principal.getName());
         model.addAttribute("plan", planDto);
         model.addAttribute("userName", principal.getName());
-        log.info(planDto.getUserRole().name());
+ /*       log.info(planDto.getUserRole().name());*/
         return "plans/detail";
     }
 
@@ -90,6 +91,23 @@ public class PlanController {
     public String acceptPlan(@PathVariable Long planId, Principal principal){
         planService.acceptPlan(planId, principal.getName());
         return "redirect:/plans/list";
+    }
+
+    @GetMapping("/{planId}/detail")
+    public String pointDetail(@PathVariable Long planId, Principal principal, Model model) {
+        PlanPaymentRequest paymentRequest = planService.getInfo(principal.getName(), planId);
+
+        model.addAttribute("paymentRequest", paymentRequest);
+        model.addAttribute("userName", principal.getName());
+        return "plans/payment";
+    }
+
+    @PostMapping("/{planId}/payment")
+    public String pointPayment(@PathVariable Long planId, Principal principal){
+
+        PlanPaymentRequest paymentRequest = planService.usedPoint(principal.getName(), planId);
+
+        return "redirect:/plans/"+planId;
     }
 
 }
