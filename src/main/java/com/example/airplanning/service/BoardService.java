@@ -336,11 +336,15 @@ public class BoardService {
         Board board = boardRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
 
-        if (board.getUser().getUserName() != user.getUserName()){
+        if (board.getUser().getUserName() != user.getUserName() && user.getRole() != UserRole.ADMIN){
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
         boardRepository.deleteById(id);
+
+        if (user.getRole() == UserRole.ADMIN) {
+            alarmService.send(board.getUser(), AlarmType.REFUSED_PLANNER, "/", board.getTitle());
+        }
         return id;
     }
 

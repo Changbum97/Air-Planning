@@ -1,5 +1,6 @@
 package com.example.airplanning.controller;
 
+import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
 import com.example.airplanning.domain.dto.comment.CommentDto;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -192,6 +194,7 @@ public class BoardController {
         RankUpDetailResponse rankUpDetailResponse = boardService.rankUpDetail(boardId);
         model.addAttribute("board", rankUpDetailResponse);
         model.addAttribute("userName", principal.getName());
+        model.addAttribute("role", userDetail.getRole());
         return "boards/rankUpDetail";
     }
 
