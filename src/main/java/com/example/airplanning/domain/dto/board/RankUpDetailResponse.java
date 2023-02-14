@@ -23,7 +23,7 @@ public class RankUpDetailResponse {
     private String title;
     private String content;
 
-    public static RankUpDetailResponse of(Board board, Region region) {
+    public static RankUpDetailResponse of(Board board) {
         return RankUpDetailResponse.builder()
                 .id(board.getId())
                 .userName(board.getUser().getUserName())
@@ -31,7 +31,7 @@ public class RankUpDetailResponse {
                 .createdAt(board.getCreatedAt())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .region(region.getRegion1() + " " + region.getRegion2())
+                .region(board.getRegion().getRegion1() + " " + board.getRegion().getRegion2())
                 .build();
     }
 }

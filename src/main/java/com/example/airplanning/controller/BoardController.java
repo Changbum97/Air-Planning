@@ -227,11 +227,30 @@ public class BoardController {
     public String portfolioList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
                             Model model,
                             @RequestParam(required = false) String searchType,
-                            @RequestParam(required = false) String keyword){
+                            @RequestParam(required = false) String keyword,
+                            @RequestParam(required = false) String region1,
+                            @RequestParam(required = false) Long regionId){
 
-        Page<BoardListResponse> boardPage = boardService.portfolioList(pageable, searchType, keyword);
+        System.out.println("=====================");
+        System.out.println("searchType : " + searchType);
+        System.out.println("keyword : " + keyword);
+        System.out.println("region1 : " + region1);
+        System.out.println("region2 : " + regionId);
+        System.out.println("=====================");
+
+        Page<BoardListResponse> boardPage = boardService.portfolioList(pageable, searchType, keyword, region1, regionId);
         model.addAttribute("list", boardPage);
-        model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
+
+        List<Region> regions = regionService.findAll();
+        HashSet<String> region1List = new HashSet<>();
+        for (Region region : regions) {
+            region1List.add(region.getRegion1());
+        }
+
+        model.addAttribute("region1List", region1List);
+        model.addAttribute("regions", regions);
+
+        model.addAttribute("portfolioSearchRequest", new PortfolioSearchRequest(searchType, keyword, region1, regionId));
 
         return "boards/portfolioList";
     }
