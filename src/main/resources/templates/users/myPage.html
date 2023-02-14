@@ -226,7 +226,35 @@
                 i++
             ) {
                 if (i < totalData) {
-                    chartHtml += "<tr><td>"
+                    if (pageSort == "trip/progress") {
+                        chartHtml += "<tr onclick=\"location.href='/plans/"+dataList[i].id+"'\"><td>"
+                    } else if (pageSort == "my/boards") {
+                        if (dataList[i].category == "자유게시판") {
+                            chartHtml += "<tr onclick=\"location.href='/boards/"+dataList[i].id+"'\"><td>"
+                        } else if (dataList[i].category == "등업게시판") {
+                            chartHtml += "<tr onclick=\"location.href='/boards/rankUp/"+dataList[i].id+"'\"><td>"
+                        } else if (dataList[i].category == "신고게시판") {
+                            chartHtml += "<tr onclick=\"location.href='/boards/report/"+dataList[i].id+"'\"><td>"
+                        } else if (dataList[i].category == "포폴게시판") {
+                            chartHtml += "<tr onclick=\"location.href='/boards/portfolio/"+dataList[i].id+"'\"><td>"
+                        }
+                    } else if (pageSort == "my/reviews"){
+                        chartHtml += "<tr onclick=\"location.href='/reviews/"+dataList[i].id+"'\"><td>"
+                    } else if (pageSort == "my/comments") {
+                        if (dataList[i].parentType == "자유게시판") {
+                            chartHtml += "<tr onclick=\"location.href='/boards/"+dataList[i].parentId+"'\"><td>"
+                        } else if (dataList[i].parentType == "리뷰게시판"){
+                            chartHtml += "<tr onclick=\"location.href='/reviews/"+dataList[i].parentId+"'\"><td>"
+                        }
+                    } else if (pageSort == "like/boards") {
+                        chartHtml += "<tr onclick=\"location.href='/boards/"+dataList[i].id+"'\"><td>"
+                    } else if (pageSort == "like/reviews"){
+                        chartHtml += "<tr onclick=\"location.href='/reviews/"+dataList[i].id+"'\"><td>"
+                    } else if (pageSort == "like/planners" ){
+                        chartHtml += "<tr onclick=\"location.href='/planners/"+dataList[i].id+"'\"><td>"
+                    } else {
+                        chartHtml += "<tr><td>"
+                    }
                     for(const n of listComponent) {
                         chartHtml += dataList[i][n] + "</td><td>";
                     }
@@ -281,14 +309,14 @@
                 i++
             ) {
                 if (i < totalData) {
-                    chartHtml += "<tr><td>"
+                    chartHtml += "<tr>"
                     for(const n of listComponent) {
-                        chartHtml += dataList[i][n] + "</td><td>";
+                            chartHtml += "<td onclick=\"location.href='/plans/"+dataList[i].id+"'\">" + dataList[i][n] + "</td>";
                     }
                     if (!dataList[i].reviewed) {
-                        chartHtml += "<button id=\"commentCreateBtn\" class=\"btn del-btn\" onclick=\"location.href='/reviews/write/"+dataList[i].id+"'\">작성</button>"
+                        chartHtml += "<td><button id=\"commentCreateBtn\" class=\"btn del-btn\" onclick=\"location.href='/reviews/write/"+dataList[i].id+"'\">작성</button>"
                     } else {
-                        chartHtml += "<button id=\"commentCreateBtn\" class=\"btn del-btn\" disabled>작성 완료</button>"
+                        chartHtml += "<td><button id=\"commentCreateBtn\" class=\"btn del-btn\" disabled>작성 완료</button>"
                     }
 
                     //chartHtml.replace(/<\/td><td>,$/,'');
