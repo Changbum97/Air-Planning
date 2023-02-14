@@ -23,9 +23,17 @@ public class MyPagePlannerResponse {
     private LocalDateTime createdAt;
 
     public static MyPagePlannerResponse of(Like like) {
+
+        String plannerName ="";
+        if (like.getPlanner().getUser().getNickname().length() <= 10) {
+            plannerName = like.getPlanner().getUser().getNickname();
+        } else {
+            plannerName = like.getPlanner().getUser().getNickname().substring(0,10)+"...";
+        }
+
         return MyPagePlannerResponse.builder()
                 .id(like.getPlanner().getId())
-                .plannerName(like.getPlanner().getUser().getNickname())
+                .plannerName(plannerName)
                 .starMean(String.format("%.2f", (double)like.getPlanner().getStarSum()/(double)like.getPlanner().getReviewCount()))
                 .createdAt(like.getCreatedAt())
                 .build();

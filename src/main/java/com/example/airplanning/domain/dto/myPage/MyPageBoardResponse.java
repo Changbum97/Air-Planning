@@ -21,7 +21,7 @@ public class MyPageBoardResponse {
 
     private Long id; //해당 게시글 id
     private String title; //해당 게시글 제목
-    private Category category;
+    private String category;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
@@ -35,10 +35,20 @@ public class MyPageBoardResponse {
             titleSub = board.getTitle().substring(0,10)+" ...";
         }
 
+        String category = "";
+        if (board.getCategory().name().equals("FREE")) {
+            category = "자유게시판";
+        } else if (board.getCategory().name().equals("RANK_UP")) {
+            category = "등업게시판";
+        } else if (board.getCategory().name().equals("REPORT")) {
+            category = "신고게시판";
+        } else if (board.getCategory().name().equals("PORTFOLIO")) {
+            category = "포폴게시판";
+        }
         return MyPageBoardResponse.builder()
                 .id(board.getId())
                 .title(titleSub)
-                .category(board.getCategory())
+                .category(category)
                 .createdAt(board.getCreatedAt())
                 .build();
     }
@@ -53,10 +63,21 @@ public class MyPageBoardResponse {
             titleSub = like.getBoard().getTitle().substring(0,10)+" ...";
         }
 
+        String category = "";
+        if (like.getBoard().getCategory().name().equals("FREE")) {
+            category = "자유게시판";
+        } else if (like.getBoard().getCategory().name().equals("RANK_UP")) {
+            category = "등업게시판";
+        } else if (like.getBoard().getCategory().name().equals("REPORT")) {
+            category = "신고게시판";
+        } else if (like.getBoard().getCategory().name().equals("PORTFOLIO")) {
+            category = "포폴게시판";
+        }
+
         return MyPageBoardResponse.builder()
                 .id(like.getBoard().getId())
                 .title(titleSub)
-                .category(like.getBoard().getCategory())
+                .category(category)
                 .createdAt(like.getCreatedAt())
                 .build();
     }
