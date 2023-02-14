@@ -364,4 +364,22 @@ public class BoardService {
 
     }
 
+    public Page<BoardListResponse> rankUpList(Pageable pageable, String searchType, String keyword){
+        Page<Board> board;
+
+        if(searchType == null) {
+            board = boardRepository.findAllByCategory(Category.RANK_UP, pageable);
+        } else {
+            // 글 제목으로 검색
+            if (searchType.equals("TITLE")) {
+                board = boardRepository.findByCategoryAndTitleContains(Category.RANK_UP, keyword, pageable);
+            }
+            // 작성자 닉네임으로 검색
+            else {
+                board = boardRepository.findByCategoryAndUserNicknameContains(Category.RANK_UP, keyword, pageable);
+            }
+        }
+        return BoardListResponse.toDtoList(board);
+    }
+
 }
