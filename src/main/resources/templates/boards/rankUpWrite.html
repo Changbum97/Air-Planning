@@ -48,7 +48,7 @@
     function write_board(){
         $.ajax({
             type:'POST',
-            url:'/boards/rankUpWrite',
+            url:'/boards/rankup/write',
             data:$('#rankUpCreateRequest').serialize(),
             success: function (){
                 location.href ="/";

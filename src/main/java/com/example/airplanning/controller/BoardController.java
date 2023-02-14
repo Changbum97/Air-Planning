@@ -166,7 +166,7 @@ public class BoardController {
     }
 
     // 플래너등급신청
-    @GetMapping("/rankUpWrite")
+    @GetMapping("/rankup/write")
     public String rankUpWrite(Model model) {
         model.addAttribute(new RankUpCreateRequest());
 
@@ -182,7 +182,7 @@ public class BoardController {
     }
 
     @ResponseBody
-    @PostMapping("/rankUpWrite")
+    @PostMapping("/rankup/write")
     public String rankUpWrite(RankUpCreateRequest createRequest, Principal principal){
         boardService.rankUpWrite(createRequest, principal.getName());
         return "등급업 신청 성공";
@@ -198,28 +198,7 @@ public class BoardController {
         return "boards/rankUpDetail";
     }
 
-    @GetMapping("/rankUp/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, Model model){
-        Board board = boardService.update(boardId);
-//        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
-        return "boards/rankUpdate";
-    }
 
-    @PostMapping("/rankUp/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
-        boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
-        model.addAttribute("boardId", boardId);
-        return "redirect:/boards/rankUp/{boardId}";
-    }
-
-    @ResponseBody
-    @GetMapping("/rankUp/delete/{boardId}")
-    public String rankDelete(@PathVariable Long boardId, Principal principal){
-        boardService.rankDelete(boardId, principal.getName());
-        log.info("delete");
-
-        return "";
-    }
 
     // 포트폴리오 리스트
     @GetMapping("/portfolio/list")
@@ -368,6 +347,28 @@ public class BoardController {
         return likeService.changeLike(boardId, principal.getName());
     }
 
+    @GetMapping("/rankup/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, Model model){
+        Board board = boardService.update(boardId);
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
+        return "boards/rankUpdate";
+    }
+
+    @PostMapping("/rankup/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
+        boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
+        model.addAttribute("boardId", boardId);
+        return "redirect:/boards/rankup/{boardId}";
+    }
+
+    @ResponseBody
+    @GetMapping("/rankup/delete/{boardId}")
+    public String rankDelete(@PathVariable Long boardId, Principal principal){
+        boardService.delete(principal.getName(), boardId);
+        log.info("delete");
+        return "";
+    }
+
     // 유저 신고 작성
     @GetMapping("/report/write")
     public String reportWritePage(Model model) {
@@ -381,5 +382,18 @@ public class BoardController {
         return "redirect:/boards/list";
     }
 
+    @GetMapping("/rankup/list")
+    public String rankUpList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+                            Model model,
+                            @RequestParam(required = false) String searchType,
+                            @RequestParam(required = false) String keyword){
+
+
+        Page<BoardListResponse> boardPage = boardService.rankUpList(pageable, searchType, keyword);
+        model.addAttribute("list", boardPage);
+        model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
+
+        return "boards/rankUpList";
+    }
 
 }

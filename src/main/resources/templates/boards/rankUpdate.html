@@ -7,7 +7,10 @@
 <div class="container px-5">
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-6 py-5">
-      <form class="form-group" th:action="@{/boards/rankUp/update/{boardId} (boardId=${boardId})}" th:object="${boardModifyRequest}" method="post">
+      <div align="center">
+        <h2>등급신청</h2><br/>
+      </div>
+      <form class="form-group" th:action="@{/boards/rankup/update/{boardId} (boardId=${boardId})}" th:object="${boardModifyRequest}" method="post">
         <br/>
         <div>
           <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
