@@ -40,11 +40,9 @@
                     </th:block>
                 </div>
 
-
-
-                    <div align="right" class="py-1" >
-                        <button type="button" class="btn btn1" th:if="${plan.planType == T(com.example.airplanning.domain.enum_class.PlanType).ACCEPT} and ${plan.userName == userName}">결제</button>
-                    </div>
+                <div align="right" class="py-1" >
+                    <button type="button" class="btn btn1" th:if="${plan.planType == T(com.example.airplanning.domain.enum_class.PlanType).ACCEPT} and ${plan.userName == userName}" th:onclick="|location.href='@{/plans/{planId}/detail (planId=${plan.id})}'|">결제</button>
+                </div>
 
                     <div align="right" class="py-1">
                         <th:block sec:authorize="hasAuthority('PLANNER')" th:if="${plan.planType == T(com.example.airplanning.domain.enum_class.PlanType).WAITING}">
@@ -62,6 +60,11 @@
                             <button type="button" class="btn btn1" onclick="accept_plan()">신청 수락으로 변경</button>
                         </th:block>
                     </div>
+
+                <div align="right" class="py-1" >
+                    <button type="button" class="btn btn1" th:if="${plan.planType == T(com.example.airplanning.domain.enum_class.PlanType).COMPLETE} and ${plan.userName == userName}">채팅</button>
+                </div>
+
 
 
             </form>

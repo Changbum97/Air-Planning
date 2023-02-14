@@ -60,4 +60,14 @@ public class Plan extends BaseEntity {
         this.planType = PlanType.ACCEPT;
     }
 
+    public void completePlan(PlanType planType){
+        if (planType.equals(PlanType.COMPLETE)){
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+        this.planType = PlanType.COMPLETE;
+    }
+
+
+
+
 }
