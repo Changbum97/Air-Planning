@@ -316,21 +316,6 @@ public class BoardService {
 
     }
 
-    @Transactional
-    public Long rankDelete(Long id, String userName){
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(()->new AppException(ErrorCode.INVALID_PERMISSION));
-        Board board = boardRepository.findById(id)
-                .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
-
-        if (board.getUser().getUserName() != user.getUserName()){
-            throw new AppException(ErrorCode.INVALID_PERMISSION);
-        }
-
-        boardRepository.deleteById(id);
-        return id;
-    }
-
     // 유저 신고 작성
     public Board reportWrite(ReportCreateRequest reportCreateRequest, String userName) {
 
@@ -345,6 +330,24 @@ public class BoardService {
                 .content(reportCreateRequest.getContent())
                 .build();
 
+    }
+
+    public Page<BoardListResponse> rankUpList(Pageable pageable, String searchType, String keyword){
+        Page<Board> board;
+
+        if(searchType == null) {
+            board = boardRepository.findAllByCategory(Category.RANK_UP, pageable);
+        } else {
+            // 글 제목으로 검색
+            if (searchType.equals("TITLE")) {
+                board = boardRepository.findByCategoryAndTitleContains(Category.RANK_UP, keyword, pageable);
+            }
+            // 작성자 닉네임으로 검색
+            else {
+                board = boardRepository.findByCategoryAndUserNicknameContains(Category.RANK_UP, keyword, pageable);
+            }
+        }
+        return BoardListResponse.toDtoList(board);
     }
 
 }

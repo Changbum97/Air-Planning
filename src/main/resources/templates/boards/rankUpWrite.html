@@ -7,6 +7,9 @@
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
             <div class="col-lg-6 py-5">
+                <div align="center">
+                    <h2>등급신청</h2><br/>
+                </div>
                 <form class="form-group" th:object="${boardCreateRequest}" id="boardCreateRequest">
                     <br/>
                     <div>
@@ -34,10 +37,11 @@
     function write_board(){
         $.ajax({
             type:'POST',
-            url:'/boards/rankUpWrite',
+            url:'/boards/rankup/write',
             data:$('#boardCreateRequest').serialize(),
             success: function (data){
-                console.log(data); //응답 body부분 데이터
+                console.log(data);
+                location.href = '/boards/rankup/?boardId=' + ${boardId};
             }
         });
     }
