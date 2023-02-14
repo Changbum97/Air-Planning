@@ -33,10 +33,10 @@ public class ChatController {
     // 채팅방 개설
     @ResponseBody
     @PostMapping("/room")
-    public String createChatRoom(@RequestBody CreateChatRoomRequest request) {
+    public Long createChatRoom(@ModelAttribute CreateChatRoomRequest request, Principal principal) {
         // 444 -> principal.getNickname으로 수정
-        Long targetRoomId = chatService.createChatRoom(request, "444");
-        return "redirect:/chat/room/" + targetRoomId;
+        Long targetRoomId = chatService.createChatRoom(request, principal.getName());
+        return targetRoomId;
     }
 
     // 채팅방 리스트 출력
