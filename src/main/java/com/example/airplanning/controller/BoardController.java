@@ -199,28 +199,7 @@ public class BoardController {
         return "boards/rankUpDetail";
     }
 
-    @GetMapping("/rankUp/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, Model model){
-        Board board = boardService.update(boardId);
-//        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
-        return "boards/rankUpdate";
-    }
 
-    @PostMapping("/rankUp/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
-        boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
-        model.addAttribute("boardId", boardId);
-        return "redirect:/boards/rankUp/{boardId}";
-    }
-
-    @ResponseBody
-    @GetMapping("/rankUp/delete/{boardId}")
-    public String rankDelete(@PathVariable Long boardId, Principal principal){
-        boardService.rankDelete(boardId, principal.getName());
-        log.info("delete");
-
-        return "";
-    }
 
     // 포트폴리오 리스트
     @GetMapping("/portfolio/list")
@@ -372,7 +351,7 @@ public class BoardController {
     @GetMapping("/rankup/update/{boardId}")
     public String rankUpdate(@PathVariable Long boardId, Model model){
         Board board = boardService.update(boardId);
-        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
         return "boards/rankUpdate";
     }
 
