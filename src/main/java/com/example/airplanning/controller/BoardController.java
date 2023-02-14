@@ -7,6 +7,7 @@ import com.example.airplanning.domain.dto.comment.CommentDto;
 import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
 import com.example.airplanning.domain.dto.planner.PlannerDetailResponse;
 import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.entity.Region;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
@@ -29,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashSet;
+import java.util.List;
 
 
 @Controller
@@ -42,6 +45,7 @@ public class BoardController {
     private final CommentService commentService;
     private final PlannerService plannerService;
     private final LikeService likeService;
+    private final RegionService regionService;
 
     @GetMapping("/list")
     public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
@@ -164,25 +168,57 @@ public class BoardController {
     // 플래너등급신청
     @GetMapping("/rankUpWrite")
     public String rankUpWrite(Model model) {
-        model.addAttribute(new BoardCreateRequest());
+        model.addAttribute(new RankUpCreateRequest());
+
+        List<Region> regions = regionService.findAll();
+        HashSet<String> region1List = new HashSet<>();
+        for (Region region : regions) {
+            region1List.add(region.getRegion1());
+        }
+
+        model.addAttribute("region1List", region1List);
+        model.addAttribute("regions", regions);
         return "boards/rankUpWrite";
     }
 
     @ResponseBody
     @PostMapping("/rankUpWrite")
-    public String rankUpWrite(BoardCreateRequest createRequest, Principal principal){
+    public String rankUpWrite(RankUpCreateRequest createRequest, Principal principal){
         boardService.rankUpWrite(createRequest, principal.getName());
-        return "redirect:/boards/rankUp/{boardId}";
+        return "등급업 신청 성공";
     }
 
     // 플래너신청조회
     @GetMapping("/rankUp/{boardId}")
-    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model, @AuthenticationPrincipal UserDetail userDetail){
-        BoardDto boardDto = boardService.rankUpDetail(boardId);
-        model.addAttribute("board", boardDto);
+    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model){
+        RankUpDetailResponse rankUpDetailResponse = boardService.rankUpDetail(boardId);
+        model.addAttribute("board", rankUpDetailResponse);
         model.addAttribute("userName", principal.getName());
         model.addAttribute("role", userDetail.getRole());
         return "boards/rankUpDetail";
+    }
+
+    @GetMapping("/rankUp/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, Model model){
+        Board board = boardService.update(boardId);
+//        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+        return "boards/rankUpdate";
+    }
+
+    @PostMapping("/rankUp/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
+        boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
+        model.addAttribute("boardId", boardId);
+        return "redirect:/boards/rankUp/{boardId}";
+    }
+
+    @ResponseBody
+    @GetMapping("/rankUp/delete/{boardId}")
+    public String rankDelete(@PathVariable Long boardId, Principal principal){
+        boardService.rankDelete(boardId, principal.getName());
+        log.info("delete");
+
+        return "";
     }
 
     // 포트폴리오 리스트
@@ -330,29 +366,6 @@ public class BoardController {
     @ResponseBody
     public String changeLike(@PathVariable Long boardId, Principal principal) {
         return likeService.changeLike(boardId, principal.getName());
-    }
-
-    @GetMapping("/rankUp/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, Model model){
-        Board board = boardService.update(boardId);
-//        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
-        return "boards/rankUpdate";
-    }
-
-    @PostMapping("/rankUp/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
-        boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
-        model.addAttribute("boardId", boardId);
-        return "redirect:/boards/rankUp/{boardId}";
-    }
-
-    @ResponseBody
-    @GetMapping("/rankUp/delete/{boardId}")
-    public String rankDelete(@PathVariable Long boardId, Principal principal){
-        boardService.rankDelete(boardId, principal.getName());
-        log.info("delete");
-
-        return "";
     }
 
     // 유저 신고 작성

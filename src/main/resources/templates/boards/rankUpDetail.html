@@ -6,21 +6,24 @@
 <div th:replace="fragments/header.html :: header"/>
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
-            <div class="col-lg-6 py-5">
+            <div class="col-lg-6 py-3">
+                <div align="center">
+                    <h2>플래너 신청</h2><br/>
+                </div>
                 <form class="form-group" th:object="${board}" id="board">
                     <div>
                         <div class="img-box">
                             <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
                         </div>
-                        <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
-                        <h6>
-                            <img src="/assets/images/eyes.svg" class="little-img"> 200
-                            <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
-                        </h6>
+                        <h5 th:text="'작성자 : ' + ${board.nickname}"></h5>
+                        <br/>
                     </div>
                     <br/>
                     <div>
                         <h1>[[${board.title}]]</h1>
+                    </div>
+                    <div>
+                        <h4>자신있는 지역 : [[${board.region}]]</h4>
                     </div>
                     <div>
                         <textarea rows="10" class="w-100" readonly>[[${board.content}]]
