@@ -65,6 +65,10 @@
           output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+" 채팅이 왔습니다.</a>\n" +
                   "<hr class=\"dropdown-divider\">\n" +
                   "</li>\n";
+        } else if (AlarmList[i].type == "REFUSED_PLANNER") {
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+" 플래너 등급 신청이 거절되었습니다.</a>\n" +
+                  "<hr class=\"dropdown-divider\">\n" +
+                  "</li>\n";
         }
       }
       output += "</ul>" +

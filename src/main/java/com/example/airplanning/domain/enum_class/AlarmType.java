@@ -14,7 +14,8 @@ public enum AlarmType {
     REVIEW_ALARM("리뷰가 작성되었습니다."),               // 리뷰가 달렸을 때 -> 플래너에게 알람
     CHANGE_ROLE_ALARM("등급이 변경되었습니다."),          // 등급이 변경 되었을 때 -> 등급변경 대상
     REQUEST_CHANGE_ROLE_ALARM("등급 변경 신청이 발생했습니다."),  // 등급 변경 신청이 왔을 때 ->admin 한명에게 가는걸로..
-    COMMENT_ALARM("댓글이 달렸습니다.");          // 리뷰/게시글에 댓글이 달렸을 때
+    COMMENT_ALARM("댓글이 달렸습니다."),
+    REFUSED_PLANNER("플래너 등급 신청이 거절되었습니다.");          // 리뷰/게시글에 댓글이 달렸을 때
 
     private String message;
 }
