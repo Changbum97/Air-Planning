@@ -4,11 +4,14 @@ import com.example.airplanning.domain.dto.chat.ChatMessageDto;
 import com.example.airplanning.domain.dto.chat.ChatRoomDto;
 import com.example.airplanning.domain.dto.chat.CreateChatRoomRequest;
 import com.example.airplanning.domain.dto.user.UserDto;
+import com.example.airplanning.domain.entity.Alarm;
 import com.example.airplanning.domain.entity.ChatMessage;
 import com.example.airplanning.domain.entity.ChatRoom;
 import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.enum_class.AlarmType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
+import com.example.airplanning.repository.AlarmRepository;
 import com.example.airplanning.repository.ChatMessageRepository;
 import com.example.airplanning.repository.ChatRoomRepository;
 import com.example.airplanning.repository.UserRepository;
@@ -34,6 +37,10 @@ public class ChatService {
     private final SimpMessagingTemplate template;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
+
+    private final AlarmRepository alarmRepository;
+
+    private final AlarmService alarmService;
     private final UserRepository userRepository;
 
     @Transactional
@@ -50,6 +57,28 @@ public class ChatService {
             ChatRoom chatRoom = chatRoomRepository.findById(dto.getRoomId()).get();
             chatRoom.update(saved.getId());
             chatRoomRepository.save(chatRoom);
+
+            // 상대방에게 알림 보내기
+            if (chatRoom.getUser1Id() == saved.getWriterId()) {
+                User received = userRepository.findById(chatRoom.getUser2Id())
+                        .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUNDED));
+                // 이미 채팅 알람이 있으면 지우기
+                Optional<Alarm> alarm = alarmRepository.findByUserAndAlarmType(received, AlarmType.CHATTING_ALARM);
+                if (alarm.isPresent()) {
+                    alarmRepository.delete(alarm.get());
+                }
+                // 보내기
+                alarmService.send(received, AlarmType.CHATTING_ALARM, "/chat/room/"+chatRoom.getId(), saved.getMessage());
+            } else {
+                User received = userRepository.findById(chatRoom.getUser1Id())
+                        .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+                Optional<Alarm> alarm = alarmRepository.findByUserAndAlarmType(received, AlarmType.CHATTING_ALARM);
+                if (alarm.isPresent()) {
+                    alarmRepository.delete(alarm.get());
+                }
+                alarmService.send(received, AlarmType.CHATTING_ALARM, "/chat/room/"+chatRoom.getId(), saved.getMessage());
+            }
 
         } else if(dto.getMessageType().equals("ENTER")) {
             // 입장이라면 본인이 작성하지 않은 글 중 읽지 않은 글들을 불러와 읽었다고 수정
@@ -71,6 +100,7 @@ public class ChatService {
 
         }
         template.convertAndSend("/sub/chat/room" + dto.getRoomId(), dto);
+
     }
 
     @Transactional

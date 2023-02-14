@@ -54,7 +54,7 @@
                   "<hr class=\"dropdown-divider\">\n" +
                   "</li>\n";
         } else if (AlarmList[i].type == "CHANGE_ROLE_ALARM") {
-          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>등급이 변경되었습니다.</a>\n" +
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+"등급이 변경되었습니다.</a>\n" +
                   "<hr class=\"dropdown-divider\">\n" +
                   "</li>\n";
         } else if (AlarmList[i].type == "REQUEST_CHANGE_ROLE_ALARM") {
@@ -62,7 +62,7 @@
                   "<hr class=\"dropdown-divider\">\n" +
                   "</li>\n";
         } else if (AlarmList[i].type == "CHATTING_ALARM") {
-          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>채팅이 왔습니다.</a>\n" +
+          output +="<a class=\"dropdown-item\" onclick='alarmCheck("+AlarmList[i].id+")' href='"+AlarmList[i].targetUrl+"'>"+AlarmList[i].title+" 채팅이 왔습니다.</a>\n" +
                   "<hr class=\"dropdown-divider\">\n" +
                   "</li>\n";
         }

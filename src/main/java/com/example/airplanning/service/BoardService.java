@@ -8,7 +8,9 @@ import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.domain.entity.Like;
 import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.enum_class.AlarmType;
 import com.example.airplanning.domain.enum_class.Category;
+import com.example.airplanning.domain.enum_class.UserRole;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -34,6 +37,8 @@ import java.util.UUID;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+
+    private final AlarmService alarmService;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -63,6 +68,10 @@ public class BoardService {
     public BoardDto detail(Long id, Boolean addView) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
 
+        if (!board.getCategory().name().equals("FREE")) {
+            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
+        }
+
         if(addView) {
             board.addViews();
         }
@@ -85,8 +94,12 @@ public class BoardService {
                 .title(boardCreateRequest.getTitle())
                 .content(boardCreateRequest.getContent())
                 .build();
-
         boardRepository.save(board);
+
+        List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
+        for (User admin : admins) {
+            alarmService.send(admin, AlarmType.REQUEST_CHANGE_ROLE_ALARM, "/boards/rankUp/"+board.getId(), board.getTitle());
+        }
     }
 
 
@@ -94,6 +107,9 @@ public class BoardService {
     public BoardDto rankUpDetail(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        if (!board.getCategory().name().equals("RANK_UP")) {
+            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
+        }
         return BoardDto.of(board);
     }
     
@@ -246,9 +262,18 @@ public class BoardService {
     }
 
     // 포토폴리오 상세 조회
-    public BoardDto portfolioDetail(Long boardId) {
+    @Transactional
+    public BoardDto portfolioDetail(Long boardId, Boolean addView) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        if (!board.getCategory().name().equals("PORTFOLIO")) {
+            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
+        }
+
+        if(addView) {
+            board.addViews();
+        }
         return BoardDto.of(board);
     }
 
