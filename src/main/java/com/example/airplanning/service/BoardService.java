@@ -4,14 +4,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.airplanning.domain.dto.board.*;
-import com.example.airplanning.domain.entity.Board;
-import com.example.airplanning.domain.entity.Plan;
-import com.example.airplanning.domain.entity.Like;
-import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.entity.*;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
+import com.example.airplanning.repository.RegionRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +32,7 @@ import java.util.UUID;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final RegionRepository regionRepository;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -75,15 +74,16 @@ public class BoardService {
     }
 
     @Transactional
-    public void rankUpWrite(BoardCreateRequest boardCreateRequest, String userName) {
+    public void rankUpWrite(RankUpCreateRequest rankUpCreateRequest, String userName) {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
         Board board = Board.builder()
                 .user(user)
                 .category(Category.RANK_UP)
-                .title(boardCreateRequest.getTitle())
-                .content(boardCreateRequest.getContent())
+                .title(rankUpCreateRequest.getTitle())
+                .content(rankUpCreateRequest.getContent())
+                .regionId(rankUpCreateRequest.getRegionId())
                 .build();
 
         boardRepository.save(board);
@@ -91,10 +91,11 @@ public class BoardService {
 
 
     // 플래너신청조회
-    public BoardDto rankUpDetail(Long boardId) {
+    public RankUpDetailResponse rankUpDetail(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-        return BoardDto.of(board);
+        Region region = regionRepository.findById(board.getRegionId()).get();
+        return RankUpDetailResponse.of(board, region);
     }
     
     // 삭제

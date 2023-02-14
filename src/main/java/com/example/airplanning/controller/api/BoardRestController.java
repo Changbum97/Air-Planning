@@ -51,9 +51,8 @@ public class BoardRestController {
     // 플래너 신청 조회
     @GetMapping("/rankUp/{boardId}")
     @Operation(summary = "플래너 신청 조회")
-    public Response<BoardDto> rankUpDetail(@PathVariable Long boardId){
-        BoardDto boardDto = boardService.rankUpDetail(boardId);
-        return Response.success(boardDto);
+    public Response<RankUpDetailResponse> rankUpDetail(@PathVariable Long boardId){
+        return Response.success( boardService.rankUpDetail(boardId));
     }
 
     // 유저 신고 작성
