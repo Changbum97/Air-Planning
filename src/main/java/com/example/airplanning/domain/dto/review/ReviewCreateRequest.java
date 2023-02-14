@@ -21,13 +21,14 @@ public class ReviewCreateRequest {
         this.planId = planId;
     }
 
-    public Review toEntity(User user, Planner planner) {
+    public Review toEntity(User user, Planner planner, String image) {
         return Review.builder()
                 .user(user)
                 .planner(planner)
                 .title(title)
                 .content(content)
                 .star(star)
+                .image(image)
                 .build();
     }
 }

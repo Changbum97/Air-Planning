@@ -50,7 +50,7 @@
     let filepath = [[${boardModifyRequest.image}]];
 
     if (filepath != null && originFile != "changed") {
-      let filename = filepath.substr(filepath.indexOf(filepath.split('-')[8]));
+      let filename = filepath.substring(96);
       document.getElementById("origin-file").style.display = 'block';
       document.getElementById("file-name").innerHTML = filename;
     }

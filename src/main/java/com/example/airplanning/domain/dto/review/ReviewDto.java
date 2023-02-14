@@ -20,8 +20,11 @@ public class ReviewDto {
     private String title;       // 리뷰 제목
     private String content;     // 리뷰 내용
     private LocalDateTime createdAt;
-    private String userName;
+    private String nickName; //작성자 닉네임
+    private String userName; //작성자 아이디
     private String plannerName;
+    private String image;
+    private String userImage;   // 작성자 프로필
 
     public static ReviewDto of(Review review) {
         return ReviewDto.builder()
@@ -31,7 +34,10 @@ public class ReviewDto {
                 .content(review.getContent())
                 .createdAt(review.getCreatedAt())
                 .userName(review.getUser().getUserName())
-                .plannerName("플래너123")
+                .nickName(review.getUser().getNickname())
+                .plannerName(review.getPlanner().getUser().getNickname())
+                .image(review.getImage())
+                .userImage(review.getUser().getImage())
                 .build();
     }
 }

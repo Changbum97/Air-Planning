@@ -38,9 +38,10 @@ public class Review extends BaseEntity{
     @OneToMany(mappedBy = "review")
     private List<Like> likes;
 
-    public void update(ReviewUpdateRequest request) {
+    public void update(ReviewUpdateRequest request, String image) {
         this.title = request.getTitle();
         this.content = request.getContent();
         this.star = request.getStar();
+        this.image = image;
     }
 }

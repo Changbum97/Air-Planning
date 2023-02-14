@@ -13,7 +13,7 @@
                 <form class="form-group">
                     <div>
                         <div class="img-box">
-                            <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
+                            <img th:src="${review.userImage}" alt="프로필 이미지" class="medium-img">
                         </div>
                         <h5>[[${review.userName}]]</h5>
                         <h6>
@@ -43,6 +43,7 @@
                         <textarea rows="10" class="w-100" readonly>[[${review.content}]]
                         </textarea>
                     </div>
+                    <button id = "download_file" style="display:none; max-width: 100%; max-height: 30px; overflow:hidden;" type="button" onclick="downloadURI()">Download</button>
                     <div style="float: left" class="py-3">
                         <span th:text="'작성일 : ' + ${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
                     </div>
@@ -97,6 +98,29 @@
     let userName
     if (loginCheck != "anonymousUser") {
         userName = document.getElementById("userName").innerText;
+    }
+
+    window.onload = function() {
+
+        let filepath = [[${review.image}]];
+        if (filepath != null) {
+            let filename = filepath.substring(96);
+            document.getElementById("download_file").style.display = 'block';
+            $("#download_file").text(filename);
+        }
+
+    }
+
+    function downloadURI() {
+
+        var link = document.createElement("a");
+        link.download = [[${review.image}]].split('-')[8];
+        link.href = [[${review.image}]];
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        delete link;
+
     }
 
     function delete_review() {

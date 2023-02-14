@@ -9,4 +9,5 @@ public class ReviewUpdateRequest {
     private String title;
     private String content;
     private Integer star;
+    private String image;
 }
