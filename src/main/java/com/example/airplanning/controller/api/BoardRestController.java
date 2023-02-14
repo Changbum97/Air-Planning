@@ -5,6 +5,9 @@ import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.board.BoardDto;
 import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.entity.Board;
+import com.example.airplanning.domain.enum_class.Category;
+import com.example.airplanning.exception.AppException;
+import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -24,20 +30,6 @@ import java.security.Principal;
 public class BoardRestController {
 
     private final BoardService boardService;
-
-    // 등록
-    @PostMapping("")
-    public Response<String> writeBoard(BoardCreateRequest createRequest, Principal principal){
-        boardService.write(createRequest, principal.getName());
-        return Response.success("글 등록이 완료되었습니다.");
-    }
-
-    // 수정
-    @PutMapping("/{boardId}")
-    public Response<String> update(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal){
-        boardService.modify(boardModifyRequest, principal.getName(), boardId);
-        return Response.success("글 수정이 완료되었습니다.");
-    }
 
     // 삭제
     @DeleteMapping("/{boardId}")
@@ -59,9 +51,8 @@ public class BoardRestController {
     // 플래너 신청 조회
     @GetMapping("/rankUp/{boardId}")
     @Operation(summary = "플래너 신청 조회")
-    public Response<BoardDto> rankUpDetail(@PathVariable Long boardId){
-        BoardDto boardDto = boardService.rankUpDetail(boardId);
-        return Response.success(boardDto);
+    public Response<RankUpDetailResponse> rankUpDetail(@PathVariable Long boardId){
+        return Response.success( boardService.rankUpDetail(boardId));
     }
 
     // 유저 신고 작성

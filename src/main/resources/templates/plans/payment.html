@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header.html :: head"/>
+
+<!-- iamport.payment.js -->
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+<!-- swal 적용 -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+<div class="container px-5">
+  <div class="row gx-5 justify-content-center">
+    <p></p>
+    <h3>ORDER FORM</h3>
+
+    <table class="table list-table table-hover text-center">
+      <thead>
+      <tr>
+        <th>결제자</th>
+        <th>결제 가격</th>
+        <th>결제 일자</th>
+        <th>플래너</th>
+        <th>결제 후 포인트 잔액</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="paymentRequests : ${paymentRequest}">
+        <td th:text="${paymentRequests.nickname}"></td>
+        <td th:text="${paymentRequests.amount} + 'point'"></td>
+        <td th:text="${paymentRequests.createdAt}"></td>
+        <td th:text="${paymentRequests.plannerName}"></td>
+        <td th:text="${paymentRequests.point} - ${paymentRequests.amount} + 'point'"></td>
+      </tr>
+      </tbody>
+    </table>
+    <br>
+
+  <div style="text-align: right">
+    <button class="btn btn1" onclick="plan_payment()">결제 하기</button>
+  </div>
+
+  </div>
+</div>
+
+<script th:inline="javascript">
+
+  function plan_payment(){
+
+    let planId = [[${planId}]];
+
+    if (confirm("결제 하시겠습니까?")) {
+      $.ajax({
+        type: 'POST',
+        url: '/plans/' + planId + '/payment',
+        /*      data:$('#paymentRequests').serialize(),*/
+        success: function (data) {
+          console.log(data); //응답 body부분 데이터
+          location.replace('/plans/' + planId);
+
+        }
+      });
+    }
+  }
+</script>
+
+</body>
+</html>

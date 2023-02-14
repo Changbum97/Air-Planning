@@ -6,7 +6,10 @@
 <div th:replace="fragments/header.html :: header"/>
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
-            <div class="col-lg-6 py-5">
+            <div class="col-lg-6 py-3">
+                <div align="center">
+                    <h2>자유게시판</h2><br/>
+                </div>
                 <form class="form-group" th:object="${boardCreateRequest}" id="boardCreateRequest">
                     <br/>
                     <div>
@@ -16,10 +19,9 @@
                     <div>
                         <textarea rows="10" class="w-100" placeholder="내용을 입력해주세요" th:field="*{content}"></textarea>
                     </div>
-                    <br/>
-                    <div class="input-group">
-                        <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" multiple="multiple">
-                        <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">사진 추가</button>
+                    <div>
+                        <input type="file" id ="file-input">
+                        <button type="button" id = "input-delete" style="background: none; color:red;" onclick="delete_input()">X</button>
                     </div>
                     <br/>
                     <div align="right" class="py-1">
@@ -31,14 +33,71 @@
         </div>
     </div>
 <script th:inline="javascript">
+
+    let file
+
+    function delete_input() {
+
+        file = null;
+
+        var agent = navigator.userAgent.toLowerCase();
+
+        if ( (navigator.appName == 'Netscape' && navigator.userAgent.search('Trident') != -1) || (agent.indexOf("msie") != -1) ){
+            // ie 일때 input[type=file] init.
+            $("#file-input").replaceWith( $("#file-input").clone(true) );
+        } else {
+            //other browser 일때 input[type=file] init.
+            $("#file-input").val("");
+        }
+
+    }
+
+    $("#file-input").on("change", (e) => {
+
+        let f = e.target.files[0];
+
+        //확장자 체크 (블랙리스트 필터보다는 화이트리스트 추가가 맞다고 한다)
+        let ext = f.name.substr(f.name.lastIndexOf('.')+1).toLowerCase();
+        const acceptType = ['gif','png','jpg','jpeg', 'bmp', 'doc','docx','xls','xlsx','hwp','pdf', 'txt', 'csv', 'ppt'];
+
+        if(acceptType.indexOf(ext) == -1) {
+            alert("업로드 불가능한 확장자 입니다.")
+            delete_input()
+            return;
+        }
+
+        //최대 용량 10MB 초과
+        if (f.size > 10 * 1024 * 1024) {
+            alert("파일은 10MB 이내로 등록 가능합니다.");
+            delete_input()
+            return;
+        }
+
+        file = f;
+
+    });
+
     function write_board(){
+
+        let requestData = {
+            title : $("#title").val(),
+            content : $("#content").val()
+        }
+
+        let formData = new FormData();
+        formData.append("file", file);
+        formData.append("request", new Blob([JSON.stringify(requestData)], {type: "application/json"}));
+
         $.ajax({
             type:'POST',
-            url:'/api/boards',
-            data:$('#boardCreateRequest').serialize(),
-            success: function (data){
-                console.log(data); //응답 body부분 데이터
-                location.href = '/boards/list';
+            url:'/boards/write',
+            data: formData,
+            contentType: false, // 필수 : x-www-form-urlencoded로 파싱되는 것을 방지
+            processData: false,  // 필수: contentType을 false로 줬을 때 QueryString 자동 설정됨. 해제
+            success: function (message) {
+
+                alert(message.split("*")[0])
+                location.href = message.split("*")[1]
             }
         });
     }

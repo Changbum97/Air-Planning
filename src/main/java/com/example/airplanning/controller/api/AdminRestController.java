@@ -7,10 +7,8 @@ import com.example.airplanning.service.AdminService;
 import com.example.airplanning.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.annotation.RequestScope;
 
 
 @RestController
@@ -28,16 +26,17 @@ public class AdminRestController {
     }
 
     // 플래너 등급 신청 수락 버튼
-    @GetMapping("/rankup-accepted/{id}")
-    public ResponseEntity<UserDto> rankUpToPlanner(@PathVariable Long id) {
-        UserDto userDto = adminService.changeRank(id, "PLANNER");
+    @ResponseBody
+    @PostMapping("/rankup-accepted")
+    public ResponseEntity<UserDto> rankUpToPlanner(@RequestParam("userName") String userName, @RequestParam("boardId") Long boardId) {
+        UserDto userDto = adminService.changeRank(userName, "PLANNER", boardId);
         return ResponseEntity.ok().body(userDto);
     }
 
     // 관리자 페이지에서 유저 등급 조절
-    @GetMapping("/rankchange/{id}/{role}")
-    public ResponseEntity<UserDto> changeRank(@PathVariable Long id, String role) {
-        UserDto userDto = adminService.changeRank(id, role);
+    @GetMapping("/rankchange/{userName}/{role}")
+    public ResponseEntity<UserDto> changeRank(@PathVariable String userName, String role) {
+        UserDto userDto = adminService.changeRank(userName, role, 3L);
         return ResponseEntity.ok().body(userDto);
     }
 

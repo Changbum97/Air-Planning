@@ -89,4 +89,8 @@ public class User extends BaseEntity{
     public void updatePoint(Integer point){
         this.point = point;
     }
+
+    public void plusPoint(Integer amount){
+        this.point += amount;
+    }
 }
