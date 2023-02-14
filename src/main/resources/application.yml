@@ -50,8 +50,8 @@ spring:
             scope: profile_nickname, profile_image, account_email, birthday
             client-name: Kakao
             authorization-grant-type: authorization_code
-#            redirect-uri: http://ec2-54-180-115-200.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/kakao
-            redirect-uri: http://localhost:8081/login/oauth2/code/kakao
+            redirect-uri: http://ec2-54-180-115-200.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/kakao
+#            redirect-uri: http://localhost:8081/login/oauth2/code/kakao
             client-authentication-method: POST
         # 소셜 로그인 Provider 설정 ( Naver, Kakao )
         provider:
