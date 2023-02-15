@@ -20,7 +20,7 @@
 
                 <br/>
                 <div align="center" class="py-1">
-                    <button class="btn btn1" onclick="write_plan()">등록</button>
+                    <button type="button" class="btn btn1" onclick="write_plan()">등록</button>
                 </div>
                 <br/>
             </form>
@@ -38,7 +38,7 @@
             data:$('#planCreateRequest').serialize(),
             success: function (data){
                 console.log(data); //응답 body부분 데이터
-                location.href='/planners/'+[[${planCreateRequest.plannerId}]]
+                location.href='/plans/list'
             }
         });
     }
