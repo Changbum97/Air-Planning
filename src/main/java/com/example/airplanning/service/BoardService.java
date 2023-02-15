@@ -84,12 +84,14 @@ public class BoardService {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
+        Region region = regionRepository.findById(rankUpCreateRequest.getRegionId()).get();
+
         Board board = Board.builder()
                 .user(user)
                 .category(Category.RANK_UP)
                 .title(rankUpCreateRequest.getTitle())
                 .content(rankUpCreateRequest.getContent())
-                .regionId(rankUpCreateRequest.getRegionId())
+                .region(region)
                 .build();
         boardRepository.save(board);
 
@@ -104,8 +106,7 @@ public class BoardService {
     public RankUpDetailResponse rankUpDetail(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-        Region region = regionRepository.findById(board.getRegionId()).get();
-        return RankUpDetailResponse.of(board, region);
+        return RankUpDetailResponse.of(board);
     }
     
     // 삭제
@@ -177,19 +178,41 @@ public class BoardService {
 //    }
 
     // 포트폴리오 리스트
-    public Page<BoardListResponse> portfolioList(Pageable pageable, String searchType, String keyword){
+    public Page<BoardListResponse> portfolioList(Pageable pageable, String searchType, String keyword, String region1, Long regionId){
         Page<Board> board;
 
+        System.out.println(region1);
+        System.out.println(regionId);
+
+
         if(searchType == null) {
+            // 검색 X
             board = boardRepository.findAllByCategory(Category.PORTFOLIO, pageable);
         } else {
             // 글 제목으로 검색
             if (searchType.equals("TITLE")) {
-                board = boardRepository.findByCategoryAndTitleContains(Category.PORTFOLIO, keyword, pageable);
+                if (regionId == 998) {
+                    // 지역 검색 X
+                    board = boardRepository.findByCategoryAndTitleContains(Category.PORTFOLIO, keyword, pageable);
+                } else if (regionId == 999) {
+                    // 지역 1로만 검색
+                    board = boardRepository.findByCategoryAndTitleContainsAndRegionRegion1(Category.PORTFOLIO, keyword, region1, pageable);
+                } else {
+                    // 지역 1, 2로 검색
+                    board = boardRepository.findByCategoryAndTitleContainsAndRegionId(Category.PORTFOLIO, keyword, regionId, pageable);
+                }
             }
             // 작성자 닉네임으로 검색
             else {
-                board = boardRepository.findByCategoryAndUserNicknameContains(Category.PORTFOLIO, keyword, pageable);
+                if (regionId == 998) {
+                    board = boardRepository.findByCategoryAndUserNicknameContains(Category.PORTFOLIO, keyword, pageable);
+                } else if (regionId == 999) {
+                    // 지역 1로만 검색
+                    board = boardRepository.findByCategoryAndUserNicknameContainsAndRegionRegion1(Category.PORTFOLIO, keyword, region1, pageable);
+                } else {
+                    // 지역 1, 2로 검색
+                    board = boardRepository.findByCategoryAndUserNicknameContainsAndRegionId(Category.PORTFOLIO, keyword, regionId, pageable);
+                }
             }
         }
         return BoardListResponse.toDtoList(board);

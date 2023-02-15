@@ -16,13 +16,11 @@
                     <img th:src = "${user.image}" class="profile-btn">
                 </div>
                 <div class="py-3">
-                    <h3 class="profile-text" th:utext="${user.nickname}">닉네임</h3>
-                    <h3 class="profile-text" th:utext="${user.role}">등급</h3>
-                    <h3 class="profile-text" th:utext="${user.email}">이메일</h3>
+                    <h3 class="profile-text">닉네임 : [[${user.nickname}]]</h3>
+                    <h3 class="profile-text">등급 : [[${user.role}]]</h3>
+                    <h3 class="profile-text">이메일 : [[${user.email}]]</h3>
                 </div>
-                <br/><br/><br/>
-
-                <h3>리스트?</h3>
+                <br/>
                 <hr/>
                 <ul class="nav nav-tabs">
                     <li class="nav-item">

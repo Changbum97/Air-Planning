@@ -24,8 +24,6 @@ public class Board extends BaseEntity {
     private String title;       // 글 제목
     private String content;     // 글 내용
     private String image;       // 이미지 URL
-    private Long regionId;      // 자신있는 지역
-
     @ColumnDefault(value = "0")
     private Integer views;      // 조회수
 
@@ -43,6 +41,9 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board", orphanRemoval = true)
     private List<Like> likes;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private Region region;
     
     // 수정
     public void modify(String title, String content){

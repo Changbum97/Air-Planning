@@ -12,5 +12,6 @@ import lombok.Setter;
 public class PortfolioSearchRequest {
     private String searchType;
     private String keyword;
+    private String region1;
     private Long regionId;
 }
