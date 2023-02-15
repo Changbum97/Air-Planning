@@ -11,18 +11,18 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @Builder
-public class BoardCreateRequest {
+public class RankUpCreateRequest {
     private String title;
     private String content;
 
-    private Category category;
+    private Long regionId;
 
     public Board toEntity(User user){
         return Board.builder()
                 .user(user)
                 .title(this.title)
                 .content(this.content)
-                .category(Category.FREE)
+                .category(Category.RANK_UP)
                 .views(0)
                 .build();
     }

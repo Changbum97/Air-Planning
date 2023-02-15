@@ -8,12 +8,26 @@
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-6 py-3">
       <div align="center">
-        <h2>자유게시판</h2><br/>
+        <h2>리뷰 게시판</h2><br/>
       </div>
-      <form class="form-group" th:object="${boardModifyRequest}" id="boardModifyRequest">
+      <!-- <form class="form-group" th:object="${reviewUpdateRequest}" id = "reviewUpdateRequest"> -->
+      <form class="form-group" th:action="@{/reviews/{reviewId}/update (reviewId=${reviewId})}" th:object="${reviewUpdateRequest}" method="post">
         <br/>
         <div>
           <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
+        </div>
+        <br/>
+        <div>
+          <h4 class="d-flex">별점 : &nbsp;
+            <div class="star-ratings">
+              <div class="star-ratings-base space-x-2 text-lg" style="position: relative">
+                                <span >★★★★★
+                                    <span class="star-ratings-fill" style="pointer-events: none; position: absolute;">★★★★★</span>
+                                    <input th:field="*{star}" type="range" class="star-input" oninput="drawStar(this)" value="1" step="1" min="1" max="5">
+                                </span>
+              </div>
+            </div>
+          </h4>
         </div>
         <br/>
         <div>
@@ -32,7 +46,6 @@
         <br/>
         <div align="center" class="py-1">
           <button type="button" class="btn btn1" onclick="modify_board()">수정</button>
-          <!--<button type="button" class="btn btn1" onclick="modify()">수정</button>-->
         </div>
         <br/>
       </form>
@@ -47,7 +60,10 @@
 
   window.onload = function() {
 
-    let filepath = [[${boardModifyRequest.image}]];
+    let filepath = [[${reviewUpdateRequest.image}]];
+    let starValue = [[${reviewUpdateRequest.star}]]*20;
+
+    document.getElementsByClassName('star-ratings-fill').item(0).style.width = starValue+'%'
 
     if (filepath != null && originFile != "changed") {
       let filename = filepath.substring(96);
@@ -108,13 +124,18 @@
 
   });
 
+  function drawStar(target) {
+    document.getElementsByClassName('star-ratings-fill').item(0).style.width = `${target.value * 20}%`
+  }
+
   function modify_board(){
 
-    let boardId = [[${boardId}]];
+    let reviewId = [[${reviewId}]];
 
     let requestData = {
       title : $("#title").val(),
       content : $("#content").val(),
+      star : $("#star").val(),
       image : originFile
     }
 
@@ -124,35 +145,17 @@
 
     $.ajax({
       type:'POST',
-      url:'/boards/'+boardId+'/modify',
+      url:'/reviews/'+reviewId+'/update',
       data: formData,
       contentType: false, // 필수 : x-www-form-urlencoded로 파싱되는 것을 방지
       processData: false,  // 필수: contentType을 false로 줬을 때 QueryString 자동 설정됨. 해제
-      success: function (message) {
-
-        alert(message.split("*")[0])
-        location.href = message.split("*")[1]
-
+      success: function () {
+        alert("글 수정을 완료했습니다.")
+        location.href = "/reviews/"+reviewId
       }
     });
   }
+
 </script>
-<!--  <script th:inline="javascript">
-
-    function modify(){
-      let boardId = [[${boardId}]];
-
-      $.ajax({
-        type : 'PUT',
-        url : '/api/boards/' + boardId,
-        data : $('#boardModifyRequest').serialize(),
-        success: function (){
-          location.href="/boards/" + boardId;
-        }
-      });
-    }
-
-  </script> -->
-
 </body>
 </html>

@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments/header.html :: head"/>
 
 <body>
 <div th:replace="fragments/header.html :: header"/>
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
-            <div class="col-lg-6 py-5">
+            <div class="col-lg-6 py-3">
+                <div align="center">
+                    <h2>플래너 신청</h2><br/>
+                </div>
                 <form class="form-group" th:object="${board}" id="board">
                     <div>
                         <div class="img-box">
                             <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
                         </div>
-                        <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
-                        <h6>
-                            <img src="/assets/images/eyes.svg" class="little-img"> 200
-                            <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
-                        </h6>
+                        <h5 th:text="'작성자 : ' + ${board.nickname}"></h5>
+                        <br/>
                     </div>
                     <br/>
                     <div>
                         <h1>[[${board.title}]]</h1>
+                    </div>
+                    <div>
+                        <h4>자신있는 지역 : [[${board.region}]]</h4>
                     </div>
                     <div>
                         <textarea rows="10" class="w-100" readonly>[[${board.content}]]
@@ -31,8 +34,12 @@
                     </div>
                     <div align="right" class="py-1">
                         <th:block th:if="${board.userName == userName}">
-                            <a class="btn btn1" th:href="@{/boards/rankUp/update/{boardId} (boardId=${boardId})}">수정</a>
+                            <a class="btn btn1" th:href="@{/boards/rankup/update/{boardId} (boardId=${boardId})}">수정</a>
                             <button type="button" class="btn btn1" onclick="rankDelete()">삭제</button>
+                        </th:block>
+                        <th:block th:if="${role == 'ADMIN'}">
+                            <button type="button" class="btn btn1" onclick="acceptPlanner()">수락</button>
+                            <button type="button" class="btn btn1" onclick="rankDelete()">거절</button>
                         </th:block>
                     </div>
                     <br/>
@@ -43,6 +50,23 @@
 </div>
 
 <script th:inline="javascript">
+    function acceptPlanner() {
+        let userName = [[${board.userName}]]
+        let boardId = [[${board.id}]]
+        if (confirm("플래너 등급 신청을 수락하시겠습니까?")) {
+            $.ajax({
+                method: 'POST',
+                url: '/api/admin/rankup-accepted',
+                data: {
+                  "userName": userName,
+                  "boardId": boardId
+                },
+                success: function (d) {
+                    location.href="/";
+                }
+            })
+        }
+    }
     function rankDelete() {
 
         let boardId = [[${boardId}]];
@@ -50,12 +74,12 @@
         if (confirm("정말 삭제하시겠습니까 ?")) {
             $.ajax({
                 type : "GET",
-                url : '/boards/rankUp/delete/' + boardId,
+                url : '/boards/rankup/delete/' + boardId,
                 data : {
                     boardId : boardId
                 },
                 success :  function () {
-                    location.href="/boards/rankUp/List"
+                    location.href="/boards/rankup/list"
                 }
             });
         }

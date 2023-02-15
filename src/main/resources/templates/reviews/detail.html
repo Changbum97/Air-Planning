@@ -6,11 +6,14 @@
 <div th:replace="fragments/header.html :: header"/>
     <div class="container px-5">
         <div class="row gx-5 justify-content-center">
-            <div class="col-lg-6 py-5">
+            <div class="col-lg-6 py-3">
+                <div align="center">
+                    <h2>리뷰 게시판</h2><br/>
+                </div>
                 <form class="form-group">
                     <div>
                         <div class="img-box">
-                            <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
+                            <img th:src="${review.userImage}" alt="프로필 이미지" class="medium-img">
                         </div>
                         <h5>[[${review.userName}]]</h5>
                         <h6>
@@ -40,12 +43,15 @@
                         <textarea rows="10" class="w-100" readonly>[[${review.content}]]
                         </textarea>
                     </div>
+                    <button id = "download_file" style="display:none; max-width: 100%; max-height: 30px; overflow:hidden;" type="button" onclick="downloadURI()">Download</button>
                     <div style="float: left" class="py-3">
                         <span th:text="'작성일 : ' + ${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
                     </div>
                     <div align="right" class="py-1">
-                        <button class="btn btn1">수정</button>
-                        <button class="btn btn1">삭제</button>
+                        <th:block th:if="${review.userName == userName}">
+                            <a class="btn btn1" th:href="@{/reviews/{reviewId}/update (reviewId=${reviewId})}">수정</a>
+<!--                            <button class="btn btn1" onclick="delete_review()">삭제</button>-->
+                        </th:block>
                     </div>
                     <br/>
                 </form>
@@ -92,6 +98,45 @@
     let userName
     if (loginCheck != "anonymousUser") {
         userName = document.getElementById("userName").innerText;
+    }
+
+    window.onload = function() {
+
+        let filepath = [[${review.image}]];
+        if (filepath != null) {
+            let filename = filepath.substring(96);
+            document.getElementById("download_file").style.display = 'block';
+            $("#download_file").text(filename);
+        }
+
+    }
+
+    function downloadURI() {
+
+        var link = document.createElement("a");
+        link.download = [[${review.image}]].split('-')[8];
+        link.href = [[${review.image}]];
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        delete link;
+
+    }
+
+    function delete_review() {
+
+        let planId = [[${review.id}]];
+        console.log(planId)
+
+        if (confirm("정말 삭제하시겠습니까?")) {
+            $.ajax({
+                url : '/reviews/'+planId+'/delete',
+                type : "GET",
+                success :  function () {
+                    // location.href="/reviews/list"
+                }
+            });
+        }
     }
 
     function isLogin() {

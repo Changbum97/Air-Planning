@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments/header.html :: head"/>
 
 <body>
@@ -35,7 +35,7 @@
 
                 <div align="center">
                     <button class="btn btn1" style="margin-right: 30px">리뷰 보기</button>
-                    <button class="btn btn1" onclick="location.href='/plans/write'">플랜 신청</button>
+                    <button class="btn btn1" sec:authorize="isAuthenticated()" th:onclick="'location.href=\'/plans/write/'+${planner.getId()}+'\''">플랜 신청</button>
                 </div>
             </div>
         </div>

@@ -22,6 +22,7 @@ public class Planner extends BaseEntity{
     private Integer reviewCount;    // 리뷰 개수
     private Integer starSum;        // 별점 총 합
     private String description;     // 자기 소개
+    private Integer amount;         // 플랜 가격
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

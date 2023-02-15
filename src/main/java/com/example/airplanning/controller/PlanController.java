@@ -1,7 +1,9 @@
 package com.example.airplanning.controller;
 
+import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.plan.PlanCreateRequest;
 import com.example.airplanning.domain.dto.plan.PlanDto;
+import com.example.airplanning.domain.dto.plan.PlanPaymentRequest;
 import com.example.airplanning.domain.dto.plan.PlanUpdateRequest;
 import com.example.airplanning.domain.dto.user.UserDto;
 import com.example.airplanning.domain.entity.Plan;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,20 +26,19 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @Slf4j
 public class PlanController {
-
     private final PlanService planService;
 
-    @GetMapping("/write")
-    public String writePlanPage(Model model){
-        model.addAttribute(new PlanCreateRequest());
+    @GetMapping("/write/{plannerId}")
+    public String writePlanPage(Model model, @AuthenticationPrincipal UserDetail userDetail, @PathVariable Long plannerId){
+        model.addAttribute(new PlanCreateRequest(plannerId));
         return "plans/write";
     }
 
     @ResponseBody
     @PostMapping("")
     public String writePlan(PlanCreateRequest createRequest, Principal principal){
-        planService.create(createRequest, principal.getName());
-        return "redirect:/plans/{planId}";
+        PlanDto planDto = planService.create(createRequest, principal.getName());
+        return "redirect:/plans/"+planDto.getId();
     }
 
     @GetMapping("/{planId}")
@@ -44,7 +46,7 @@ public class PlanController {
         PlanDto planDto = planService.detail(planId, principal.getName());
         model.addAttribute("plan", planDto);
         model.addAttribute("userName", principal.getName());
-        log.info(planDto.getUserRole().name());
+ /*       log.info(planDto.getUserRole().name());*/
         return "plans/detail";
     }
 
@@ -89,6 +91,23 @@ public class PlanController {
     public String acceptPlan(@PathVariable Long planId, Principal principal){
         planService.acceptPlan(planId, principal.getName());
         return "redirect:/plans/list";
+    }
+
+    @GetMapping("/{planId}/detail")
+    public String pointDetail(@PathVariable Long planId, Principal principal, Model model) {
+        PlanPaymentRequest paymentRequest = planService.getInfo(principal.getName(), planId);
+
+        model.addAttribute("paymentRequest", paymentRequest);
+        model.addAttribute("userName", principal.getName());
+        return "plans/payment";
+    }
+
+    @PostMapping("/{planId}/payment")
+    public String pointPayment(@PathVariable Long planId, Principal principal){
+
+        PlanPaymentRequest paymentRequest = planService.usedPoint(principal.getName(), planId);
+
+        return "redirect:/plans/"+planId;
     }
 
 }

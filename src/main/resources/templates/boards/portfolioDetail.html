@@ -6,17 +6,20 @@
 <div th:replace="fragments/header.html :: header"/>
 <div class="container px-5">
     <div class="row gx-5 justify-content-center">
-        <th:block class="col-lg-6 py-5">
+        <div class="col-lg-6 py-3">
+            <div align="center">
+                <h2>포트폴리오</h2><br/>
+            </div>
             <form class="form-group" th:object="${board}" id="board">
                 <div>
                     <div class="img-box">
                         <img th:src = "${planner.image}" alt="프로필 이미지" class="medium-img">
                     </div>
-                    <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
+                    <a style="float: right" class="btn btn1" th:href="@{/planners/{plannerId} (plannerId=${planner.id})}">플래너 페이지</a>
+                    <h5 th:text="'플래너 : ' + ${board.userName}"></h5>
                     <h6>
-                        <img src="/assets/images/eyes.svg" class="little-img"> 200
-                        <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
-                        <a class="btn btn1" th:href="@{/planners/{plannerId} (plannerId=${planner.id})}">플래너 페이지</a>
+                        <img src="/assets/images/eyes.svg" class="little-img"> [[${board.views}]]
+                        <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> [[${board.likeCnt}]]
                     </h6>
                 </div>
                 <br/>
@@ -25,27 +28,28 @@
                     <h5>지역 : [[${planner.region}]]</h5>
                 </div>
                 <div>
-                        <textarea rows="10" class="w-100" readonly>[[${board.content}]]
-                        </textarea>
+                    <textarea rows="10" class="w-100" readonly>[[${board.content}]]
+                    </textarea>
                 </div>
-                <div style="float: left" class="py-3">
-                    <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
-                    </br>
-                    <button id = "download_file" style="display:none;" type="button" onclick="downloadURI()">Download</button>
+
+                <button id = "download_file" style="display:none; max-width: 100%; max-height: 30px; overflow:hidden;" type="button" onclick="downloadURI()">Download</button>
+                <div style="height: 50px">
+                    <div style="float: left" class="py-3">
+                        <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    </div>
+                    <div align="right" class="py-1">
+                        <th:block th:if="${#authentication.principal.username} == ${board.userName}">
+                            <a class="btn btn1" th:href="@{/boards/portfolio/{boardId}/modify (boardId=${boardId})}">수정</a>
+                            <button class="btn btn1" type = "button" onclick="delete_board()">삭제</button>
+                        </th:block>
+                    </div>
                 </div>
-                <div align="right" class="py-1">
-                    <th:block th:if="${#authentication.principal.username} == ${board.userName}">
-                        <a class="btn btn1" th:href="@{/boards/portfolio/{boardId}/modify (boardId=${boardId})}">수정</a>
-                        <button class="btn btn1" onclick="delete_board()">삭제</button>
-                    </th:block>
-                </div>
-                <br/>
             </form>
-            <div>
-                <button class="btn icon-btn">
+            <div align="center" style="margin-top: 10px">
+                <button th:if="${checkLike == false}" class="btn icon-btn" onclick="changeLike()" type="button">
                     <img src="/assets/images/empty-hearts.svg" class="little-img">
                 </button>
-                <button class="btn icon-btn">
+                <button th:if="${checkLike == true}" class="btn icon-btn" onclick="changeLike()" type="button">
                     <img src="/assets/images/fill-hearts.svg" class="little-img">
                 </button>
             </div>
@@ -72,12 +76,23 @@
             <ul id="pagingul" class="pagination justify-content-center">
                 <!-- 페이징 버튼 -->
             </ul>
-        </th:block>
+        </div>
     </div>
 </div>
 </div>
 
 <script th:inline="javascript">
+
+    function changeLike() {
+        $.ajax({
+            type: 'POST',
+            url: '/boards/' + [[${board.id}]] + '/like',
+            success: function (message) {
+                alert(message);
+                location.reload();
+            }
+        });
+    }
 
     let totalData; //총 데이터 수
     let dataPerPage = 10; //한 페이지에 나타낼 글 수
@@ -93,11 +108,11 @@
 
     window.onload = function() {
 
-        let filename = [[${board.image}]];
-
-        if (filename != null) {
+        let filepath = [[${board.image}]];
+        if (filepath != null) {
+            let filename = filepath.substr(96);
             document.getElementById("download_file").style.display = 'block';
-            $("#download_file").text(filename.split('-')[8]);
+            $("#download_file").text(filename);
         }
 
     }

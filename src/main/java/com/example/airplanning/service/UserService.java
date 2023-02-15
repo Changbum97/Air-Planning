@@ -43,6 +43,13 @@ public class UserService {
         return UserDto.of(user);
     }
 
+    public String userProfile(String userName) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        return user.getImage();
+    }
+
     public UserDto join(UserJoinRequest request) {
 
         // userName, nickname 중복 체크

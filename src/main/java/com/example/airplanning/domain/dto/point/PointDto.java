@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Builder
@@ -18,21 +19,19 @@ public class PointDto {
 
     private Long id;
     private Integer amount;
-    private String userName;
+    private String nickName;
     private PointStatus pointStatus;
     private String impUid;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     public static PointDto of(Point point){
         return PointDto.builder()
                 .id(point.getId())
                 .amount(point.getAmount())
-                .userName(point.getUser().getUserName())
+                .nickName(point.getUser().getNickname())
                 .pointStatus(point.getPointStatus())
                 .impUid(point.getImpUid())
-                .createdAt(point.getCreatedAt())
+                .createdAt(point.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .build();
     }
 

@@ -23,6 +23,7 @@ public class MyPagePlanResponse {
     private String title; //플랜 제목
     private Long plannerId; //플래너 id
     private PlanType planType;  //신청 수락 여부(신청 중, 신청 수락, 신청 거절, 여행 완료)
+    private boolean isReviewed;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
@@ -41,6 +42,7 @@ public class MyPagePlanResponse {
                 .title(plan.getTitle())
                 .plannerId(plan.getPlanner().getId())
                 .planType(plan.getPlanType())
+                .isReviewed(plan.isReviewed())
                 .createdAt(plan.getCreatedAt())
                 .build();
     }
