@@ -314,6 +314,18 @@ body, head {
     padding: 30px;
 }
 
+.edit-form {
+    width: 500px;
+    height: fit-content;
+    background-color: white;
+    text-align: center;
+    border-radius: 15px;
+    padding: 30px;
+    box-sizing:border-box;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+
+}
+
 .login-input {
     border: none;
     outline: none;
