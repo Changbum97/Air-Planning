@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments/header.html :: head"/>
 
 <body>
@@ -29,8 +29,7 @@
             <li class="py-1">숨겨진 맛집과 명소가 궁금하신 분</li>
         </ul>
         <br/>
-        <button class="btn btn1">신청 방법</button>
-        <button class="btn btn1">플래너 선택</button>
+        <button class="btn btn1 fw-bold" onclick="location.href='/boards/portfolio/list'">플래너 선택</button>
         <br/>
     </div>
     <div class="col-6 py-5" style="background-color: white; color: black" align="center">
@@ -42,14 +41,16 @@
             <li class="py-1">나만의 맛집이나 명소가 있으신 분</li>
         </ul>
         <br/>
-        <button class="btn btn1">신청 방법</button>
-        <button class="btn btn1">플래너 신청</button>
+        <button class="btn btn1 fw-bold" onclick="move()">플래너 신청</button>
         <br/>
     </div>
 </div>
 
-<br/>
-<br/>
+<script th:inline="javascript">
+    function move() {
+        location.href = [[${nextUrl}]];
+    }
+</script>
 
 </body>
 </html>
