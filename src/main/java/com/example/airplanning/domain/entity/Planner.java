@@ -32,9 +32,9 @@ public class Planner extends BaseEntity{
     @JoinColumn(name = "region_id")
     private Region region;
 
-    @OneToMany(mappedBy = "planner")
+    @OneToMany(mappedBy = "planner", cascade = CascadeType.REMOVE)
     private List<Like> likes;
 
-    @OneToMany(mappedBy = "planner")
+    @OneToMany(mappedBy = "planner", cascade = CascadeType.REMOVE)
     private List<Plan> plans;
 }
