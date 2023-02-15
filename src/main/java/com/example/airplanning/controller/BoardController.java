@@ -183,19 +183,45 @@ public class BoardController {
 
     @ResponseBody
     @PostMapping("/rankup/write")
-    public String rankUpWrite(RankUpCreateRequest createRequest, Principal principal){
-        boardService.rankUpWrite(createRequest, principal.getName());
+    public String rankUpWrite(@RequestPart(value = "request") RankUpCreateRequest createRequest,
+                              @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
+        boardService.rankUpWrite(createRequest, file, principal.getName());
         return "등급업 신청 성공";
     }
 
     // 플래너신청조회
-    @GetMapping("/rankUp/{boardId}")
-    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model, @AuthenticationPrincipal UserDetail userDetail){
+    @GetMapping("/rankup/{boardId}")
+    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model,
+                               @AuthenticationPrincipal UserDetail userDetail){
         RankUpDetailResponse rankUpDetailResponse = boardService.rankUpDetail(boardId);
         model.addAttribute("board", rankUpDetailResponse);
         model.addAttribute("userName", principal.getName());
         model.addAttribute("role", userDetail.getRole());
         return "boards/rankUpDetail";
+    }
+
+    @GetMapping("/rankup/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, Model model){
+        Board board = boardService.update(boardId);
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
+        return "boards/rankUpdate";
+    }
+
+    @PostMapping("/rankup/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, @RequestPart(value = "request") BoardModifyRequest boardModifyRequest,
+                             @RequestPart(value = "file",required = false) MultipartFile file, Principal principal, Model model) throws IOException {
+        boardService.rankUpdate(boardModifyRequest, file, principal.getName(), boardId);
+        model.addAttribute("boardId", boardId);
+        return "redirect:/boards/rankup/{boardId}";
+    }
+
+    @ResponseBody
+    @GetMapping("/rankup/delete/{boardId}")
+    public String rankDelete(@PathVariable Long boardId, Principal principal){
+        boardService.rankDelete(boardId, principal.getName());
+        log.info("delete");
+
+        return "";
     }
 
     // 포트폴리오 리스트

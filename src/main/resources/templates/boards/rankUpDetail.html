@@ -13,7 +13,7 @@
                 <form class="form-group" th:object="${board}" id="board">
                     <div>
                         <div class="img-box">
-                            <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
+                            <img th:src="${board.userImage}" alt="프로필 이미지" class="medium-img">
                         </div>
                         <h5 th:text="'작성자 : ' + ${board.nickname}"></h5>
                         <br/>
@@ -29,6 +29,7 @@
                         <textarea rows="10" class="w-100" readonly>[[${board.content}]]
                         </textarea>
                     </div>
+                    <button id = "download_file" style="display:none; max-width: 100%; max-height: 30px; overflow:hidden;" type="button" onclick="downloadURI()">Download</button>
                     <div style="float: left" class="py-3">
                         <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
                     </div>
@@ -50,6 +51,30 @@
 </div>
 
 <script th:inline="javascript">
+
+    window.onload = function() {
+
+        let filepath = [[${board.image}]];
+        if (filepath != null) {
+            let filename = filepath.substr(96);
+            document.getElementById("download_file").style.display = 'block';
+            $("#download_file").text(filename);
+        }
+
+    }
+
+    function downloadURI() {
+
+        var link = document.createElement("a");
+        link.download = [[${board.image}]].split('-')[8];
+        link.href = [[${board.image}]];
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        delete link;
+
+    }
+
     function acceptPlanner() {
         let userName = [[${board.userName}]]
         let boardId = [[${board.id}]]

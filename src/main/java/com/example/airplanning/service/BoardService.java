@@ -42,10 +42,6 @@ public class BoardService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-//    private final LikeRepository likeRepository;
-//    private final AlarmService alarmRepository;
-
-
     @Transactional
     public BoardDto write(BoardCreateRequest boardCreateRequest, String userName) {
 
@@ -80,9 +76,15 @@ public class BoardService {
     }
 
     @Transactional
-    public void rankUpWrite(RankUpCreateRequest rankUpCreateRequest, String userName) {
+    public void rankUpWrite(RankUpCreateRequest rankUpCreateRequest, MultipartFile file, String userName) throws IOException {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        String changedFile = null;
+
+        if (file != null) {
+            changedFile = uploadFile(file);
+        }
 
         Region region = regionRepository.findById(rankUpCreateRequest.getRegionId()).get();
 
@@ -91,8 +93,10 @@ public class BoardService {
                 .category(Category.RANK_UP)
                 .title(rankUpCreateRequest.getTitle())
                 .content(rankUpCreateRequest.getContent())
+                .image(changedFile)
                 .region(region)
                 .build();
+
         boardRepository.save(board);
 
         List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
@@ -336,7 +340,7 @@ public class BoardService {
                 orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
     }
 
-    public BoardDto rankUpdate(BoardModifyRequest modifyRequest, String userName, Long boardId) {
+    public BoardDto rankUpdate(BoardModifyRequest modifyRequest, MultipartFile file, String userName, Long boardId) throws IOException {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
         Board board = boardRepository.findById(boardId)
@@ -346,7 +350,27 @@ public class BoardService {
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
-        board.modify(modifyRequest.getTitle(), modifyRequest.getContent());
+        String changedFile = null;
+
+        //만약 기존 게시글에 파일이 있던 경우
+        if (board.getImage() !=  null) {
+            if (modifyRequest.getImage().equals("changed")) { //파일 변경시
+                if (file != null) { // 파일을 다른 파일로 교체한 경우
+                    changedFile = uploadFile(file);
+                    deleteFile(board.getImage()); //기존 파일 삭제
+                } else { //파일 삭제한 경우
+                    deleteFile(board.getImage()); //기존 파일 삭제
+                }
+            } else { //파일 변경이 없던 경우
+                changedFile = board.getImage();
+            }
+        } else { //기존 파일이 없던 경우
+            if (file != null) { //새 파일 업로드
+                changedFile = uploadFile(file);
+            }
+        }
+
+        board.modify(modifyRequest.getTitle(), modifyRequest.getContent(), changedFile);
         boardRepository.save(board);
         return BoardDto.of(board);
 
@@ -361,6 +385,10 @@ public class BoardService {
 
         if (board.getUser().getUserName() != user.getUserName() && user.getRole() != UserRole.ADMIN){
             throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        if (board.getImage() != null) {
+            deleteFile(board.getImage());
         }
 
         boardRepository.deleteById(id);
