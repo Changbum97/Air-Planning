@@ -35,6 +35,7 @@ public class MyPageController {
 
         UserDto user = userService.findUser(principal.getName());
 
+
         model.addAttribute("user", user);
 
         return "users/myPage";

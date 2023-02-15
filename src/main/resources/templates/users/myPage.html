@@ -9,7 +9,12 @@
             <div class="col-lg-8 py-5">
                 <div class="d-flex justify-content-between">
                     <h1>마이 페이지</h1>
-                    <button class="btn btn1" th:onclick="|location.href='@{/users/mypage/{userId}/edit (userId=${user.id})}'|">정보 수정</button>
+                    <div>
+                        <th:block th:if="${user.role == 'PLANNER'}">
+                            <button class="btn btn1" th:onclick="|location.href='@{/planners/{plannerId} (plannerId=${user.plannerId})}'|">플레너 페이지</button>
+                        </th:block>
+                        <button class="btn btn1" th:onclick="|location.href='@{/users/mypage/{userId}/edit (userId=${user.id})}'|">정보 수정</button>
+                    </div>
                 </div>
                 <hr/>
                 <div class="img-box">
