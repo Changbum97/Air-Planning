@@ -15,7 +15,7 @@
                     <div class="img-box">
                         <img th:src="${board.userImage}" alt="프로필 이미지" class="medium-img">
                     </div>
-                    <h5 th:text="'작성자 : ' + ${board.userName}"></h5>
+                    <h5 th:text="'작성자 : ' + ${board.nickname}"></h5>
                     <h6>
                         <img src="/assets/images/eyes.svg" class="little-img"> [[${board.views}]]
                         <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> [[${board.likeCnt}]]
