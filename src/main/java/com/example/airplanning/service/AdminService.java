@@ -55,7 +55,7 @@ public class AdminService {
 
         plannerRepository.save(request.toEntity(changedUser, selectedRegion));
 
-        alarmService.send(user, AlarmType.CHANGE_ROLE_ALARM, "/users/mypage/"+user.getId(), "PLANNER");
+        alarmService.send(user, AlarmType.CHANGE_ROLE_ALARM, "/users/mypage", "PLANNER");
 
         Board board = boardRepository.findById(request.getBoardId())
                 .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
@@ -78,7 +78,7 @@ public class AdminService {
                 plannerRepository.delete(planner.get());
         }
 
-        alarmService.send(user, AlarmType.CHANGE_ROLE_ALARM, "/users/mypage/"+user.getId(), role);
+        alarmService.send(user, AlarmType.CHANGE_ROLE_ALARM, "/users/mypage", role);
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));

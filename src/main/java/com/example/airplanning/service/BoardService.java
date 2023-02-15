@@ -102,7 +102,7 @@ public class BoardService {
 
         List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
         for (User admin : admins) {
-            alarmService.send(admin, AlarmType.REQUEST_CHANGE_ROLE_ALARM, "/boards/rankUp/"+board.getId(), board.getTitle());
+            alarmService.send(admin, AlarmType.REQUEST_CHANGE_ROLE_ALARM, "/boards/rankup/"+board.getId(), board.getTitle());
         }
     }
 
@@ -406,6 +406,12 @@ public class BoardService {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
         Board board = boardRepository.save(reportCreateRequest.toEntity(user));
+
+        List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
+        for (User admin : admins) {
+            alarmService.send(admin, AlarmType.REPORT_CREATED, "/boards/report/"+board.getId(), board.getTitle());
+        }
+
 
         return Board.builder()
                 .id(board.getId())
