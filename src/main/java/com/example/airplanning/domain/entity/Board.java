@@ -24,6 +24,8 @@ public class Board extends BaseEntity {
     private String title;       // 글 제목
     private String content;     // 글 내용
     private String image;       // 이미지 URL
+
+    private Integer amount; // 플래너 등급 신청 시 작성한 플랜 가격
     @ColumnDefault(value = "0")
     private Integer views;      // 조회수
 

@@ -28,7 +28,11 @@
                     </div>
                     <br/>
                     <div>
-                        <textarea rows="10" class="w-100" placeholder="내용을 입력해주세요" th:field="*{content}"></textarea>
+                        플랜 가격 : <input type="number" placeholder="플랜 가격을 입력해주세요" th:field="*{amount}" id="amount">
+                    </div>
+                    <br/>
+                    <div>
+                        <textarea rows="10" class="w-100" placeholder="자기 소개를 입력해주세요! 플래너 승급 이후, 자기 소개란에 기재됩니다." th:field="*{content}"></textarea>
                     </div>
                     <br/>
                     <div class="input-group">
@@ -94,13 +98,13 @@
         let requestData = {
             title : $("#title").val(),
             content : $("#content").val(),
-            regionId : $("#regionId").val()
+            regionId : $("#regionId").val(),
+            amount : $("#amount").val()
         }
 
         let formData = new FormData();
         formData.append("file", file);
         formData.append("request", new Blob([JSON.stringify(requestData)], {type: "application/json"}));
-
 
         $.ajax({
             type:'POST',

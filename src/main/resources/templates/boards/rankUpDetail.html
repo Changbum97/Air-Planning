@@ -26,6 +26,9 @@
                         <h4>자신있는 지역 : [[${board.region}]]</h4>
                     </div>
                     <div>
+                        <h4>플랜 가격 : [[${board.amount}]]</h4>
+                    </div>
+                    <div>
                         <textarea rows="10" class="w-100" readonly>[[${board.content}]]
                         </textarea>
                     </div>
@@ -80,6 +83,7 @@
         let region = [[${board.region}]]
         let description = [[${board.content}]]
         let boardId = [[${board.id}]]
+        let amount = [[${board.amount}]]
         if (confirm("플래너 등급 신청을 수락하시겠습니까?")) {
             $.ajax({
                 method: 'POST',
@@ -88,7 +92,8 @@
                   "userName": userName,
                   "description": description,
                   "region": region,
-                  "boardId": boardId
+                  "boardId": boardId,
+                  "amount": amount
                 },
                 success: function (d) {
                     location.href="/";

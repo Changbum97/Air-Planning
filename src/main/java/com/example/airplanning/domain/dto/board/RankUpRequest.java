@@ -13,6 +13,7 @@ public class RankUpRequest {
     private String description;
     private String region;
     private Long boardId;
+    private Integer amount;
 
     public Planner toEntity(User user, Region region) {
 
@@ -20,6 +21,7 @@ public class RankUpRequest {
                 .user(user)
                 .description(this.description)
                 .region(region)
+                .amount(this.amount)
                 .starSum(0)
                 .reviewCount(0)
                 .build();

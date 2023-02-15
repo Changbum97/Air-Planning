@@ -14,6 +14,7 @@ import lombok.*;
 public class RankUpCreateRequest {
     private String title;
     private String content;
+    private Integer amount;
 
     private Long regionId;
 

@@ -95,6 +95,7 @@ public class BoardService {
                 .content(rankUpCreateRequest.getContent())
                 .image(changedFile)
                 .region(region)
+                .amount(rankUpCreateRequest.getAmount())
                 .build();
 
         boardRepository.save(board);
