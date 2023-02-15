@@ -7,7 +7,7 @@
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-4 py-5">
       <form th:method="post" th:action="@{/users/login}" th:object="${userLoginRequest}" class="login-form form-group">
-        <h2 onclick="location.href='/'">로고이미지(홈으로)</h2>
+        <button onclick="location.href='/'" class="btn brand-btn" type="button">Air Planning</button>
         <br/><br/>
         <div>
           <input th:field="*{userName}" type="text" class="w-75 login-input" placeholder="아이디">
@@ -51,7 +51,7 @@
   }
   function find_id() {
     let new_window_width = 400
-    let new_window_height = 600
+    let new_window_height = 400
     let positionX = 50;
     let positionY = 150;
     window.open("/users/find-id", "아이디 찾기", "width=" + new_window_width + ", height=" + new_window_height +
@@ -59,7 +59,7 @@
   }
   function find_pw() {
     let new_window_width = 400
-    let new_window_height = 600
+    let new_window_height = 400
     let positionX = 50;
     let positionY = 150;
     window.open("/users/find-pw", "비밀번호 찾기", "width=" + new_window_width + ", height=" + new_window_height +
