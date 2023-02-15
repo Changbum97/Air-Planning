@@ -34,12 +34,19 @@
                 <br/>
 
                 <div align="center">
-                    <button class="btn btn1" style="margin-right: 30px">리뷰 보기</button>
+                    <button class="btn btn1" style="margin-right: 30px" onclick="toReview()">리뷰 보기</button>
                     <button class="btn btn1" sec:authorize="isAuthenticated()" th:onclick="'location.href=\'/plans/write/'+${planner.getId()}+'\''">플랜 신청</button>
                 </div>
             </div>
         </div>
     </div>
+
+<script th:inline="javascript">
+    function toReview() {
+        location.href="/reviews/list?searchType=NICKNAME&keyword="+[[${planner.nickname}]]
+    }
+
+</script>
 
 </body>
 </html>
