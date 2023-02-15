@@ -27,7 +27,6 @@
                     </h3>
                     <h3 class="profile-text">
                         좋아요 : [[${planner.likeCnt}]]
-
                         <button th:if="${checkLike == false}" class="btn icon-btn" onclick="changeLike()" type="button" style="padding-top: 0px; margin-left: 10px;">
                             <img src="/assets/images/empty-hearts.svg" class="little-img">
                         </button>
@@ -45,19 +44,10 @@
 
                 <div align="center">
                     <button class="btn btn1" style="margin-right: 30px">리뷰 보기</button>
-                    <button class="btn btn1" sec:authorize="isAuthenticated()" th:onclick="'location.href=\'/plans/write/'+${planner.getId()}+'\''">플랜 신청</button>
+                    <button class="btn btn1" sec:authorize="isAuthenticated()" th:onclick="'location.href=\'/plans/write/'+${planner.getId()}+'\''" style="margin-right: 30px">플랜 신청</button>
+                    <button class="btn btn1" th:if="${isWriter==true}"th:onclick="'location.href=\'/planners/'+${planner.getId()}+'/edit\''" >정보 수정</button>
                 </div>
                 <br/>
-
-                <!--<div align="center" style="margin-top: 10px">
-                    <button th:if="${checkLike == false}" class="btn icon-btn" onclick="changeLike()" type="button">
-                        <img src="/assets/images/empty-hearts.svg" class="little-img">
-                    </button>
-                    <button th:if="${checkLike == true}" class="btn icon-btn" onclick="changeLike()" type="button">
-                        <img src="/assets/images/fill-hearts.svg" class="little-img">
-                    </button>
-                </div>
-                <br/>-->
 
                 <!-- 로그인 체크, 로그인 유저 정보-->
                 <div id="loginCheck" sec:authentication="principal" hidden/>

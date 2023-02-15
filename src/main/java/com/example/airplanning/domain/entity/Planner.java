@@ -37,4 +37,9 @@ public class Planner extends BaseEntity{
 
     @OneToMany(mappedBy = "planner", cascade = CascadeType.REMOVE)
     private List<Plan> plans;
+
+    public void edit(String description, Region region) {
+        this.description = description;
+        this.region = region;
+    }
 }
