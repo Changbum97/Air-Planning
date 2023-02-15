@@ -1,16 +1,10 @@
 package com.example.airplanning.service;
 
-import com.example.airplanning.domain.entity.Board;
-import com.example.airplanning.domain.entity.Like;
-import com.example.airplanning.domain.entity.Planner;
-import com.example.airplanning.domain.entity.User;
+import com.example.airplanning.domain.entity.*;
 import com.example.airplanning.domain.enum_class.LikeType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
-import com.example.airplanning.repository.BoardRepository;
-import com.example.airplanning.repository.LikeRepository;
-import com.example.airplanning.repository.PlannerRepository;
-import com.example.airplanning.repository.UserRepository;
+import com.example.airplanning.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +19,7 @@ public class LikeService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final PlannerRepository plannerRepository;
+    private final ReviewRepository reviewRepository;
 
     public Boolean checkLike(Long boardId, String userName) {
         User user = userRepository.findByUserName(userName)
@@ -36,6 +31,12 @@ public class LikeService {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
         return likeRepository.existsByPlannerIdAndUserId(plannerId, user.getId());
+    }
+
+    public Boolean checkReviewLike(Long reviewId, String userName) {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        return likeRepository.existsByReviewIdAndUserId(reviewId, user.getId());
     }
 
     @Transactional
@@ -71,6 +72,22 @@ public class LikeService {
                         .user(user)
                         .likeType(LikeType.PLANNER_LIKE)
                         .planner(planner).build());
+                return "좋아요가 추가되었습니다.";
+            } else {
+                likeRepository.delete(optLike.get());
+                return "좋아요가 취소되었습니다.";
+            }
+        } else if(likeType.equals(LikeType.REVIEW_LIKE)) {
+            Optional<Like> optLike = likeRepository.findByReviewIdAndUserId(id, user.getId());
+
+            // 좋아요가 없으면 좋아요 추가, 있으면 좋아요 삭제
+            if(optLike.isEmpty()) {
+                Review review = reviewRepository.findById(id)
+                        .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+                likeRepository.save(Like.builder()
+                        .user(user)
+                        .likeType(LikeType.REVIEW_LIKE)
+                        .review(review).build());
                 return "좋아요가 추가되었습니다.";
             } else {
                 likeRepository.delete(optLike.get());

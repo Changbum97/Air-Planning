@@ -17,8 +17,8 @@
                         </div>
                         <h5>[[${review.userName}]]</h5>
                         <h6>
-                            <img src="/assets/images/eyes.svg" class="little-img"> 200
-                            <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> 10
+                            <img src="/assets/images/eyes.svg" class="little-img"> [[${review.views}]]
+                            <img src="/assets/images/fill-hearts.svg" class="little-img" style="margin-left: 5px"> [[${review.likeCnt}]]
                         </h6>
                     </div>
                     <br/>
@@ -44,22 +44,23 @@
                         </textarea>
                     </div>
                     <button id = "download_file" style="display:none; max-width: 100%; max-height: 30px; overflow:hidden;" type="button" onclick="downloadURI()">Download</button>
-                    <div style="float: left" class="py-3">
-                        <span th:text="'작성일 : ' + ${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    <div style="height: 50px">
+                        <div style="float: left" class="py-3">
+                            <span th:text="'작성일 : ' + ${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                        </div>
+                        <div align="right" class="py-1">
+                            <th:block th:if="${review.userName == userName}">
+                                <a class="btn btn1" th:href="@{/reviews/{reviewId}/update (reviewId=${reviewId})}">수정</a>
+                                <!--                            <button class="btn btn1" onclick="delete_review()">삭제</button>-->
+                            </th:block>
+                        </div>
                     </div>
-                    <div align="right" class="py-1">
-                        <th:block th:if="${review.userName == userName}">
-                            <a class="btn btn1" th:href="@{/reviews/{reviewId}/update (reviewId=${reviewId})}">수정</a>
-<!--                            <button class="btn btn1" onclick="delete_review()">삭제</button>-->
-                        </th:block>
-                    </div>
-                    <br/>
                 </form>
-                <div>
-                    <button class="btn icon-btn">
+                <div align="center" style="margin-top: 10px">
+                    <button th:if="${checkLike == false}" class="btn icon-btn" onclick="changeLike()" type="button">
                         <img src="/assets/images/empty-hearts.svg" class="little-img">
                     </button>
-                    <button class="btn icon-btn">
+                    <button th:if="${checkLike == true}" class="btn icon-btn" onclick="changeLike()" type="button">
                         <img src="/assets/images/fill-hearts.svg" class="little-img">
                     </button>
                 </div>
@@ -87,6 +88,19 @@
         </div>
     </div>
 <script th:inline="javascript">
+
+    function changeLike() {
+
+        $.ajax({
+            type: 'POST',
+            url: '/reviews/' + [[${review.id}]] + '/like',
+            success: function (message) {
+                alert(message);
+                location.reload();
+            }
+        });
+
+    }
 
     let totalData; //총 데이터 수
     let dataPerPage = 10; //한 페이지에 나타낼 글 수
