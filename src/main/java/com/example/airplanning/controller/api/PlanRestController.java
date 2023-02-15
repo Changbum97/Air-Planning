@@ -49,9 +49,9 @@ public class PlanRestController {
     }
 
     @GetMapping
-    public Response<Page<PlanDto>> planList(@PageableDefault(sort = "createdAt", size = 20, direction = Sort.Direction.DESC) Pageable pageable){
-        Page<PlanDto> planDtos = planService.list(pageable);
-        return Response.success(planDtos);
+    public Response<Page<PlanListResponse>> planList(@PageableDefault(sort = "createdAt", size = 20, direction = Sort.Direction.DESC) Pageable pageable){
+        Page<PlanListResponse> list = planService.list(pageable);
+        return Response.success(list);
     }
 
 }
