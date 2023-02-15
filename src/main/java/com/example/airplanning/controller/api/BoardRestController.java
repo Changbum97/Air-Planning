@@ -92,7 +92,40 @@ public class BoardRestController {
         Board board = boardService.reportWrite(reportCreateRequest, "test");
         return Response.success(new BoardResponse("신고가 완료되었습니다.", board.getId()));
     }
+    
+    
+    // 유저 신고 상세 조회
+    @GetMapping("/reportDetail/{boardId}")
+    public Response<BoardDto> reportDetail(@PathVariable Long boardId) {
+        BoardDto boardDto =  boardService.reportDetail(boardId);
+        return Response.success(boardDto);
+    }
 
+
+    // 유저 신고 수정
+    @PutMapping("/reportModify/{boardId}")
+    public Response<BoardResponse> reportModify(@PathVariable Long boardId, @RequestBody ReportModifyRequest reportModifyRequest, Principal principal){
+        String userName = principal.getName();
+        BoardDto boardDto = boardService.reportModify(reportModifyRequest, "test", boardId);
+        return Response.success(new BoardResponse("신고 수정이 완료되었습니다.", boardDto.getId()));
+    }
+
+
+    // 유저 신고 삭제
+    @DeleteMapping("/reportDelete/{boardId}")
+    public Response<BoardResponse> reportDelete(@PathVariable Long boardId, Principal principal) {
+        String userName = principal.getName();
+        Long deleteReport = boardService.reportDelete("test", boardId);
+        return Response.success(new BoardResponse("신고 삭제가 완료되었습니다.", boardId));
+    }
+
+
+    // 유저 신고 리스트
+    @GetMapping
+    public Response<Page<BoardDto>> reportList(@PageableDefault(sort = "createdAt",size = 20,direction = Sort.Direction.DESC) Pageable pageable){
+        Page<BoardDto> boardDto = boardService.reportList(pageable);
+        return Response.success(boardDto);
+    }
 
 }
 

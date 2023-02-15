@@ -40,10 +40,10 @@ public class BoardController {
     private final LikeService likeService;
 
     @GetMapping("/list")
-    public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+    public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                             Model model,
                             @RequestParam(required = false) String searchType,
-                            @RequestParam(required = false) String keyword){
+                            @RequestParam(required = false) String keyword) {
 
 
         Page<BoardListResponse> boardPage = boardService.boardList(pageable, searchType, keyword);
@@ -61,7 +61,7 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     public String detailBoard(@PathVariable Long boardId, Model model, Principal principal,
-                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         BoardDto boardDto = boardService.detail(boardId);
         model.addAttribute("board", boardDto);
 
@@ -71,7 +71,7 @@ public class BoardController {
         model.addAttribute("commentCreateRequest", new CommentCreateRequest());
         model.addAttribute("commentSize", commentSize.getTotalElements());
 
-        if(principal != null) {
+        if (principal != null) {
             model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
         } else {
             model.addAttribute("checkLike", false);
@@ -81,14 +81,14 @@ public class BoardController {
 
 
     @GetMapping("/{boardId}/modify")
-    public String modifyBoardPage(@PathVariable Long boardId, Model model){
+    public String modifyBoardPage(@PathVariable Long boardId, Model model) {
         Board board = boardService.view(boardId);
         model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
         return "boards/modify";
     }
 
     @PostMapping("/{boardId}/modify")
-    public String modifyBoard(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
+    public String modifyBoard(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model) {
         boardService.modify(boardModifyRequest, principal.getName(), boardId);
         model.addAttribute("boardId", boardId);
         return "redirect:/boards/{boardId}";
@@ -103,14 +103,14 @@ public class BoardController {
 
     @ResponseBody
     @PostMapping("/rankUpWrite")
-    public String rankUpWrite(BoardCreateRequest createRequest, Principal principal){
+    public String rankUpWrite(BoardCreateRequest createRequest, Principal principal) {
         boardService.rankUpWrite(createRequest, principal.getName());
         return "redirect:/boards/rankUp/{boardId}";
     }
 
     // 플래너신청조회
     @GetMapping("/rankUp/{boardId}")
-    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model){
+    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model) {
         BoardDto boardDto = boardService.rankUpDetail(boardId);
         model.addAttribute("board", boardDto);
         model.addAttribute("userName", principal.getName());
@@ -119,7 +119,7 @@ public class BoardController {
 
     @ResponseBody
     @GetMapping("/{boardId}/delete")
-    public String deleteBoard(@PathVariable Long boardId, Principal principal){
+    public String deleteBoard(@PathVariable Long boardId, Principal principal) {
         Long boardDelete = boardService.delete(principal.getName(), boardId);
         log.info("delete");
         return "boards/delete";
@@ -130,7 +130,7 @@ public class BoardController {
     public String portfolioWrite(Model model, Principal principal) {
 
         PlannerDetailResponse response = plannerService.findByUser(principal.getName());
-        
+
         model.addAttribute(new BoardCreateRequest());
         model.addAttribute("planner", response);
         return "boards/portfolioWrite";
@@ -139,21 +139,21 @@ public class BoardController {
     @ResponseBody
     @PostMapping("/portfolio/write")
     public String portfolioWrite(@RequestPart(value = "request") BoardCreateRequest req,
-                                 @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
+                                 @RequestPart(value = "file", required = false) MultipartFile file, Principal principal) throws IOException {
 
         Long boardId = Long.valueOf(0);
 
         try {
             boardId = boardService.writePortfolio(req, file, principal.getName());
         } catch (AppException e) {
-            if  (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
+            if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
                 return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/portfolio/write";
             }
         } catch (Exception e) {
             return "error*/";
         }
 
-        return "글이 등록되었습니다.*/boards/portfolio/"+boardId;
+        return "글이 등록되었습니다.*/boards/portfolio/" + boardId;
     }
 
     //포토폴리오 상세
@@ -179,7 +179,7 @@ public class BoardController {
 
     //포토폴리오 게시글 수정
     @GetMapping("portfolio/{boardId}/modify")
-    public String portfolioModify(@PathVariable Long boardId, Model model, Principal principal){
+    public String portfolioModify(@PathVariable Long boardId, Model model, Principal principal) {
 
         PlannerDetailResponse response = plannerService.findByUser(principal.getName());
         BoardDto boardDto = boardService.portfolioDetail(boardId);
@@ -191,7 +191,7 @@ public class BoardController {
     @ResponseBody
     @PostMapping("portfolio/{boardId}/modify")
     public String portfolioModify(@PathVariable Long boardId, @RequestPart(value = "request") PortfolioModifyRequest req,
-                                  @RequestPart(value = "file",required = false) MultipartFile file,  Principal principal, Model model) throws IOException {
+                                  @RequestPart(value = "file", required = false) MultipartFile file, Principal principal, Model model) throws IOException {
 
         log.info(req.getImage());
 
@@ -205,7 +205,7 @@ public class BoardController {
             } else if (e.getErrorCode().equals(ErrorCode.INVALID_PERMISSION)) { //작성자 수정자 불일치 (혹시 버튼이 아닌 url로 접근시 제한)
                 return "작성자만 수정이 가능합니다.*/boards/portfolio/" + boardId;
             }
-        } catch (Exception e){ //알수 없는 error
+        } catch (Exception e) { //알수 없는 error
             return "error*/";
         }
 
@@ -216,7 +216,7 @@ public class BoardController {
     //포토폴리오 게시글 삭제
     @ResponseBody
     @GetMapping("portfolio/{boardId}/delete")
-    public String portfolioDelete(@PathVariable Long boardId, Principal principal){
+    public String portfolioDelete(@PathVariable Long boardId, Principal principal) {
 
         boardService.delete(principal.getName(), boardId);
         log.info("delete");
@@ -231,14 +231,14 @@ public class BoardController {
     }
 
     @GetMapping("/rankUp/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, Model model){
+    public String rankUpdate(@PathVariable Long boardId, Model model) {
         Board board = boardService.update(boardId);
         model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
         return "boards/rankUpdate";
     }
 
     @PostMapping("/rankUp/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
+    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model) {
         boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
         model.addAttribute("boardId", boardId);
         return "redirect:/boards/rankUp/{boardId}";
@@ -246,7 +246,7 @@ public class BoardController {
 
     @ResponseBody
     @GetMapping("/rankUp/delete/{boardId}")
-    public String rankDelete(@PathVariable Long boardId, Principal principal){
+    public String rankDelete(@PathVariable Long boardId, Principal principal) {
         boardService.rankDelete(boardId, principal.getName());
         log.info("delete");
 
@@ -262,9 +262,54 @@ public class BoardController {
 
     @PostMapping("/report/write")
     public String reportWrite(ReportCreateRequest reportCreateRequest, Principal principal){
+        System.out.println(reportCreateRequest.getTitle() + reportCreateRequest.getContent());
         boardService.reportWrite(reportCreateRequest, principal.getName());
-        return "redirect:/boards/list";
+        return "redirect:/boards/report/list";
     }
 
 
+
+    // 유저 신고 상세 조회
+    @GetMapping("/report/{boardId}")
+    public String reportDetail(@PathVariable Long boardId, Model model) {
+        BoardDto boardDto = boardService.detail(boardId);
+        model.addAttribute("board", boardDto);
+        return "boards/reportDetail";
+    }
+
+
+
+    // 유저 신고 수정
+    @GetMapping("/report/{boardId}/modify")
+    public String reportModifyPage(@PathVariable Long boardId, Model model) {
+        Board board = boardService.reportView(boardId);
+        model.addAttribute(new ReportModifyRequest(board.getTitle(), board.getContent()));
+        return "boards/reportModify";
+    }
+
+    @PostMapping("/report/{boardId}/modify")
+    public String reportModify(@PathVariable Long boardId, ReportModifyRequest reportModifyRequest, Principal principal, Model model) {
+        boardService.reportModify(reportModifyRequest, principal.getName(), boardId);
+        model.addAttribute("boardId", boardId);
+        return "redirect:/boards/{boardId}";
+    }
+
+
+
+    // 유저 신고 삭제
+    @ResponseBody
+    @GetMapping("/report/{boardId}/delete")
+    public String reportDelete(@PathVariable Long boardId, Principal principal) {
+        Long reportDelete = boardService.reportDelete(principal.getName(), boardId);
+        return "redirect:/boards/report/list";
+    }
+
+
+    // 유저 신고 리스트
+    @GetMapping("/report/list")
+    public String reportList(Pageable pageable, Model model){
+        Page<BoardDto> reportPage = boardService.reportList(pageable);
+        model.addAttribute("list", reportPage);
+        return "boards/reportList";
+    }
 }

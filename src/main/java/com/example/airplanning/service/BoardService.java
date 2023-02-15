@@ -340,4 +340,70 @@ public class BoardService {
 
     }
 
+
+    // 유저 신고 상세 조회
+    public BoardDto reportDetail(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        return BoardDto.of(board);
+    }
+
+
+    // 유저 신고 수정
+    public BoardDto reportModify(ReportModifyRequest reportModifyRequest, String userName, Long id) {
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        if (!Objects.equals(board.getUser().getUserName(), user.getUserName())) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        board.modify(reportModifyRequest.getTitle(), reportModifyRequest.getContent());
+        boardRepository.save(board);
+        return BoardDto.of(board);
+
+    }
+
+
+
+    // 유저 신고 삭제
+    @Transactional
+    public Long reportDelete(String userName, Long id) {
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        if (!Objects.equals(board.getUser().getUserName(),userName)){
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        if (board.getImage() != null) {
+            deleteFile(board.getImage());
+        }
+
+        boardRepository.deleteById(id);
+        return id;
+
+    }
+
+
+    
+    // 유저 신고 리스트
+    public Page<BoardDto> reportList(Pageable pageable){
+        Page<Board> board = boardRepository.findAllByCategory(Category.REPORT, pageable);
+        Page<BoardDto> boardDto = BoardDto.toDtoList(board);
+        return boardDto;
+    }
+
+    public Board reportView(Long id){
+        return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+    }
+
+    
 }

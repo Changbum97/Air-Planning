@@ -19,22 +19,24 @@
 
         <br/>
         <div align="center" class="py-1">
-          <button class="btn btn1" onclick="write_board()">등록</button>
+          <button class="btn btn1" onclick="write_report()">등록</button>
         </div>
         <br/>
       </form>
+
     </div>
   </div>
 </div>
 
 <script th:inline="javascript">
-  function write_board(){
+  function write_report(){
     $.ajax({
       type:'POST',
-      url:'/boards',
+      url:'/boards/report/write',
       data:$('#reportCreateRequest').serialize(),
       success: function (data){
-        location.href = "/boards/list"
+        console.log(data); //응답 body부분 데이터
+        location.href = "/boards/report/list"
       }
     });
   }
