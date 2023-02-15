@@ -48,6 +48,7 @@
                             <div style="margin-top: 5px" class="w-75">
                                 <div id="nickname-pass" class="alert-pass" hidden>사용 가능한 닉네임 입니다</div>
                                 <div id="nickname-fail" class="alert-fail" hidden>닉네임이 중복됩니다</div>
+                                <div id="nickname-long" class="alert-fail" hidden>닉네임은 최대 10글자입니다</div>
                             </div>
                         </div>
                         <br/>
@@ -173,10 +174,18 @@
             if(nickname == "") {
                 hide('nickname-fail')
                 hide('nickname-pass')
+                hide('nickname-long')
                 changeNickname = false
                 nicknamePass = true
                 check_all()
                 return
+            }
+
+            if (nickname.length > 10) {
+                show('nickname-long')
+                hide('nickname-fail')
+                hide('nickname-pass')
+                return;
             }
 
             $.ajax({
@@ -189,9 +198,11 @@
                     if (duplicated == true) {
                         hide('nickname-pass')
                         show('nickname-fail')
+                        hide('nickname-long')
                     } else {
                         show('nickname-pass')
                         hide('nickname-fail')
+                        hide('nickname-long')
                         changeNickname = true
                         nicknamePass = true
                         check_all()

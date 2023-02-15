@@ -30,26 +30,7 @@ public class MyPageController {
     private final MyPageService myPageService;
     private final UserService userService;
 
-
-    //자신의 마이페이지로 이동
-    @ResponseBody
-    @GetMapping
-    public String toMyPage(Principal principal) {
-
-        String userId = "";
-
-        //principal 오류 (로그인 오류, 만료)
-        try {
-            userId = Long.toString(userService.findUser(principal.getName()).getId());
-        } catch (Exception e) {
-            return userId;
-        }
-
-        return userId;
-
-    }
-
-    @GetMapping("/{userId}")
+    @GetMapping("")
     public String myPage(Principal principal, Model model) {
 
         UserDto user = userService.findUser(principal.getName());
@@ -120,7 +101,7 @@ public class MyPageController {
             return "로그인 정보가 유효하지 않습니다. 다시 로그인 해주세요.*/login";
         }
 
-        return "변경이 완료되었습니다.*/mypage/"+userId;
+        return "변경이 완료되었습니다.*/mypage";
     }
 
     //마이페이지 여행중
