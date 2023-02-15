@@ -461,14 +461,23 @@ public class BoardController {
     public String rankUpList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
                             Model model,
                             @RequestParam(required = false) String searchType,
-                            @RequestParam(required = false) String keyword){
+                            @RequestParam(required = false) String keyword,
+                             @AuthenticationPrincipal UserDetail userDetail){
+        if (userDetail != null) {
+            Page<BoardListResponse> boardPage = boardService.rankUpList(pageable, searchType, keyword);
+            model.addAttribute("userRole", userDetail.getRole());
+            model.addAttribute("list", boardPage);
+            model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
 
+            return "boards/rankUpList";
+        } else {
+            Page<BoardListResponse> boardPage = boardService.rankUpList(pageable, searchType, keyword);
+            model.addAttribute("userRole", "비로그인");
+            model.addAttribute("list", boardPage);
+            model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
+            return "boards/rankUpList";
+        }
 
-        Page<BoardListResponse> boardPage = boardService.rankUpList(pageable, searchType, keyword);
-        model.addAttribute("list", boardPage);
-        model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
-
-        return "boards/rankUpList";
     }
 
 
