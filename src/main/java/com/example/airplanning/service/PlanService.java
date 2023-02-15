@@ -100,11 +100,10 @@ public class PlanService {
         return id;
     }
 
-    public Page<PlanDto> list(Pageable pageable){
-        Page<Plan> planPage = planRepository.findAll(pageable);
-        Page<PlanDto> planDtos = PlanDto.planDto(planPage);
+    public Page<PlanListResponse> list(Pageable pageable){
+        Page<Plan> plans = planRepository.findAll(pageable);
 
-        return planDtos;
+        return PlanListResponse.toDtoList(plans);
     }
 
     public PlanResponse refusePlan(Long id, String userName){
