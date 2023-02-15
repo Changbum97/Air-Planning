@@ -33,6 +33,7 @@ public class PlanDto {
 
     private Long userId;
     private Long plannerId;
+    private Long plannerUserId;
 
     public static PlanDto of(Plan plan){
         return PlanDto.builder()
@@ -47,6 +48,7 @@ public class PlanDto {
                 .plannerName(plan.getPlanner().getUser().getNickname())
                 .userId(plan.getUser().getId())
                 .plannerId(plan.getPlanner().getId())
+                .plannerUserId(plan.getPlanner().getUser().getId())
                 .build();
     }
 
