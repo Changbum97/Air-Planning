@@ -26,13 +26,19 @@
                     <span th:text="'작성일 : ' + ${#temporals.format(board.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
                 </div>
                 <div align="right" class="py-1">
-                    <th:block sec:authorize="hasAuthority('ADMIN')" th:if="principal">
+                    <th:block th:if="${board.userName == userName}">
                         <a class="btn btn1" th:href="@{/boards/report/{boardId}/modify (boardId=${boardId})}">수정</a>
                         <button class="btn btn1" onclick="delete_board()">삭제</button>
                     </th:block>
-                    <th:block sec:authorize="hasAuthority('USER')" th:if="principal">
-                        <a class="btn btn1" th:href="@{/boards/report/{boardId}/modify (boardId=${boardId})}">수정</a>
-                        <button class="btn btn1" onclick="delete_board()">삭제</button>
+                    <th:block sec:authorize="hasAuthority('ADMIN')" th:if="principal">
+                        <form>
+                            <select name="role" onchange="selectedRank(this)">
+                                <option value="USER">유저</option>
+                                <option value="BLACKLIST">블랙리스트</option>
+                            </select>
+                            <button class="btn btn1" type="button" onclick="changeRank()"> 등급수정</button>
+                        </form>
+                        <button class="btn btn1" onclick="delete_board()">거절</button>
                     </th:block>
                 </div>
             </form>
@@ -43,18 +49,41 @@
 
 
 <script th:inline="javascript">
+    let Role = "USER";
+    const selectedRank = (target) => {
+        Role = target.value;
+    }
+
+    function changeRank() {
+        let nickname = [[${board.title}]];
+        let boardId = [[${board.id}]];
+        let role = Role;
+
+        $.ajax({
+            method: 'POST',
+            url: '/api/admin/rankchange',
+            data: {
+                "nickname" : nickname,
+                "boardId" : boardId,
+                "role" : role
+            },
+            success: function (d) {
+                alert(d.nickname+"의 등급이 "+d.role+"로 변경되었습니다.")
+                location.href="/boards/report/list";
+            }
+
+        })
+    }
+
     function delete_board() {
 
-        let boardId = [[${boardId}]];
+        let boardId = [[${board.id}]];
 
         if (confirm("글을 삭제하시겠습니까?")) {
             $.ajax({
-                url: '/boards/' + boardId + '/delete/',
+                url: '/boards/report/' + boardId + '/delete',
                 type: "GET",
-                data: {
-                    boardId: boardId
-                },
-                success: function () {
+                success: function (d) {
                     location.href = "/boards/report/list"
                 }
             });

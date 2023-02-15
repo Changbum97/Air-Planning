@@ -77,6 +77,8 @@
 
     function acceptPlanner() {
         let userName = [[${board.userName}]]
+        let region = [[${board.region}]]
+        let description = [[${board.content}]]
         let boardId = [[${board.id}]]
         if (confirm("플래너 등급 신청을 수락하시겠습니까?")) {
             $.ajax({
@@ -84,6 +86,8 @@
                 url: '/api/admin/rankup-accepted',
                 data: {
                   "userName": userName,
+                  "description": description,
+                  "region": region,
                   "boardId": boardId
                 },
                 success: function (d) {

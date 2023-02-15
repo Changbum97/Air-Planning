@@ -420,19 +420,20 @@ public class BoardController {
     }
 
     @PostMapping("/report/write")
-    public String reportWrite(ReportCreateRequest reportCreateRequest, Principal principal){
+    public Long reportWrite(ReportCreateRequest reportCreateRequest, Principal principal){
         System.out.println(reportCreateRequest.getTitle() + reportCreateRequest.getContent());
-        boardService.reportWrite(reportCreateRequest, principal.getName());
-        return "redirect:/boards/report/list";
+        Board board = boardService.reportWrite(reportCreateRequest, principal.getName());
+        return board.getId();
     }
 
 
 
     // 유저 신고 상세 조회
     @GetMapping("/report/{boardId}")
-    public String reportDetail(@PathVariable Long boardId, Model model) {
+    public String reportDetail(@PathVariable Long boardId, Model model, Principal principal) {
         BoardDto boardDto = boardService.reportDetail(boardId);
         model.addAttribute("board", boardDto);
+        model.addAttribute("userName", principal.getName());
         return "boards/reportDetail";
     }
 
@@ -447,10 +448,12 @@ public class BoardController {
     }
 
     @PostMapping("/report/{boardId}/modify")
+    @ResponseBody
     public String reportModify(@PathVariable Long boardId, ReportModifyRequest reportModifyRequest, Principal principal, Model model) {
+        System.out.println("신고 수정요청이 들어왔다@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         boardService.reportModify(reportModifyRequest, principal.getName(), boardId);
         model.addAttribute("boardId", boardId);
-        return "redirect:/boards/{boardId}";
+        return boardId+"";
     }
 
     @GetMapping("/rankup/list")
@@ -473,14 +476,14 @@ public class BoardController {
     @GetMapping("/report/{boardId}/delete")
     public String reportDelete(@PathVariable Long boardId, Principal principal) {
         Long reportDelete = boardService.reportDelete(principal.getName(), boardId);
-        return "redirect:/boards/report/list";
+        return reportDelete+"";
     }
 
 
     // 유저 신고 리스트
     @GetMapping("/report/list")
-    public String reportList(Pageable pageable, Model model){
-        Page<BoardDto> reportPage = boardService.reportList(pageable);
+    public String reportList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable, Model model){
+        Page<BoardListResponse> reportPage = boardService.reportList(pageable);
         model.addAttribute("list", reportPage);
         return "boards/reportList";
     }

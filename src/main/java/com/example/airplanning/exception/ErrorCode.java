@@ -37,7 +37,8 @@ public enum ErrorCode {
     INVALID_ORDER(HttpStatus.BAD_REQUEST, "결제를 취소하셨습니다."),
     INVALID_ORDER_TOTAL_POINT(HttpStatus.BAD_REQUEST,"잘못된 결제 금액입니다."),
     PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "플랜 신청을 찾을 수 없습니다."),
-    INVALID_LACK_OF_POINT(HttpStatus.BAD_REQUEST,"포인트가 부족합니다.")
+    INVALID_LACK_OF_POINT(HttpStatus.BAD_REQUEST,"포인트가 부족합니다."),
+    REGION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 지역입니다")
     ;
 
     private HttpStatus status;

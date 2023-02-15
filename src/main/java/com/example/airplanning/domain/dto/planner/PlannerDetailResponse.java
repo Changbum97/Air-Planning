@@ -20,11 +20,17 @@ public class PlannerDetailResponse {
     private String description;     // 자기 소개
 
     public static PlannerDetailResponse of(Planner planner) {
+        Double star;
+        if (planner.getStarSum()==0 || planner.getReviewCount() ==0) {
+            star = (double) 0;
+        } else {
+            star = (double)planner.getStarSum() / planner.getReviewCount();
+        }
         return PlannerDetailResponse.builder()
                 .id(planner.getId())
                 .userName(planner.getUser().getUserName())
                 .image(planner.getUser().getImage())
-                .star((double)planner.getStarSum() / planner.getReviewCount())
+                .star(star)
                 .region(planner.getRegion().getRegion1() +" "+ planner.getRegion().getRegion2())
                 .description(planner.getDescription())
                 .build();
