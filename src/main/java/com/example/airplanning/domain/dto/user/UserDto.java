@@ -21,7 +21,14 @@ public class UserDto {
     private Integer point;      // 포인트
     private String role;      // 권한 (USER, ADMIN, BLACKLIST, PLANNER)
     private String provider; // 소셜로그인 어딘지
+    private Long plannerId;
     public static UserDto of(User user) {
+        Long plannerId;
+        if (user.getPlanner() != null) {
+            plannerId = user.getPlanner().getId();
+        } else {
+            plannerId = 0L;
+        }
         return UserDto.builder()
                 .id(user.getId())
                 .nickname(user.getNickname())
@@ -32,6 +39,7 @@ public class UserDto {
                 .point(user.getPoint())
                 .role(user.getRole().name())
                 .provider(user.getProvider())
+                .plannerId(plannerId)
                 .build();
     }
 }
