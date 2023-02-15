@@ -386,7 +386,7 @@ public class BoardController {
     // 유저 신고 상세 조회
     @GetMapping("/report/{boardId}")
     public String reportDetail(@PathVariable Long boardId, Model model) {
-        BoardDto boardDto = boardService.detail(boardId);
+        BoardDto boardDto = boardService.reportDetail(boardId);
         model.addAttribute("board", boardDto);
         return "boards/reportDetail";
     }

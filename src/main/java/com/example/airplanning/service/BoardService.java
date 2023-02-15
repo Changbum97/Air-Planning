@@ -367,6 +367,9 @@ public class BoardService {
     // 유저 신고 상세 조회
     public BoardDto reportDetail(Long id) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        if (!board.getCategory().name().equals("REPORT")) {
+            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
+        }
         return BoardDto.of(board);
     }
 
