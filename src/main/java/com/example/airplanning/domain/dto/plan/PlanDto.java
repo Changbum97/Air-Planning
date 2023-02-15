@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Builder
@@ -23,11 +24,10 @@ public class PlanDto {
     private String title;
     private String content;
     private String userName;
+    private String nickname;
     private PlanType planType;
     private UserRole userRole;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     private String plannerName;
 
@@ -40,10 +40,11 @@ public class PlanDto {
                 .title(plan.getTitle())
                 .content(plan.getContent())
                 .userName(plan.getUser().getUserName())
+                .nickname(plan.getUser().getNickname())
                 .planType(plan.getPlanType())
                 .userRole(plan.getUser().getRole())
-                .createdAt(plan.getCreatedAt())
-                .plannerName(plan.getPlanner().getUser().getUserName())
+                .createdAt(plan.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
+                .plannerName(plan.getPlanner().getUser().getNickname())
                 .userId(plan.getUser().getId())
                 .plannerId(plan.getPlanner().getId())
                 .build();
@@ -54,10 +55,10 @@ public class PlanDto {
                 .id(plan.getId())
                 .title(plan.getTitle())
                 .content(plan.getContent())
-                .userName(plan.getUser().getUserName())
+                .nickname(plan.getUser().getNickname())
                 .planType(plan.getPlanType())
-                .createdAt(plan.getCreatedAt())
-                .plannerName(plan.getPlanner().getUser().getUserName())
+                .createdAt(plan.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
+                .plannerName(plan.getPlanner().getUser().getNickname())
                 .build());
         return planDtos;
     }
