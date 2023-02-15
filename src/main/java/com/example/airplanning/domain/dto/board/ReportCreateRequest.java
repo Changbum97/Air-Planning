@@ -16,11 +16,12 @@ public class ReportCreateRequest {
 
     private Category category;
 
-    public Board toEntity(User user){
+    public Board toEntity(User user, String image){
         return Board.builder()
                 .user(user)
                 .title(this.title)
                 .content(this.content)
+                .image(image)
                 .category(Category.REPORT)
                 .build();
     }

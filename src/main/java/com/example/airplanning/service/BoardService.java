@@ -401,11 +401,18 @@ public class BoardService {
     }
 
     // 유저 신고 작성
-    public Board reportWrite(ReportCreateRequest reportCreateRequest, String userName) {
+    public Board reportWrite(ReportCreateRequest reportCreateRequest, MultipartFile file, String userName) throws IOException {
 
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-        Board board = boardRepository.save(reportCreateRequest.toEntity(user));
+
+        String changedFile = null;
+
+        if (file != null) {
+            changedFile = uploadFile(file);
+        }
+
+        Board board = boardRepository.save(reportCreateRequest.toEntity(user, changedFile));
 
         List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
         for (User admin : admins) {
@@ -433,7 +440,7 @@ public class BoardService {
 
 
     // 유저 신고 수정
-    public BoardDto reportModify(ReportModifyRequest reportModifyRequest, String userName, Long id) {
+    public BoardDto reportModify(ReportModifyRequest reportModifyRequest, MultipartFile file, String userName, Long id) throws IOException {
 
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
@@ -445,7 +452,27 @@ public class BoardService {
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
-        board.modify(reportModifyRequest.getTitle(), reportModifyRequest.getContent());
+        String changedFile = null;
+
+        //만약 기존 게시글에 파일이 있던 경우
+        if (board.getImage() !=  null) {
+            if (reportModifyRequest.getImage().equals("changed")) { //파일 변경시
+                if (file != null) { // 파일을 다른 파일로 교체한 경우
+                    changedFile = uploadFile(file);
+                    deleteFile(board.getImage()); //기존 파일 삭제
+                } else { //파일 삭제한 경우
+                    deleteFile(board.getImage()); //기존 파일 삭제
+                }
+            } else { //파일 변경이 없던 경우
+                changedFile = board.getImage();
+            }
+        } else { //기존 파일이 없던 경우
+            if (file != null) { //새 파일 업로드
+                changedFile = uploadFile(file);
+            }
+        }
+
+        board.modify(reportModifyRequest.getTitle(), reportModifyRequest.getContent(), changedFile);
         boardRepository.save(board);
         return BoardDto.of(board);
 

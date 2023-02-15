@@ -57,9 +57,9 @@ public class BoardRestController {
 
     // 유저 신고 작성
     @PostMapping("/reportWrite/{boardId}")
-    public Response<BoardResponse>reportWrite(@RequestBody ReportCreateRequest reportCreateRequest, Principal principal) {
+    public Response<BoardResponse>reportWrite(@RequestBody ReportCreateRequest reportCreateRequest, Principal principal) throws IOException {
         String userName = principal.getName();
-        Board board = boardService.reportWrite(reportCreateRequest, "test");
+        Board board = boardService.reportWrite(reportCreateRequest, null, userName);
         return Response.success(new BoardResponse("신고가 완료되었습니다.", board.getId()));
     }
     
@@ -74,9 +74,9 @@ public class BoardRestController {
 
     // 유저 신고 수정
     @PutMapping("/reportModify/{boardId}")
-    public Response<BoardResponse> reportModify(@PathVariable Long boardId, @RequestBody ReportModifyRequest reportModifyRequest, Principal principal){
+    public Response<BoardResponse> reportModify(@PathVariable Long boardId, @RequestBody ReportModifyRequest reportModifyRequest, Principal principal) throws IOException {
         String userName = principal.getName();
-        BoardDto boardDto = boardService.reportModify(reportModifyRequest, "test", boardId);
+        BoardDto boardDto = boardService.reportModify(reportModifyRequest, null, userName, boardId);
         return Response.success(new BoardResponse("신고 수정이 완료되었습니다.", boardDto.getId()));
     }
 
