@@ -166,7 +166,7 @@ public class BoardController {
     }
 
     // 플래너등급신청
-    @GetMapping("/rankUpWrite")
+    @GetMapping("/rankup/write")
     public String rankUpWrite(Model model) {
         model.addAttribute(new RankUpCreateRequest());
 
@@ -182,14 +182,15 @@ public class BoardController {
     }
 
     @ResponseBody
-    @PostMapping("/rankUpWrite")
-    public String rankUpWrite(RankUpCreateRequest createRequest, Principal principal){
-        boardService.rankUpWrite(createRequest, principal.getName());
+    @PostMapping("/rankup/write")
+    public String rankUpWrite(@RequestPart(value = "request") RankUpCreateRequest createRequest,
+                              @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
+        boardService.rankUpWrite(createRequest, file, principal.getName());
         return "등급업 신청 성공";
     }
 
     // 플래너신청조회
-    @GetMapping("/rankUp/{boardId}")
+    @GetMapping("/rankup/{boardId}")
     public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model,
                                @AuthenticationPrincipal UserDetail userDetail){
         RankUpDetailResponse rankUpDetailResponse = boardService.rankUpDetail(boardId);
@@ -199,22 +200,23 @@ public class BoardController {
         return "boards/rankUpDetail";
     }
 
-    @GetMapping("/rankUp/update/{boardId}")
+    @GetMapping("/rankup/update/{boardId}")
     public String rankUpdate(@PathVariable Long boardId, Model model){
         Board board = boardService.update(boardId);
-//        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent()));
+        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
         return "boards/rankUpdate";
     }
 
-    @PostMapping("/rankUp/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
-        boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
+    @PostMapping("/rankup/update/{boardId}")
+    public String rankUpdate(@PathVariable Long boardId, @RequestPart(value = "request") BoardModifyRequest boardModifyRequest,
+                             @RequestPart(value = "file",required = false) MultipartFile file, Principal principal, Model model) throws IOException {
+        boardService.rankUpdate(boardModifyRequest, file, principal.getName(), boardId);
         model.addAttribute("boardId", boardId);
-        return "redirect:/boards/rankUp/{boardId}";
+        return "redirect:/boards/rankup/{boardId}";
     }
 
     @ResponseBody
-    @GetMapping("/rankUp/delete/{boardId}")
+    @GetMapping("/rankup/delete/{boardId}")
     public String rankDelete(@PathVariable Long boardId, Principal principal){
         boardService.rankDelete(boardId, principal.getName());
         log.info("delete");
