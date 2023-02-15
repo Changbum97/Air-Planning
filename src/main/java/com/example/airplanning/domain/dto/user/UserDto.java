@@ -20,7 +20,7 @@ public class UserDto {
     private String image;       // 프로필 이미지 URL
     private Integer point;      // 포인트
     private String role;      // 권한 (USER, ADMIN, BLACKLIST, PLANNER)
-
+    private String provider; // 소셜로그인 어딘지
     public static UserDto of(User user) {
         return UserDto.builder()
                 .id(user.getId())
@@ -31,6 +31,7 @@ public class UserDto {
                 .image(user.getImage())
                 .point(user.getPoint())
                 .role(user.getRole().name())
+                .provider(user.getProvider())
                 .build();
     }
 }

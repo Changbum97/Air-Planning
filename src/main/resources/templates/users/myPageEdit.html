@@ -77,6 +77,23 @@
         let changeNickname = false
         let changeImage = false
 
+        window.onload = function() {
+
+            let isSocial = [[${user.provider}]];
+
+            if (isSocial == null) {
+                document.getElementById("origin_password").style.display = 'block';
+                document.getElementById("password").style.display = 'block';
+                document.getElementById("password-check").style.display = 'block';
+            } else {
+                originPasswordPass = true;
+                hide('origin-password-check-null')
+                edit_component_able()
+            }
+
+        }
+
+
         $("#image-input").on("change", (e) => {
 
             let f = e.target.files[0];

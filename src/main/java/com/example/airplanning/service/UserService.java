@@ -107,7 +107,9 @@ public class UserService {
         String[] bits = filePath.split("/");
         String fileName = bits[bits.length-1];
         //S3에서 delete
-        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+        if (!filePath.equals("https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com/default.jpeg")) {
+            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+        }
     }
 
     //이미지 변경
@@ -184,6 +186,7 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
         user.setNickname(newNickname);
+        user.setDefaultImage();
         userRepository.save(user);
     }
 }
