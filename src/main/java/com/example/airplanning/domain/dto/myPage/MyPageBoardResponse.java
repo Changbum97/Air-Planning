@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,8 +23,7 @@ public class MyPageBoardResponse {
     private Long id; //해당 게시글 id
     private String title; //해당 게시글 제목
     private String category;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     public static MyPageBoardResponse Of(Board board) {
 
@@ -49,7 +49,7 @@ public class MyPageBoardResponse {
                 .id(board.getId())
                 .title(titleSub)
                 .category(category)
-                .createdAt(board.getCreatedAt())
+                .createdAt(board.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .build();
     }
 
@@ -78,7 +78,7 @@ public class MyPageBoardResponse {
                 .id(like.getBoard().getId())
                 .title(titleSub)
                 .category(category)
-                .createdAt(like.getCreatedAt())
+                .createdAt(like.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .build();
     }
 

@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,8 +25,7 @@ public class MyPagePlanResponse {
     private Long plannerId; //플래너 id
     private PlanType planType;  //신청 수락 여부(신청 중, 신청 수락, 신청 거절, 여행 완료)
     private boolean isReviewed;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     public static MyPagePlanResponse of(Plan plan) {
 
@@ -43,7 +43,7 @@ public class MyPagePlanResponse {
                 .plannerId(plan.getPlanner().getId())
                 .planType(plan.getPlanType())
                 .isReviewed(plan.isReviewed())
-                .createdAt(plan.getCreatedAt())
+                .createdAt(plan.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .build();
     }
 
