@@ -84,7 +84,6 @@
         url:"/alarm/getList",
         success: function (d) {
           AlarmList = d
-          console.log(AlarmList);
           if (AlarmList != "") {
             displayAlarm();
           }
@@ -98,7 +97,6 @@
           url:"/alarm/getList",
           success: function (d) {
             AlarmList = d
-            console.log(AlarmList);
             displayAlarm();
           }
         })

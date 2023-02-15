@@ -420,6 +420,7 @@ public class BoardController {
     }
 
     @PostMapping("/report/write")
+    @ResponseBody
     public Long reportWrite(ReportCreateRequest reportCreateRequest, Principal principal){
         System.out.println(reportCreateRequest.getTitle() + reportCreateRequest.getContent());
         Board board = boardService.reportWrite(reportCreateRequest, principal.getName());

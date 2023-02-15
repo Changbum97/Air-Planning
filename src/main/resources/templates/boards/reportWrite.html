@@ -21,10 +21,9 @@
         <div>
           <textarea th:field="*{content}" rows="10" cols="80" class="w-100" placeholder="내용을 입력해주세요" style="resize: none; width: 80%;"></textarea>
         </div>
-
         <br/>
         <div align="center" class="py-1">
-          <button id="write-btn" class="btn btn1" onclick="write_report()" disabled>등록</button>
+          <button id="write-btn" class="btn btn1" type="button" onclick="write_report()" disabled>등록</button>
         </div>
         <br/>
       </form>
@@ -41,8 +40,7 @@
       url:'/boards/report/write',
       data:$('#reportCreateRequest').serialize(),
       success: function (data){
-        console.log(data); //응답 body부분 데이터
-        location.href = "/boards/report/"+data;
+        location.href = "/boards/report/list"
       }
     });
   }
