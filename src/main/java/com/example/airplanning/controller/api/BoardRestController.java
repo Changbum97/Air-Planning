@@ -92,8 +92,8 @@ public class BoardRestController {
 
     // 유저 신고 리스트
     @GetMapping
-    public Response<Page<BoardDto>> reportList(@PageableDefault(sort = "createdAt",size = 20,direction = Sort.Direction.DESC) Pageable pageable){
-        Page<BoardDto> boardDto = boardService.reportList(pageable);
+    public Response<Page<BoardListResponse>> reportList(@PageableDefault(sort = "createdAt",size = 20,direction = Sort.Direction.DESC) Pageable pageable){
+        Page<BoardListResponse> boardDto = boardService.reportList(pageable);
         return Response.success(boardDto);
     }
 

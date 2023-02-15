@@ -405,7 +405,7 @@ public class BoardService {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
-        if (!Objects.equals(board.getUser().getUserName(),userName)){
+        if (!Objects.equals(board.getUser().getUserName(),userName) && !user.getRole().name().equals("ADMIN")){
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
@@ -421,10 +421,9 @@ public class BoardService {
 
     
     // 유저 신고 리스트
-    public Page<BoardDto> reportList(Pageable pageable){
+    public Page<BoardListResponse> reportList(Pageable pageable){
         Page<Board> board = boardRepository.findAllByCategory(Category.REPORT, pageable);
-        Page<BoardDto> boardDto = BoardDto.toDtoList(board);
-        return boardDto;
+        return board.map(b -> BoardListResponse.of(b));
     }
 
     public Board reportView(Long id){

@@ -15,8 +15,8 @@
       <table class="table list-table table-hover text-center">
         <thead>
         <tr>
-          <th style="width: 45%">제목</th>
-          <th style="width: 35%">작성자</th>
+          <th style="width: 45%">신고대상</th>
+          <th style="width: 35%">신고자</th>
           <th style="width: 20%">작성일자</th>
           <!--                            <th>좋아요</th>-->
         </tr>
@@ -32,21 +32,8 @@
         <button class="btn btn1" onclick="location.href='/boards/report/write'">등록</button>
       </div>
       <br/>
-      <ul class="pagination justify-content-center">
-        <li class="page-item">
-          <a class="page-link" href="#" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item">
-          <a class="page-link" href="#" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-      </ul>
+        <ul id = "paging-ul" class="pagination justify-content-center">
+        </ul>
     </div>
   </div>
 </div>

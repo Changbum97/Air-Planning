@@ -10,7 +10,12 @@
       <form class="form-group" th:object="${reportCreateRequest}" id="reportCreateRequest">
         <br/>
         <div>
-          <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요" style="width: 80%">
+          <input th:field="*{title}" type="text" placeholder="신고 대상의 닉네임을 입력해 주세요" style="width: 80%" oninput="searchUser()">
+          <div style="margin-top: 5px" class="w-75">
+            <div id="nickname-pass" class="alert-pass" hidden>신고대상이 확인 되었습니다</div>
+            <div id="nickname-fail" class="alert-fail" hidden>존재하지 않는 유저입니다</div>
+            <div id="nickname-null" class="alert-fail" hidden>공백일 수 없습니다</div>
+          </div>
         </div>
         <br/>
         <div>
@@ -19,7 +24,7 @@
 
         <br/>
         <div align="center" class="py-1">
-          <button class="btn btn1" onclick="write_report()">등록</button>
+          <button id="write-btn" class="btn btn1" onclick="write_report()" disabled>등록</button>
         </div>
         <br/>
       </form>
@@ -29,6 +34,7 @@
 </div>
 
 <script th:inline="javascript">
+  let nicknamePass = false;
   function write_report(){
     $.ajax({
       type:'POST',
@@ -36,9 +42,61 @@
       data:$('#reportCreateRequest').serialize(),
       success: function (data){
         console.log(data); //응답 body부분 데이터
-        location.href = "/boards/report/list"
+        location.href = "/boards/report/"+data;
       }
     });
+  }
+  function button_disable() {
+    document.getElementById('write-btn').setAttribute("disabled", "true");
+  }
+  function button_able() {
+    if (nicknamePass = true) {
+      document.getElementById('write-btn').removeAttribute("disabled")
+    }
+  }
+  function searchUser() {
+    let nickname =  $("#title").val();
+    nicknamePass = false;
+    button_disable();
+
+    if(nickname == "") {
+      show('nickname-null')
+      hide('nickname-pass')
+      hide('nickname-fail')
+      return
+    }
+
+    $.ajax({
+      method: 'GET',
+      url: '/users/check-nickname',
+      data: {
+        nickname: nickname
+      },
+      success: function (d) {
+        if (d == true) {
+          hide('nickname-null')
+          show('nickname-pass')
+          hide('nickname-fail')
+          nicknamePass = true;
+          button_able()
+        } else {
+          hide('nickname-null')
+          hide('nickname-pass')
+          show('nickname-fail')
+        }
+      }
+    })
+
+  }
+  function show(id) {
+    if(document.getElementById(id) != null) {
+      document.getElementById(id).removeAttribute("hidden")
+    }
+  }
+  function hide(id) {
+    if(document.getElementById(id) != null) {
+      document.getElementById(id).setAttribute("hidden", "true")
+    }
   }
 </script>
 

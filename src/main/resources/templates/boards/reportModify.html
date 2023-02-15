@@ -7,10 +7,11 @@
 <div class="container px-5">
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-6 py-5">
-      <form class="form-group" th:action="@{/boards/{boardId}/modify (boardId=${boardId})}" th:object="${reportModifyRequest}" method="post">
+      <form class="form-group" id="reportModifyRequest" th:object="${reportModifyRequest}">
         <br/>
         <div>
-          <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
+          <input th:value="*{title}" disabled>
+          <input th:field="*{title}" th:value="*{title}" hidden>
         </div>
         <br/>
         <div>
@@ -18,7 +19,7 @@
         </div>
         <br/>
         <div align="center" class="py-1">
-          <input type="submit" class="btn btn1" th:value="저장"/>
+          <button class="btn btn1" type="button" onclick="edit()">저장</button>
         </div>
         <br/>
       </form>
@@ -33,10 +34,10 @@
 
       $.ajax({
         type : 'POST',
-        url : '/report/{boardId}/modify',
+        url : '/boards/report/'+boardId+'/modify',
         data : $('#reportModifyRequest').serialize(),
-        success: function (){
-          location.href= "/boards/report/list"
+        success: function (d){
+          location.href= '/boards/report/'+d;
         }
       });
     }
