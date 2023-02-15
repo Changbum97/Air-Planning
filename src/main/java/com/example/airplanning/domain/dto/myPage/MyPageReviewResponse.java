@@ -32,19 +32,34 @@ public class MyPageReviewResponse {
             titleSub = review.getTitle().substring(0,10)+" ...";
         }
 
+        String plannerName ="";
+        if (review.getPlanner().getUser().getNickname().length() <= 10) {
+            plannerName = review.getPlanner().getUser().getNickname();
+        } else {
+            plannerName = review.getPlanner().getUser().getNickname().substring(0,10)+"...";
+        }
+
         return MyPageReviewResponse.builder()
                 .id(review.getId())
                 .title(titleSub)
-                .plannerName(review.getPlanner().getUser().getNickname())
+                .plannerName(plannerName)
                 .createdAt(review.getCreatedAt())
                 .build();
     }
 
     public static MyPageReviewResponse Of(Like like) {
+
+        String plannerName ="";
+        if (like.getReview().getPlanner().getUser().getNickname().length() <= 10) {
+            plannerName = like.getReview().getPlanner().getUser().getNickname();
+        } else {
+            plannerName = like.getReview().getPlanner().getUser().getNickname().substring(0,10)+"...";
+        }
+
         return MyPageReviewResponse.builder()
                 .id(like.getReview().getId())
                 .title(like.getReview().getTitle())
-                .plannerName(like.getReview().getPlanner().getUser().getNickname())
+                .plannerName(plannerName)
                 .createdAt(like.getCreatedAt())
                 .build();
     }

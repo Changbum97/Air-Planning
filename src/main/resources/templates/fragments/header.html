@@ -24,10 +24,9 @@
     let AlarmList;
 
     function displayAlarm() {
-      console.log("알람보여주기 진입 완료")
       let output = ""
       output += "<div class=\"dropdown\">\n" +
-              "        <a class=\"btn btn-secondary dropdown-toggle\" href=\"#\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n" +
+              "        <a class=\"btn btn-secondary \" href=\"#\" role=\"button\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n" +
               "          <i class=\"bi bi-bell-fill\"></i>\n" +
               "        </a>\n" +
               "        <ul class=\"dropdown-menu\">\n";
@@ -150,10 +149,11 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container px-5">
       <a class="navbar-brand" href="/">Air Planning</a>
-      <div id = "dropdown"><!--알림 드롭다운--></div>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+<!--          <div id="dropdown"></div>-->
+          <li class="nav-item" id="dropdown"><!--알림 드롭다운--></li>
           <li class="nav-item"><a class="nav-link active" aria-current="page" href="/">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="/">About</a></li>
           <li class="nav-item dropdown">

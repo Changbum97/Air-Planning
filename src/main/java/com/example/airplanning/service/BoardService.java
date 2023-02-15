@@ -86,13 +86,15 @@ public class BoardService {
             changedFile = uploadFile(file);
         }
 
+        Region region = regionRepository.findById(rankUpCreateRequest.getRegionId()).get();
+
         Board board = Board.builder()
                 .user(user)
                 .category(Category.RANK_UP)
                 .title(rankUpCreateRequest.getTitle())
                 .content(rankUpCreateRequest.getContent())
-                .regionId(rankUpCreateRequest.getRegionId())
                 .image(changedFile)
+                .region(region)
                 .build();
 
         boardRepository.save(board);
@@ -108,8 +110,7 @@ public class BoardService {
     public RankUpDetailResponse rankUpDetail(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-        Region region = regionRepository.findById(board.getRegionId()).get();
-        return RankUpDetailResponse.of(board, region);
+        return RankUpDetailResponse.of(board);
     }
     
     // 삭제
@@ -181,19 +182,41 @@ public class BoardService {
 //    }
 
     // 포트폴리오 리스트
-    public Page<BoardListResponse> portfolioList(Pageable pageable, String searchType, String keyword){
+    public Page<BoardListResponse> portfolioList(Pageable pageable, String searchType, String keyword, String region1, Long regionId){
         Page<Board> board;
 
+        System.out.println(region1);
+        System.out.println(regionId);
+
+
         if(searchType == null) {
+            // 검색 X
             board = boardRepository.findAllByCategory(Category.PORTFOLIO, pageable);
         } else {
             // 글 제목으로 검색
             if (searchType.equals("TITLE")) {
-                board = boardRepository.findByCategoryAndTitleContains(Category.PORTFOLIO, keyword, pageable);
+                if (regionId == 998) {
+                    // 지역 검색 X
+                    board = boardRepository.findByCategoryAndTitleContains(Category.PORTFOLIO, keyword, pageable);
+                } else if (regionId == 999) {
+                    // 지역 1로만 검색
+                    board = boardRepository.findByCategoryAndTitleContainsAndRegionRegion1(Category.PORTFOLIO, keyword, region1, pageable);
+                } else {
+                    // 지역 1, 2로 검색
+                    board = boardRepository.findByCategoryAndTitleContainsAndRegionId(Category.PORTFOLIO, keyword, regionId, pageable);
+                }
             }
             // 작성자 닉네임으로 검색
             else {
-                board = boardRepository.findByCategoryAndUserNicknameContains(Category.PORTFOLIO, keyword, pageable);
+                if (regionId == 998) {
+                    board = boardRepository.findByCategoryAndUserNicknameContains(Category.PORTFOLIO, keyword, pageable);
+                } else if (regionId == 999) {
+                    // 지역 1로만 검색
+                    board = boardRepository.findByCategoryAndUserNicknameContainsAndRegionRegion1(Category.PORTFOLIO, keyword, region1, pageable);
+                } else {
+                    // 지역 1, 2로 검색
+                    board = boardRepository.findByCategoryAndUserNicknameContainsAndRegionId(Category.PORTFOLIO, keyword, regionId, pageable);
+                }
             }
         }
         return BoardListResponse.toDtoList(board);
@@ -390,6 +413,91 @@ public class BoardService {
                 .content(reportCreateRequest.getContent())
                 .build();
 
+    }
+
+    // 유저 신고 상세 조회
+    public BoardDto reportDetail(Long id) {
+        Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        if (!board.getCategory().name().equals("REPORT")) {
+            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
+        }
+        return BoardDto.of(board);
+    }
+
+
+    // 유저 신고 수정
+    public BoardDto reportModify(ReportModifyRequest reportModifyRequest, String userName, Long id) {
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        if (!Objects.equals(board.getUser().getUserName(), user.getUserName())) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        board.modify(reportModifyRequest.getTitle(), reportModifyRequest.getContent());
+        boardRepository.save(board);
+        return BoardDto.of(board);
+
+    }
+
+
+
+    // 유저 신고 삭제
+    @Transactional
+    public Long reportDelete(String userName, Long id) {
+
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        if (!Objects.equals(board.getUser().getUserName(),userName)){
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        if (board.getImage() != null) {
+            deleteFile(board.getImage());
+        }
+
+        boardRepository.deleteById(id);
+        return id;
+
+    }
+
+
+    
+    // 유저 신고 리스트
+    public Page<BoardDto> reportList(Pageable pageable){
+        Page<Board> board = boardRepository.findAllByCategory(Category.REPORT, pageable);
+        Page<BoardDto> boardDto = BoardDto.toDtoList(board);
+        return boardDto;
+    }
+
+    public Board reportView(Long id){
+        return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+    }
+
+    public Page<BoardListResponse> rankUpList(Pageable pageable, String searchType, String keyword){
+        Page<Board> board;
+
+        if(searchType == null) {
+            board = boardRepository.findAllByCategory(Category.RANK_UP, pageable);
+        } else {
+            // 글 제목으로 검색
+            if (searchType.equals("TITLE")) {
+                board = boardRepository.findByCategoryAndTitleContains(Category.RANK_UP, keyword, pageable);
+            }
+            // 작성자 닉네임으로 검색
+            else {
+                board = boardRepository.findByCategoryAndUserNicknameContains(Category.RANK_UP, keyword, pageable);
+            }
+        }
+        return BoardListResponse.toDtoList(board);
     }
 
 }

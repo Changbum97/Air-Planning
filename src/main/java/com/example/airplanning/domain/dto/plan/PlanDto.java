@@ -31,6 +31,9 @@ public class PlanDto {
 
     private String plannerName;
 
+    private Long userId;
+    private Long plannerId;
+
     public static PlanDto of(Plan plan){
         return PlanDto.builder()
                 .id(plan.getId())
@@ -41,6 +44,8 @@ public class PlanDto {
                 .userRole(plan.getUser().getRole())
                 .createdAt(plan.getCreatedAt())
                 .plannerName(plan.getPlanner().getUser().getUserName())
+                .userId(plan.getUser().getId())
+                .plannerId(plan.getPlanner().getId())
                 .build();
     }
 

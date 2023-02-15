@@ -1,10 +1,7 @@
 package com.example.airplanning.controller;
 
 import com.example.airplanning.configuration.login.UserDetail;
-import com.example.airplanning.domain.dto.plan.PlanCreateRequest;
-import com.example.airplanning.domain.dto.plan.PlanDto;
-import com.example.airplanning.domain.dto.plan.PlanPaymentRequest;
-import com.example.airplanning.domain.dto.plan.PlanUpdateRequest;
+import com.example.airplanning.domain.dto.plan.*;
 import com.example.airplanning.domain.dto.user.UserDto;
 import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.domain.entity.User;
@@ -14,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -73,9 +72,9 @@ public class PlanController {
     }
 
     @GetMapping("/list")
-    public String listPlan(Pageable pageable, Model model){
-        Page<PlanDto> planDtos = planService.list(pageable);
-        model.addAttribute("plan", planDtos);
+    public String listPlan(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable, Model model){
+        Page<PlanListResponse> planList = planService.list(pageable);
+        model.addAttribute("plan", planList);
         return "plans/list";
     }
 
