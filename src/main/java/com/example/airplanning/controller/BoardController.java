@@ -9,6 +9,7 @@ import com.example.airplanning.domain.dto.planner.PlannerDetailResponse;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Region;
 import com.example.airplanning.domain.enum_class.Category;
+import com.example.airplanning.domain.enum_class.LikeType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.*;
@@ -387,7 +388,7 @@ public class BoardController {
     @PostMapping("/{boardId}/like")
     @ResponseBody
     public String changeLike(@PathVariable Long boardId, Principal principal) {
-        return likeService.changeLike(boardId, principal.getName());
+        return likeService.changeLike(boardId, principal.getName(), LikeType.BOARD_LIKE);
     }
 
     /*@GetMapping("/rankup/update/{boardId}")
