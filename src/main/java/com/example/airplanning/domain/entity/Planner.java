@@ -42,4 +42,16 @@ public class Planner extends BaseEntity{
         this.description = description;
         this.region = region;
     }
+
+    public void plusStar(Integer star) {
+        this.starSum += star;
+    }
+
+    public void plusReviewCnt() {
+        this.reviewCount++;
+    }
+
+    public void minusReviewCnt() {
+        this.reviewCount--;
+    }
 }
