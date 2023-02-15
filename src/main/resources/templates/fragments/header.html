@@ -165,7 +165,7 @@
           </li>
           <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link active" href="/points/list">Point</a></li>
           <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link active" href="/chat/rooms">Chatting</a></li>
-          <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link active"  style="cursor: pointer" onclick="myPage()">MyPage</a></li>
+          <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link active"  href="/users/mypage">MyPage</a></li>
           <li sec:authorize="isAnonymous()" class="nav-item"><a class="nav-link active" href="/users/login">Login</a></li>
           <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link active" href="/users/logout">Logout</a></li>
         </ul>
@@ -173,26 +173,5 @@
     </div>
   </nav>
 </div>
-<script th:inline="javascript">
-
-  function myPage() {
-    $.ajax({
-      type: 'GET',
-      url: '/users/mypage',
-
-      success: function (id) {
-
-        if (id == "") {
-          alert("로그인 정보가 유효하지 않습니다. 로그인 해주세요.")
-          location.href="/users/login"
-        }
-        else {
-          location.href = "/users/mypage/" + id
-        }
-      }
-    });
-  }
-
-</script>
 </body>
 </html>

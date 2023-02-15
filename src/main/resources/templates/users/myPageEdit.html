@@ -20,7 +20,7 @@
                         <span>(이미지 클릭 시 프로필 수정 가능)</span>
                         <div class="py-3">
                             <div align="center">
-                                <input type="password" id = "origin_password" class="w-75 login-input" placeholder="현재 비밀번호가 일치해야 수정 가능합니다" onchange="check_origin_pw()">
+                                <input type="password" style="display:none;" id = "origin_password" class="w-75 login-input" placeholder="현재 비밀번호가 일치해야 수정 가능합니다" onchange="check_origin_pw()">
                                 <div style="margin-top: 5px" class="w-75">
                                     <div id="origin-password-check-pass" class="alert-pass" hidden>비밀번호가 일치합니다</div>
                                     <div id="origin-password-check-fail" class="alert-fail" hidden>비밀번호가 일치하지 않습니다</div>
@@ -29,11 +29,11 @@
                             </div>
                             <br/>
                             <div align="center">
-                                <input id = "password" th:field="*{password}" type="password" class="w-75 login-input" placeholder="새 비밀번호 (변경하고 싶지 않으면 공백)" onchange="check_pw()" disabled>
+                                <input id = "password" style="display:none;" th:field="*{password}" type="password" class="w-75 login-input" placeholder="새 비밀번호 (변경하고 싶지 않으면 공백)" onchange="check_pw()" disabled>
                             </div>
                             <br/>
                             <div align="center">
-                                <input id="password-check" type="password" class="w-75 login-input" placeholder="새 비밀번호 확인" onchange="check_pw()" disabled>
+                                <input id="password-check" style="display:none;" type="password" class="w-75 login-input" placeholder="새 비밀번호 확인" onchange="check_pw()" disabled>
                                 <div style="margin-top: 5px" class="w-75">
                                     <div id="password-check-pass" class="alert-pass" hidden>비밀번호가 일치합니다</div>
                                     <div id="password-check-fail" class="alert-fail" hidden>비밀번호가 일치하지 않습니다</div>
