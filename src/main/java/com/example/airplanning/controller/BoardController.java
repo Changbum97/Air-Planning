@@ -9,6 +9,7 @@ import com.example.airplanning.domain.dto.planner.PlannerDetailResponse;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Region;
 import com.example.airplanning.domain.enum_class.Category;
+import com.example.airplanning.domain.enum_class.LikeType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.*;
@@ -387,30 +388,8 @@ public class BoardController {
     @PostMapping("/{boardId}/like")
     @ResponseBody
     public String changeLike(@PathVariable Long boardId, Principal principal) {
-        return likeService.changeLike(boardId, principal.getName());
+        return likeService.changeLike(boardId, principal.getName(), LikeType.BOARD_LIKE);
     }
-
-    /*@GetMapping("/rankup/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, Model model){
-        Board board = boardService.update(boardId);
-        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
-        return "boards/rankUpdate";
-    }*/
-
-    /*@PostMapping("/rankup/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
-        boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
-        model.addAttribute("boardId", boardId);
-        return "redirect:/boards/rankup/{boardId}";
-    }*/
-
-    /*@ResponseBody
-    @GetMapping("/rankup/delete/{boardId}")
-    public String rankDelete(@PathVariable Long boardId, Principal principal){
-        boardService.delete(principal.getName(), boardId);
-        log.info("delete");
-        return "";
-    }*/
 
     // 유저 신고 작성
     @GetMapping("/report/write")
