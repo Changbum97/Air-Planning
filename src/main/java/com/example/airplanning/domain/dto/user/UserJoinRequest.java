@@ -18,7 +18,6 @@ public class UserJoinRequest {
     private String userName;    // 로그인에 사용할 ID
 
     private String password;    // 비밀번호
-    private String phoneNumber; // 전화번호 01012345678
 
     private String code; //이메일 인증코드
 
@@ -28,7 +27,6 @@ public class UserJoinRequest {
                 .email(this.email)
                 .userName(this.userName)
                 .password(encodedPassword)
-                .phoneNumber(this.phoneNumber)
                 .role(UserRole.USER)
                 .image("https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com/default.jpeg")
                 .build();

@@ -62,15 +62,6 @@ public class UserRestController {
         }
     }
 
-    @PostMapping("/check/phone")
-    public String checkPhoneNumber(String phoneNumber) {
-        if (!userService.checkPhoneNumber(phoneNumber)) {
-            return "사용 가능한 PhoneNumber 입니다.";
-        } else {
-            return "중복된 PhoneNumber 입니다.";
-        }
-    }
-
     // 인증 이메일 보내기
     @GetMapping("/emailcertification")
     public ResponseEntity<String> emailConfirm(@RequestParam String email) throws Exception {

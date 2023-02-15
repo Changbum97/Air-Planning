@@ -61,17 +61,6 @@
           </div>
         </div>
         <br/>
-        <div align="center">
-          <div class="w-75 d-flex">
-            <input type="text" class="join-input flex-fill" placeholder="전화 번호">
-            <button type="button" class="btn send-btn" onclick="send_phone()">인증번호 전송</button>
-          </div>
-          <div id="check-phone" style="margin-top: 20px" hidden>
-            <input type="text" class="join-input flex-fill" placeholder="인증번호">
-            <button type="button" class="btn btn1">인증</button>
-          </div>
-        </div>
-        <br/>
         <div>
           <button id="join-btn" type="button" class="btn btn1" onclick="join()" disabled>회원가입</button>
           <br/><br/>
@@ -246,12 +235,6 @@
         }
       }
     })
-  }
-
-  function send_phone() {
-    alert("핸드폰으로 인증번호를 전송했습니다")
-    document.getElementById("check-phone").removeAttribute("hidden")
-    document.getElementById("check-phone").className = "w-75 d-flex"
   }
 
   function check_pw() {

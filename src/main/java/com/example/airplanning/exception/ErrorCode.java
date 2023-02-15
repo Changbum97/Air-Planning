@@ -10,7 +10,6 @@ public enum ErrorCode {
 
     DUPLICATED_USER_NAME(HttpStatus.CONFLICT, "User Name이 중복됩니다."),
     DUPLICATED_USER_EMAIL(HttpStatus.CONFLICT, "User Email이 중복됩니다."),
-    DUPLICATED_USER_PHONE(HttpStatus.CONFLICT, "User PhoneNumber가 중복됩니다."),
     NOT_NULL_INDEX(HttpStatus.BAD_REQUEST, "값을 입력해 주세요."),
 
     INVALID_VERIFICATION_CODE(HttpStatus.UNAUTHORIZED, "인증번호가 일치하지 않습니다."),
