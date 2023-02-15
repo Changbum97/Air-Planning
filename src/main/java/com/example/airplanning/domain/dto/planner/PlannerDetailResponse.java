@@ -18,7 +18,8 @@ public class PlannerDetailResponse {
     private Double star;            // 별점 총 합 / 리뷰 개수
     private String region;          // 자신있는 지역
     private String description;     // 자기 소개
-    private String nickname;    // 작성자 닉네임
+    private String nickname;        // 작성자 닉네임
+    private Integer likeCnt;        // 좋아요 개수
 
     public static PlannerDetailResponse of(Planner planner) {
         Double star;
@@ -35,6 +36,7 @@ public class PlannerDetailResponse {
                 .star(star)
                 .region(planner.getRegion().getRegion1() +" "+ planner.getRegion().getRegion2())
                 .description(planner.getDescription())
+                .likeCnt(planner.getLikes().size())
                 .build();
     }
 }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header.html :: head"/>
+
+<body>
+<div th:replace="fragments/header.html :: header"/>
+    <div class="container px-5">
+        <div class="row gx-5 justify-content-center">
+            <div class="col-lg-6 py-3">
+                <div align="center">
+                    <h2>플래너 정보 수정</h2><br/>
+                </div>
+                <form class="form-group" th:object="${plannerEditRequest}" id="plannerEditRequest">
+                    <div>
+                        <label th:for="*{regionId}">자신있는 지역 : </label>
+                        <select style="height: 40px;" onchange="change_region1(this)">
+                            <option>지역</option>
+                            <option th:each="region1 : ${region1List}" th:text="${region1}"></option>
+                        </select>
+                        <select style="height: 40px;" id="regionId" name="regionId">
+                            <option>세부 지역</option>
+                        </select>
+                    </div>
+                    <br/>
+                    <div>
+                        <textarea rows="10" class="w-100" placeholder="자기소개를 입력해주세요" th:field="*{description}"></textarea>
+                    </div>
+                    <br/>
+                    <div align="right" class="py-1">
+                        <button type="button" class="btn btn1" onclick="edit()">수정</button>
+                    </div>
+                    <br/>
+                </form>
+            </div>
+        </div>
+    </div>
+<script th:inline="javascript">
+
+    function change_region1(e) {
+        let region1 = e.value;
+        let regions = [[${regions}]];
+        let target = document.getElementById('regionId');
+
+        target.options.length = 0;
+        regions.forEach(region => {
+            if (region['region1'] == region1) {
+                console.log(region['id'] + " : " + region['region2'])
+                let opt = document.createElement("option");
+                opt.value = region['id'];
+                opt.innerText = region['region2'];
+                target.appendChild(opt);
+            }
+        })
+    }
+
+    function edit() {
+        $.ajax({
+            type: 'POST',
+            url: '/planners/' + [[${plannerEditRequest.plannerId}]] + "/edit",
+            data: $('#plannerEditRequest').serialize(),
+            success: function (id) {
+                location.href = "/planners/" + id;
+            }
+        });
+    }
+</script>
+</body>
+</html>

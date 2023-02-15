@@ -61,10 +61,9 @@
             </div>
             <hr/>
 
-            <!--                로그인 체크, 로그인 유저 정보-->
+            <!-- 로그인 체크, 로그인 유저 정보-->
             <div id="loginCheck" sec:authentication="principal" hidden/>
             <div sec:authorize="isAuthenticated()" id="userName" sec:authentication="principal.username" hidden/>
-
 
             <div id="comment-list">
                 <!-- 댓글 내용 -->
@@ -103,6 +102,14 @@
     }
 
     function changeLike() {
+        if (document.getElementById("loginCheck").innerText == "anonymousUser") {
+            if (confirm("로그인이 필요한 서비스입니다.\n" + "로그인 화면으로 이동하시겠습니까?")) {
+                document.location = "/users/login"
+            } else {
+                return
+            }
+        }
+
         $.ajax({
             type: 'POST',
             url: '/boards/' + [[${board.id}]] + '/like',

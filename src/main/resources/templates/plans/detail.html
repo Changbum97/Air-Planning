@@ -16,9 +16,6 @@
                         <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
                     </div>
                     <h5 th:text="'플랜 신청자 : ' + ${plan.nickname}"></h5>
-                </div>
-                <br/>
-                <div>
                     <h5 th:text="'플래너 : ' + ${plan.plannerName}"></h5>
                 </div>
                 <br/>
@@ -129,14 +126,14 @@
 
    function create_chat(){
        let userId = [[${plan.userId}]];
-       let plannerId = [[${plan.plannerId}]];
+       let plannerUserId = [[${plan.plannerUserId}]];
 
        $.ajax({
            url : '/chat/room',
            type : "POST",
            data : {
                user1Id : userId,
-               user2Id : plannerId
+               user2Id : plannerUserId
            },
            success :  function (roomId) {
                location.href="/chat/room/"+roomId;  //?
