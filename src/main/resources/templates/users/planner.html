@@ -41,7 +41,7 @@
                 </div>
                 <br/>
                 <div align="center">
-                    <button class="btn btn1" style="margin-right: 30px">리뷰 보기</button>
+                    <button class="btn btn1" style="margin-right: 30px" onclick="toReview()">리뷰 보기</button>
                     <button class="btn btn1" sec:authorize="isAuthenticated()" th:onclick="'location.href=\'/plans/write/'+${planner.getId()}+'\''" style="margin-right: 30px">플랜 신청</button>
                     <button class="btn btn1" th:if="${isWriter==true}"th:onclick="'location.href=\'/planners/'+${planner.getId()}+'/edit\''" >정보 수정</button>
                 </div>
