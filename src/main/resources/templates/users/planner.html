@@ -36,6 +36,16 @@
                     </h3>
                 </div>
                 <br/>
+                <div align="center">
+                    <textarea rows="10" class="w-75" readonly>[[${planner.description}]]</textarea>
+                </div>
+                <br/>
+                <div align="center">
+                    <button class="btn btn1" style="margin-right: 30px">리뷰 보기</button>
+                    <button class="btn btn1" sec:authorize="isAuthenticated()" th:onclick="'location.href=\'/plans/write/'+${planner.getId()}+'\''" style="margin-right: 30px">플랜 신청</button>
+                    <button class="btn btn1" th:if="${isWriter==true}"th:onclick="'location.href=\'/planners/'+${planner.getId()}+'/edit\''" >정보 수정</button>
+                </div>
+                <br/><hr/><br/>
                 <th:block th:if="${planner.userName == plannerName}">
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
@@ -60,24 +70,6 @@
                     <ul id = "pagingul" class="pagination justify-content-center">
                     </ul>
                 </th:block>
-
-                <th:block th:unless="${planner.userName == plannerName}">
-                    <div align="center">
-                        <textarea rows="10" class="w-75" readonly>[[${planner.description}]]</textarea>
-                    </div>
-                    <br/>
-                    <div align="center">
-                        <button class="btn btn1" style="margin-right: 30px" onclick="toReview()">리뷰 보기</button>
-                        <button class="btn btn1" sec:authorize="isAuthenticated()" th:onclick="'location.href=\'/plans/write/'+${planner.getId()}+'\''">플랜 신청</button>
-                    </div>
-                </th:block>
-
-                <div align="center">
-                    <button class="btn btn1" style="margin-right: 30px">리뷰 보기</button>
-                    <button class="btn btn1" sec:authorize="isAuthenticated()" th:onclick="'location.href=\'/plans/write/'+${planner.getId()}+'\''" style="margin-right: 30px">플랜 신청</button>
-                    <button class="btn btn1" th:if="${isWriter==true}"th:onclick="'location.href=\'/planners/'+${planner.getId()}+'/edit\''" >정보 수정</button>
-                </div>
-                <br/>
 
                 <!-- 로그인 체크, 로그인 유저 정보-->
                 <div id="loginCheck" sec:authentication="principal" hidden/>
