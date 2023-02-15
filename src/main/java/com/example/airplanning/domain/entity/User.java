@@ -68,6 +68,7 @@ public class User extends BaseEntity{
         this.nickname = newNickname;
     }
     public void setDefaultImage() {this.image = "https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com/default.jpeg";}
+    public void setPointZero() {this.point = 0;}
     public void changeRank(String role) {
         log.info("{}", role);
         log.info("{}", UserRole.PLANNER.name());

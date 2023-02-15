@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments/header.html :: head"/>
 
 <body>
@@ -34,7 +34,7 @@
                 </tbody>
             </table>
             <div align="right" class="py-1">
-                <button class="btn btn1" type="button" onclick="location.href='/boards/rankup/write'">등록</button>
+                <button class="btn btn1" type="button" onclick="location.href='/boards/rankup/write'" th:if="${userRole == 'USER'}">등록</button>
             </div>
             <br/>
             <ul id = "paging-ul" class="pagination justify-content-center">
@@ -44,6 +44,18 @@
 </div>
 
 <script th:inline="javascript">
+
+    $(document).ready(function () {
+        let role = [[${userRole}]];
+        if (role == "비로그인") {
+            if (confirm("플래너 신청에는 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?")) {
+                location.href="/users/login"
+            } else {
+                location.href="/"
+            }
+        }
+    })
+
     // 화면 호출 시 페이징 버튼 생성 및 출력
     window.onload = function () {
         let nowPage = [[${list.getNumber()}]] + 1;

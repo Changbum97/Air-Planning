@@ -7,16 +7,21 @@ import com.example.airplanning.domain.entity.Region;
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.domain.enum_class.LikeType;
 import com.example.airplanning.service.LikeService;
+import com.example.airplanning.domain.dto.planner.PlannerPlanResponse;
 import com.example.airplanning.service.PlannerService;
 import com.example.airplanning.service.RegionService;
 import com.example.airplanning.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.HashSet;
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -45,6 +50,8 @@ public class PlannerController {
         } else {
             model.addAttribute("checkLike", false);
         }
+            model.addAttribute("plannerName", principal.getName());
+
         return "users/planner";
     }
 
@@ -85,4 +92,37 @@ public class PlannerController {
         System.out.println("REgionId : " + plannerEditRequest.getRegionId());
         return plannerService.edit(plannerId, plannerEditRequest);
     }
+
+    @ResponseBody
+    @GetMapping("/{plannerId}/trip-waiting")
+    public Page<PlannerPlanResponse> getWaitingPlan(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+                                                    @PathVariable Long plannerId) {
+        Page<PlannerPlanResponse> planPage = plannerService.getWaitingPlan(plannerId, pageable);
+        return planPage;
+    }
+
+    @ResponseBody
+    @GetMapping("/{plannerId}/trip-accepted")
+    public Page<PlannerPlanResponse> getAcceptedPlan(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+                                                    @PathVariable Long plannerId) {
+        Page<PlannerPlanResponse> planPage = plannerService.getAcceptedPlan(plannerId, pageable);
+        return planPage;
+    }
+
+    @ResponseBody
+    @GetMapping("/{plannerId}/trip-refused")
+    public Page<PlannerPlanResponse> getRefusedPlan(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+                                                     @PathVariable Long plannerId) {
+        Page<PlannerPlanResponse> planPage = plannerService.getRefusedPlan(plannerId, pageable);
+        return planPage;
+    }
+
+    @ResponseBody
+    @GetMapping("/{plannerId}/trip-completed")
+    public Page<PlannerPlanResponse> getCompletedPlan(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+                                                    @PathVariable Long plannerId) {
+        Page<PlannerPlanResponse> planPage = plannerService.getCompletedPlan(plannerId, pageable);
+        return planPage;
+    }
+
 }

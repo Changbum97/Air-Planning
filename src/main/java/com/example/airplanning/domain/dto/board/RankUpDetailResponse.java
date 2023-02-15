@@ -24,6 +24,7 @@ public class RankUpDetailResponse {
     private String content;
     private String image; //게시글 파일
     private String userImage; //유저 프로필
+    private Integer amount;
     public static RankUpDetailResponse of(Board board) {
         return RankUpDetailResponse.builder()
                 .id(board.getId())
@@ -35,6 +36,7 @@ public class RankUpDetailResponse {
                 .region(board.getRegion().getRegion1() + " " + board.getRegion().getRegion2())
                 .image(board.getImage())
                 .userImage(board.getUser().getImage())
+                .amount(board.getAmount())
                 .build();
     }
 }

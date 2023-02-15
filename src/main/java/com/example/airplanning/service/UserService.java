@@ -187,6 +187,7 @@ public class UserService {
 
         user.setNickname(newNickname);
         user.setDefaultImage();
+        user.setPointZero();
         userRepository.save(user);
     }
 }

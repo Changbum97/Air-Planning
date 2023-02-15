@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,8 +20,7 @@ public class MyPagePlannerResponse {
     private Long id; // 플래너 id
     private String plannerName; // 플래너 닉네임
     private String starMean;        // 별점 평균
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     public static MyPagePlannerResponse of(Like like) {
 
@@ -35,7 +35,7 @@ public class MyPagePlannerResponse {
                 .id(like.getPlanner().getId())
                 .plannerName(plannerName)
                 .starMean(String.format("%.2f", (double)like.getPlanner().getStarSum()/(double)like.getPlanner().getReviewCount()))
-                .createdAt(like.getCreatedAt())
+                .createdAt(like.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .build();
     }
 }

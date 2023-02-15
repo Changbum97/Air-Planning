@@ -145,7 +145,7 @@ public class MyPageService {
         Page<Plan> planPages = planRepository.findAllByUser(user, pageable);
 
         return new PageImpl<>(planPages.stream()
-                .filter(Plan -> Plan.getPlanType().equals(PlanType.FINISH))
+                .filter(Plan -> Plan.getPlanType().equals(PlanType.COMPLETE))
                 .map(Plan -> MyPagePlanResponse.of(Plan))
                 .collect(Collectors.toList()));
     }
