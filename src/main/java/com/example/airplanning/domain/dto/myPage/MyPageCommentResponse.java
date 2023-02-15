@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.lang.reflect.GenericDeclaration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,8 +24,7 @@ public class MyPageCommentResponse {
     private Long parentId; // 리뷰 or 글 id
     private String parentType;
     private String parentTitle; // 리뷰 or 글의 제목
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
 
     public static MyPageCommentResponse Of(Comment comment) {
@@ -57,7 +57,7 @@ public class MyPageCommentResponse {
                 .parentId(commentOrReviewId)
                 .parentType(contentType)
                 .parentTitle(commentOrReviewTitle)
-                .createdAt(comment.getCreatedAt())
+                .createdAt(comment.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .build();
     }
 

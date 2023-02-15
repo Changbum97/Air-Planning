@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,8 +19,7 @@ public class MyPageReviewResponse {
 
     private Long id; //해당 리뷰 id
     private String title; //해당 리뷰 제목
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
-    private LocalDateTime createdAt;
+    private String createdAt;
     private String plannerName; // 리뷰한 플레너 닉네임
 
     public static MyPageReviewResponse Of(Review review) {
@@ -43,7 +43,7 @@ public class MyPageReviewResponse {
                 .id(review.getId())
                 .title(titleSub)
                 .plannerName(plannerName)
-                .createdAt(review.getCreatedAt())
+                .createdAt(review.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .build();
     }
 
@@ -60,7 +60,7 @@ public class MyPageReviewResponse {
                 .id(like.getReview().getId())
                 .title(like.getReview().getTitle())
                 .plannerName(plannerName)
-                .createdAt(like.getCreatedAt())
+                .createdAt(like.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .build();
     }
 }
