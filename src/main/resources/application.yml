@@ -34,7 +34,7 @@ spring:
           google:
             client-id: 769882399475-ic1aib52em6i83quog4r4s3rdni419j4.apps.googleusercontent.com
             client-secret: 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
-            redirect-uri: http://ec2-3-39-131-153.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/google
+            redirect-uri: https://ec2-3-39-131-153.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/google
             scope: profile, email
           # 소셜 로그인 Naver
           naver:
