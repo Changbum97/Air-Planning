@@ -10,6 +10,18 @@ body, head {
     font-size: x-large;
 }
 
+.brand-btn, .brand-btn:hover, .brand-btn:active, .brand-btn:focus {
+    font-family: 'Dancing Script', cursive;
+    font-size: xxx-large;
+    font-weight: bold;
+    border: none;
+    color: #96d1cf;
+}
+
+.brand-btn:hover, .brand-btn:active, .brand-btn:focus {
+    animation: jelly 0.5s;
+}
+
 .list-table {
     width: 100%;
 }
@@ -272,6 +284,8 @@ body, head {
     border-radius: 15px;
     padding: 30px;
     margin-bottom: 30px;
+    box-sizing:border-box;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
 
 .join-form {
@@ -384,7 +398,7 @@ body, head {
     color: #ffffff;
 }
 
-#all{
+#all {
     margin: auto;
     margin-top: 60px;
     width: 600px;

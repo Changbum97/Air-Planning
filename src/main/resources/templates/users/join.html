@@ -7,8 +7,8 @@
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-8 py-5">
       <form class="join-form form-group" th:object="${userJoinRequest}" id="userJoinRequest">
-        <h2 onclick="location.href='/'">로고이미지(홈으로)</h2>
-        <br/>
+        <button onclick="location.href='/'" class="btn brand-btn" type="button">Air Planning</button>
+        <br/><br/>
         <div align="center">
           <input th:field="*{userName}" type="text" class="w-75 login-input" placeholder="아이디"
                  oninput="check_userName()">
