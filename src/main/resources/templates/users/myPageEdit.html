@@ -22,7 +22,7 @@
                     </div>
                     <div class="py-3">
                         <div align="center">
-                            <input type="password" id = "origin_password" class="w-75 login-input" placeholder="현재 비밀번호" onchange="check_origin_pw()">
+                            <input type="password" id = "origin_password" style="display:none;" class="w-75 login-input" placeholder="현재 비밀번호" onchange="check_origin_pw()">
                             <div style="margin-top: 5px" class="w-75">
                                 <div id="origin-password-check-pass" class="alert-pass" hidden>비밀번호가 일치합니다</div>
                                 <div id="origin-password-check-fail" class="alert-fail" hidden>비밀번호가 일치하지 않습니다</div>
@@ -31,11 +31,11 @@
                         </div>
                         <br/>
                         <div align="center">
-                            <input id = "password" th:field="*{password}" type="password" class="w-75 login-input" placeholder="변경할 비밀번호" onchange="check_pw()" disabled>
+                            <input id = "password" th:field="*{password}" style="display:none;" type="password" class="w-75 login-input" placeholder="변경할 비밀번호" onchange="check_pw()" disabled>
                         </div>
                         <br/>
                         <div align="center">
-                            <input id="password-check" type="password" class="w-75 login-input" placeholder="비밀번호 확인" onchange="check_pw()" disabled>
+                            <input id="password-check" type="password" style="display:none;" class="w-75 login-input" placeholder="비밀번호 확인" onchange="check_pw()" disabled>
                             <div style="margin-top: 5px" class="w-75">
                                 <div id="password-check-pass" class="alert-pass" hidden>비밀번호가 일치합니다</div>
                                 <div id="password-check-fail" class="alert-fail" hidden>비밀번호가 일치하지 않습니다</div>
@@ -78,6 +78,23 @@
         let changePassword = false
         let changeNickname = false
         let changeImage = false
+
+        window.onload = function() {
+
+            let isSocial = [[${user.provider}]];
+
+            if (isSocial == null) {
+                document.getElementById("origin_password").style.display = 'block';
+                document.getElementById("password").style.display = 'block';
+                document.getElementById("password-check").style.display = 'block';
+            } else {
+                originPasswordPass = true;
+                hide('origin-password-check-null')
+                edit_component_able()
+            }
+
+        }
+
 
         $("#image-input").on("change", (e) => {
 
