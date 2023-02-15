@@ -137,7 +137,8 @@
 </head>
 
 <body>
-<div th:fragment="header">
+
+<div th:fragment="header" class="header">
 
   <!-- toastr -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -146,7 +147,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <!-- Responsive navbar-->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container px-5">
       <a class="navbar-brand" href="/">Air Planning</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
@@ -160,19 +161,19 @@
             <a class="nav-link" data-bs-toggle="dropdown" aria-expanded="false">Board</a>
             <ul class="dropdown-menu">
               <li class="dropdown-item" onclick="location.href='/boards/list'">자유 게시판</li>
-              <li class="dropdown-item" href="#">플래너 등급 신청 게시판</li>
-              <li class="dropdown-item" href="#">플래너 포트폴리오 게시판</li>
-              <li class="dropdown-item" href="#">리뷰 게시판</li>
+              <li class="dropdown-item" onclick="location.href = '/boards/rankup/list'">플래너 등급 신청 게시판</li>
+              <li class="dropdown-item" onclick="location.href = '/boards/portfolio/list'">플래너 포트폴리오 게시판</li>
+              <li class="dropdown-item" onclick="location.href = '/reviews/list'">리뷰 게시판</li>
             </ul>
           </li>
           <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/points/list">Point</a></li>
+          <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/users/mypage/{userId}">MyPage</a></li>
           <li sec:authorize="isAnonymous()" class="nav-item"><a class="nav-link" href="/users/login">Login</a></li>
           <li sec:authorize="isAuthenticated()" class="nav-item"><a class="nav-link" href="/users/logout">Logout</a></li>
         </ul>
       </div>
     </div>
   </nav>
-
 </div>
 
 </body>

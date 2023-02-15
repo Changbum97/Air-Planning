@@ -394,3 +394,10 @@ body, head {
     box-sizing:border-box;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
+/*header css*/
+.header{
+    position: sticky;
+    top: 0;
+    background-color: #96d1cf;
+}
+
