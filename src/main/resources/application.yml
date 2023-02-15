@@ -91,7 +91,7 @@ mail:
 # admin 구글 계정
 AdminMail:
   id: skdlfma123@gmail.com
-  password: ugwplewriwktlvss
+  password: wgoalsxtuaxjlxmc
 
 # multipart 설정
 spring.servlet.multipart.max-file-size: 10MB
