@@ -30,7 +30,7 @@ public class PlanPaymentRequest {
                 .nickname(plan.getUser().getNickname())
                 .createdAt(plan.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .point(plan.getUser().getPoint())
-                .plannerName(plan.getPlanner().getUser().getUserName())
+                .plannerName(plan.getPlanner().getUser().getNickname())
                 .amount(plan.getPlanner().getAmount())
                 .build();
     }
