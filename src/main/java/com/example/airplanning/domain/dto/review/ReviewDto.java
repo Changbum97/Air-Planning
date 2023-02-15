@@ -2,10 +2,7 @@ package com.example.airplanning.domain.dto.review;
 
 import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.domain.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Builder
+@ToString
 public class ReviewDto {
 
     private Long id;
@@ -25,6 +23,8 @@ public class ReviewDto {
     private String plannerName;
     private String image;
     private String userImage;   // 작성자 프로필
+    private Integer likeCnt;    // 좋아요 수
+    private Integer views;      // 조회수
 
     public static ReviewDto of(Review review) {
         return ReviewDto.builder()
@@ -38,6 +38,8 @@ public class ReviewDto {
                 .plannerName(review.getPlanner().getUser().getNickname())
                 .image(review.getImage())
                 .userImage(review.getUser().getImage())
+                .likeCnt(review.getLikes().size())
+                .views(review.getViews())
                 .build();
     }
 }

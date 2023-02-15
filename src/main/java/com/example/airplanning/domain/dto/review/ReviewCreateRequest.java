@@ -29,6 +29,7 @@ public class ReviewCreateRequest {
                 .content(content)
                 .star(star)
                 .image(image)
+                .views(0)
                 .build();
     }
 }

@@ -196,8 +196,15 @@ public class ReviewService {
         return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
     }
 
-    public Review findById(Long reviewId) {
-        return reviewRepository.findById(reviewId)
+    @Transactional
+    public Review findById(Long reviewId, Boolean addView) {
+        Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+
+        if(addView) {
+            review.addViews();
+        }
+
+        return review;
     }
 }
