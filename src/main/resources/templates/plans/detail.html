@@ -15,7 +15,7 @@
                     <div class="img-box">
                         <img src="/assets/images/default.jpeg" alt="프로필 이미지" class="medium-img">
                     </div>
-                    <h5 th:text="'플랜 신청자 : ' + ${plan.userName}"></h5>
+                    <h5 th:text="'플랜 신청자 : ' + ${plan.nickname}"></h5>
                 </div>
                 <br/>
                 <div>
@@ -30,7 +30,7 @@
                 </div>
 
                 <div style="float: left" class="py-3">
-                    <span th:text="'작성일 : ' + ${#temporals.format(plan.createdAt, 'yyyy/MM/dd HH:mm:ss')}"></span>
+                    <span th:text="'작성일 : ' + ${plan.createdAt}"></span>
                 </div>
 
                 <div align="right" class="py-1">

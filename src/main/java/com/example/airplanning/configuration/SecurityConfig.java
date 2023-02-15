@@ -68,6 +68,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/api/boards/write").authenticated()
                 .antMatchers(HttpMethod.PUT, "/api/boards/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/api/boards/**").authenticated()
+                .antMatchers(HttpMethod.GET, "/users/mypage").authenticated()
 //                .antMatchers("/boards/rankup/**").authenticated()
                 .antMatchers(HttpMethod.GET, "/reviews/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/reviews").authenticated()

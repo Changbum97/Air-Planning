@@ -37,6 +37,7 @@
             <div id="nickname-pass" class="alert-pass" hidden>사용 가능한 닉네임 입니다</div>
             <div id="nickname-fail" class="alert-fail" hidden>닉네임이 중복됩니다</div>
             <div id="nickname-null" class="alert-fail" hidden>공백일 수 없습니다</div>
+            <div id="nickname-long" class="alert-fail" hidden>닉네임은 최대 10글자입니다</div>
           </div>
         </div>
         <br/>
@@ -128,6 +129,15 @@
       show('nickname-null')
       hide('nickname-pass')
       hide('nickname-fail')
+      hide('nickname-long')
+      return
+    }
+
+    if (nickname.length > 10) {
+      hide('nickname-null')
+      hide('nickname-pass')
+      hide('nickname-fail')
+      show('nickname-long')
       return
     }
 
@@ -142,10 +152,12 @@
           hide('nickname-null')
           hide('nickname-pass')
           show('nickname-fail')
+          hide('nickname-long')
         } else {
           hide('nickname-null')
           show('nickname-pass')
           hide('nickname-fail')
+          hide('nickname-long')
           nicknamePass = true
           check_all()
         }
