@@ -390,27 +390,27 @@ public class BoardController {
         return likeService.changeLike(boardId, principal.getName());
     }
 
-    @GetMapping("/rankup/update/{boardId}")
+    /*@GetMapping("/rankup/update/{boardId}")
     public String rankUpdate(@PathVariable Long boardId, Model model){
         Board board = boardService.update(boardId);
         model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
         return "boards/rankUpdate";
-    }
+    }*/
 
-    @PostMapping("/rankup/update/{boardId}")
+    /*@PostMapping("/rankup/update/{boardId}")
     public String rankUpdate(@PathVariable Long boardId, BoardModifyRequest boardModifyRequest, Principal principal, Model model){
         boardService.rankUpdate(boardModifyRequest, principal.getName(), boardId);
         model.addAttribute("boardId", boardId);
         return "redirect:/boards/rankup/{boardId}";
-    }
+    }*/
 
-    @ResponseBody
+    /*@ResponseBody
     @GetMapping("/rankup/delete/{boardId}")
     public String rankDelete(@PathVariable Long boardId, Principal principal){
         boardService.delete(principal.getName(), boardId);
         log.info("delete");
         return "";
-    }
+    }*/
 
     // 유저 신고 작성
     @GetMapping("/report/write")
