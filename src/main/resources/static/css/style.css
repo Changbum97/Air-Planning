@@ -413,5 +413,6 @@ body, head {
     position: sticky;
     top: 0;
     background-color: #96d1cf;
+    z-index: 2;
 }
 
