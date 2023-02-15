@@ -7,6 +7,7 @@ import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.domain.enum_class.UserRole;
 import com.example.airplanning.service.PlanService;
+import com.example.airplanning.service.PlannerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,9 +27,16 @@ import java.security.Principal;
 @Slf4j
 public class PlanController {
     private final PlanService planService;
+    private final PlannerService plannerService;
 
     @GetMapping("/write/{plannerId}")
     public String writePlanPage(Model model, @AuthenticationPrincipal UserDetail userDetail, @PathVariable Long plannerId){
+
+        if (userDetail.getUsername().equals(plannerService.findById(plannerId).getUserName())) {
+            model.addAttribute("nextPage", "/planners/"+plannerId);
+            model.addAttribute("msg", "본인에게는 플랜 신청 할 수 없습니다.");
+            return "error/redirect";
+        }
         model.addAttribute(new PlanCreateRequest(plannerId));
         return "plans/write";
     }
