@@ -86,6 +86,14 @@ public class ReviewService {
         plan.reviewedPlan();
         planRepository.save(plan);
 
+        Planner planner = plannerRepository.findById(plan.getPlanner().getId())
+                        .orElseThrow(() -> new AppException(ErrorCode.PLANNER_NOT_FOUNDED));
+
+        planner.plusStar(savedReview.getStar());
+        planner.plusReviewCnt();
+
+        plannerRepository.save(planner);
+
         alarmService.send(plan.getPlanner().getUser(), AlarmType.REVIEW_ALARM, "/reviews/"+savedReview.getId(), savedReview.getTitle());
         return savedReview.getId();
     }
@@ -94,6 +102,8 @@ public class ReviewService {
     public Long update(Long reviewId, ReviewUpdateRequest request, MultipartFile file, String userName) throws IOException {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(()-> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+
+        Integer originStar = review.getStar();
 
         if (!userName.equals(review.getUser().getUserName())) {
             throw new AppException(ErrorCode.INVALID_PERMISSION);
@@ -121,6 +131,11 @@ public class ReviewService {
 
         review.update(request, changedFile);
         Review updatedReview = reviewRepository.save(review);
+
+        Planner planner = plannerRepository.findById(updatedReview.getPlanner().getId())
+                .orElseThrow(()->new AppException(ErrorCode.PLANNER_NOT_FOUNDED));
+
+        planner.plusStar(updatedReview.getStar()-originStar);
         return updatedReview.getId();
     }
 
@@ -138,6 +153,11 @@ public class ReviewService {
         }
 
         reviewRepository.delete(review);
+        Planner planner = plannerRepository.findById(review.getPlanner().getId())
+                .orElseThrow(()->new AppException(ErrorCode.PLANNER_NOT_FOUNDED));
+
+        planner.plusStar(-review.getStar());
+        planner.minusReviewCnt();
     }
 
     //기존 이미지 삭제
