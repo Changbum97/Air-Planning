@@ -421,9 +421,10 @@ public class BoardController {
 
     @PostMapping("/report/write")
     @ResponseBody
-    public Long reportWrite(ReportCreateRequest reportCreateRequest, Principal principal){
+    public Long reportWrite(@RequestPart(value = "request") ReportCreateRequest reportCreateRequest,
+                            @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
         System.out.println(reportCreateRequest.getTitle() + reportCreateRequest.getContent());
-        Board board = boardService.reportWrite(reportCreateRequest, principal.getName());
+        Board board = boardService.reportWrite(reportCreateRequest, file, principal.getName());
         return board.getId();
     }
 
@@ -444,15 +445,16 @@ public class BoardController {
     @GetMapping("/report/{boardId}/modify")
     public String reportModifyPage(@PathVariable Long boardId, Model model) {
         Board board = boardService.reportView(boardId);
-        model.addAttribute(new ReportModifyRequest(board.getTitle(), board.getContent()));
+        model.addAttribute(new ReportModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
         return "boards/reportModify";
     }
 
     @PostMapping("/report/{boardId}/modify")
     @ResponseBody
-    public String reportModify(@PathVariable Long boardId, ReportModifyRequest reportModifyRequest, Principal principal, Model model) {
+    public String reportModify(@PathVariable Long boardId,@RequestPart(value = "request") ReportModifyRequest reportModifyRequest,
+                               @RequestPart(value = "file",required = false) MultipartFile file, Principal principal, Model model) throws IOException {
         System.out.println("신고 수정요청이 들어왔다@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        boardService.reportModify(reportModifyRequest, principal.getName(), boardId);
+        boardService.reportModify(reportModifyRequest, file, principal.getName(), boardId);
         model.addAttribute("boardId", boardId);
         return boardId+"";
     }
