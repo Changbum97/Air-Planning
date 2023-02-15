@@ -36,7 +36,7 @@ public class BoardCreateRequest {
                 .image(image)
                 .category(category)
                 .image(image)
-                .region(user.getPlanner().getRegion())
+                .region(category == Category.PORTFOLIO ? user.getPlanner().getRegion() : null)
                 .views(0)
                 .build();
     }
