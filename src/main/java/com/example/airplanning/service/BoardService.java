@@ -137,50 +137,23 @@ public class BoardService {
 
     }
 
-    public Page<BoardListResponse> boardList(Pageable pageable, String searchType, String keyword){
+    public Page<BoardListResponse> boardList(Pageable pageable, String searchType, String keyword, Category category){
         Page<Board> board;
 
         if(searchType == null) {
-            board = boardRepository.findAllByCategory(Category.FREE, pageable);
+            board = boardRepository.findAllByCategory(category, pageable);
         } else {
             // 글 제목으로 검색
             if (searchType.equals("TITLE")) {
-                board = boardRepository.findByCategoryAndTitleContains(Category.FREE, keyword, pageable);
+                board = boardRepository.findByCategoryAndTitleContains(category, keyword, pageable);
             }
             // 작성자 닉네임으로 검색
             else {
-                board = boardRepository.findByCategoryAndUserNicknameContains(Category.FREE, keyword, pageable);
+                board = boardRepository.findByCategoryAndUserNicknameContains(category, keyword, pageable);
             }
         }
         return BoardListResponse.toDtoList(board);
     }
-
-//    @Transactional
-//    public void like(String userName, Long id) {
-//
-//        Board board = boardRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-//
-//        User user = userRepository.findByUserName(userName)
-//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-//
-//        // 좋아요 중복체크
-//        likeRepository.findByUserBoard(user, board)
-//                .ifPresent(item -> {
-//                    throw new AppException(ErrorCode.ALREADY_LIKED)});
-//
-//        likeRepository.save(Like.of(user, board));
-//        alarmRepository.save(Alarm.of(board.getUser(), AlarmType.NEW_LIKE_ON_POST,
-//                user.getId(), board.getId()));
-//
-//    }
-//
-//    public Integer likeCount(Long id) {
-//        // Board 유무 확인
-//        Board board = boardRepository.findById(id)
-//                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-//        return likeRepository.countByBoard(id);
-//    }
 
     // 포트폴리오 리스트
     public Page<BoardListResponse> portfolioList(Pageable pageable, String searchType, String keyword, String region1, Long regionId){
@@ -188,7 +161,6 @@ public class BoardService {
 
         System.out.println(region1);
         System.out.println(regionId);
-
 
         if(searchType == null) {
             // 검색 X
@@ -503,34 +475,8 @@ public class BoardService {
 
     }
 
-
-    
-    // 유저 신고 리스트
-    public Page<BoardListResponse> reportList(Pageable pageable){
-        Page<Board> board = boardRepository.findAllByCategory(Category.REPORT, pageable);
-        return board.map(b -> BoardListResponse.of(b));
-    }
-
     public Board reportView(Long id){
         return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-    }
-
-    public Page<BoardListResponse> rankUpList(Pageable pageable, String searchType, String keyword){
-        Page<Board> board;
-
-        if(searchType == null) {
-            board = boardRepository.findAllByCategory(Category.RANK_UP, pageable);
-        } else {
-            // 글 제목으로 검색
-            if (searchType.equals("TITLE")) {
-                board = boardRepository.findByCategoryAndTitleContains(Category.RANK_UP, keyword, pageable);
-            }
-            // 작성자 닉네임으로 검색
-            else {
-                board = boardRepository.findByCategoryAndUserNicknameContains(Category.RANK_UP, keyword, pageable);
-            }
-        }
-        return BoardListResponse.toDtoList(board);
     }
 
 }

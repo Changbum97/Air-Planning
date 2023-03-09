@@ -42,24 +42,68 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-    private final UserService userService;
     private final CommentService commentService;
     private final PlannerService plannerService;
     private final LikeService likeService;
     private final RegionService regionService;
 
-    @GetMapping("/list")
+    // 게시판 리스트
+    @GetMapping("/{category}/list")
     public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-                            Model model,
+                            Model model, @PathVariable String category,
                             @RequestParam(required = false) String searchType,
-                            @RequestParam(required = false) String keyword) {
+                            @RequestParam(required = false) String keyword,
+                            @RequestParam(required = false) String region1,
+                            @RequestParam(required = false) Long regionId,
+                            @AuthenticationPrincipal UserDetail userDetail) {
 
+        Category enumCategory;
+        if (category.equals("free")) enumCategory = Category.FREE;
+        else if (category.equals("rankup")) enumCategory = Category.RANK_UP;
+        else if (category.equals("report")) enumCategory = Category.REPORT;
+        else if (category.equals("portfolio")) enumCategory = Category.PORTFOLIO;
+        else {
+            model.addAttribute("msg", "잘못된 접근입니다.");
+            model.addAttribute("nextUrl", "/");
+            return "error/redirect";
+        }
 
-        Page<BoardListResponse> boardPage = boardService.boardList(pageable, searchType, keyword);
-        model.addAttribute("list", boardPage);
-        model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
+        Page<BoardListResponse> boardPage;
 
-        return "boards/list";
+        if (enumCategory.equals(Category.PORTFOLIO)) {
+            boardPage = boardService.portfolioList(pageable, searchType, keyword, region1, regionId);
+            model.addAttribute("list", boardPage);
+
+            List<Region> regions = regionService.findAll();
+            HashSet<String> region1List = new HashSet<>();
+            for (Region region : regions) {
+                region1List.add(region.getRegion1());
+            }
+
+            model.addAttribute("region1List", region1List);
+            model.addAttribute("regions", regions);
+            model.addAttribute("portfolioSearchRequest", new PortfolioSearchRequest(searchType, keyword, region1, regionId));
+
+            return "boards/portfolioList";
+
+        } else {
+            boardPage = boardService.boardList(pageable, searchType, keyword, enumCategory);
+            model.addAttribute("list", boardPage);
+            model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
+
+            if (enumCategory.equals(Category.FREE)) {
+                return "boards/list";
+            } else if (enumCategory.equals(Category.REPORT)) {
+                return "boards/reportList";
+            } else if (enumCategory.equals(Category.RANK_UP)) {
+                if (userDetail != null) {
+                    model.addAttribute("userRole", userDetail.getRole());
+                }
+                return "boards/rankUpList";
+            }
+        }
+
+        return "/";
     }
 
     @GetMapping("/write")
@@ -191,7 +235,7 @@ public class BoardController {
     }
 
     // 플래너신청조회
-    @GetMapping("/rankup/{boardId}")
+   // @GetMapping("/rankup/{boardId}")
     public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model,
                                @AuthenticationPrincipal UserDetail userDetail){
         RankUpDetailResponse rankUpDetailResponse = boardService.rankUpDetail(boardId);
@@ -223,39 +267,6 @@ public class BoardController {
         log.info("delete");
 
         return "";
-    }
-
-    // 포트폴리오 리스트
-    @GetMapping("/portfolio/list")
-    public String portfolioList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
-                            Model model,
-                            @RequestParam(required = false) String searchType,
-                            @RequestParam(required = false) String keyword,
-                            @RequestParam(required = false) String region1,
-                            @RequestParam(required = false) Long regionId){
-
-        System.out.println("=====================");
-        System.out.println("searchType : " + searchType);
-        System.out.println("keyword : " + keyword);
-        System.out.println("region1 : " + region1);
-        System.out.println("region2 : " + regionId);
-        System.out.println("=====================");
-
-        Page<BoardListResponse> boardPage = boardService.portfolioList(pageable, searchType, keyword, region1, regionId);
-        model.addAttribute("list", boardPage);
-
-        List<Region> regions = regionService.findAll();
-        HashSet<String> region1List = new HashSet<>();
-        for (Region region : regions) {
-            region1List.add(region.getRegion1());
-        }
-
-        model.addAttribute("region1List", region1List);
-        model.addAttribute("regions", regions);
-
-        model.addAttribute("portfolioSearchRequest", new PortfolioSearchRequest(searchType, keyword, region1, regionId));
-
-        return "boards/portfolioList";
     }
 
     // 포트폴리오 작성
@@ -290,7 +301,7 @@ public class BoardController {
     }
 
     //포토폴리오 상세
-    @GetMapping("/portfolio/{boardId}")
+    //@GetMapping("/portfolio/{boardId}")
     public String portfolioDetail(@PathVariable Long boardId, Model model, Principal principal,
                                   @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                                   HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
@@ -410,7 +421,7 @@ public class BoardController {
 
 
     // 유저 신고 상세 조회
-    @GetMapping("/report/{boardId}")
+    //@GetMapping("/report/{boardId}")
     public String reportDetail(@PathVariable Long boardId, Model model, Principal principal) {
         BoardDto boardDto = boardService.reportDetail(boardId);
         model.addAttribute("board", boardDto);
@@ -438,29 +449,6 @@ public class BoardController {
         return boardId+"";
     }
 
-    @GetMapping("/rankup/list")
-    public String rankUpList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
-                            Model model,
-                            @RequestParam(required = false) String searchType,
-                            @RequestParam(required = false) String keyword,
-                             @AuthenticationPrincipal UserDetail userDetail){
-        if (userDetail != null) {
-            Page<BoardListResponse> boardPage = boardService.rankUpList(pageable, searchType, keyword);
-            model.addAttribute("userRole", userDetail.getRole());
-            model.addAttribute("list", boardPage);
-            model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
-
-            return "boards/rankUpList";
-        } else {
-            Page<BoardListResponse> boardPage = boardService.rankUpList(pageable, searchType, keyword);
-            model.addAttribute("userRole", "비로그인");
-            model.addAttribute("list", boardPage);
-            model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
-            return "boards/rankUpList";
-        }
-
-    }
-
 
     // 유저 신고 삭제
     @ResponseBody
@@ -470,12 +458,4 @@ public class BoardController {
         return reportDelete+"";
     }
 
-
-    // 유저 신고 리스트
-    @GetMapping("/report/list")
-    public String reportList(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable, Model model){
-        Page<BoardListResponse> reportPage = boardService.reportList(pageable);
-        model.addAttribute("list", reportPage);
-        return "boards/reportList";
-    }
 }

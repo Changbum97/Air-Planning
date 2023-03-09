@@ -89,13 +89,5 @@ public class BoardRestController {
         return Response.success(new BoardResponse("신고 삭제가 완료되었습니다.", boardId));
     }
 
-
-    // 유저 신고 리스트
-    @GetMapping
-    public Response<Page<BoardListResponse>> reportList(@PageableDefault(sort = "createdAt",size = 20,direction = Sort.Direction.DESC) Pageable pageable){
-        Page<BoardListResponse> boardDto = boardService.reportList(pageable);
-        return Response.success(boardDto);
-    }
-
 }
 
