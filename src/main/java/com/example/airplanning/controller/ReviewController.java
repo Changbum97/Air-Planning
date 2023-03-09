@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,7 @@ import java.security.Principal;
 @Controller
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
+@ApiIgnore
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -55,29 +57,12 @@ public class ReviewController {
         return "reviews/write";
     }
 
-    @ResponseBody
-    @PostMapping("")
-    public String writeReview(@RequestPart(value = "request") ReviewCreateRequest request,
-                              @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
-        reviewService.write(request, file, principal.getName());
-        return "리뷰 작성 성공";
-    }
-
     @GetMapping("/{reviewId}/update")
     public String updateReviewPage(@PathVariable Long reviewId, Model model) {
         Review review = reviewService.findById(reviewId, false);
         model.addAttribute(new ReviewUpdateRequest(review.getTitle(), review.getContent(), review.getStar(), review.getImage()));
         return "reviews/update";
     }
-
-    @ResponseBody
-    @PostMapping("/{reviewId}/update")
-    public String updateReview(@PathVariable Long reviewId, @RequestPart(value = "request") ReviewUpdateRequest request,
-                               @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
-        Long updatedReviewId = reviewService.update(reviewId, request, file, principal.getName());
-        return "";
-    }
-
     @GetMapping("/{reviewId}")
     public String getOneReview(@PathVariable Long reviewId, Model model, Principal principal,
                                HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) {
@@ -116,19 +101,5 @@ public class ReviewController {
         model.addAttribute("review", ReviewDto.of(review));
         model.addAttribute("userName", principal.getName());
         return "reviews/detail";
-    }
-
-    @PostMapping("/{reviewId}/like")
-    @ResponseBody
-    public String changeLike(@PathVariable Long reviewId, Principal principal) {
-        return likeService.changeLike(reviewId, principal.getName(), LikeType.REVIEW_LIKE);
-    }
-
-    @GetMapping("/{reviewId}/delete")
-    public String deleteReview(@PathVariable Long reviewId, Principal principal) {
-        System.out.println("삭제 요청 수락! : " +reviewId);
-        reviewService.delete(reviewId, principal.getName());
-        System.out.println("삭제 완료");
-        return "redirect:";
     }
 }

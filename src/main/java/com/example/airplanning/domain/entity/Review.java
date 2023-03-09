@@ -39,7 +39,7 @@ public class Review extends BaseEntity{
     @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "review", cascade = CascadeType.REMOVE)
     private List<Like> likes;
 
     public void update(ReviewUpdateRequest request, String image) {
