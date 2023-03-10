@@ -76,7 +76,7 @@ public class ReviewRestController {
     @GetMapping("/list")
     @ApiOperation(value = "리뷰 목록 조회", notes = "리뷰 목록을 확인합니다. 누구나 조회 가능하며, 리뷰 제목과 플래너 닉네임으로 검색 할 수 있습니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "searchType", value = "검색 조건, TITLE, NICKNAME 중 하나를 입력", defaultValue = "TITLE"),
+            @ApiImplicitParam(name = "searchType", value = "검색 조건. TITLE, NICKNAME 중 하나를 입력", defaultValue = "TITLE"),
             @ApiImplicitParam(name = "keyword", value = "검색어", defaultValue = "None")})
     public Response<Page<ReviewListResponse>> readList (@ApiIgnore @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                                                         @RequestParam(required = false) String searchType,

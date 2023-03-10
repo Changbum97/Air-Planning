@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class CoCommentCreateRequest2 {
+public class CoCommentCreateRequest {
     private Long parentId;
     private Long postId;
     private String content;

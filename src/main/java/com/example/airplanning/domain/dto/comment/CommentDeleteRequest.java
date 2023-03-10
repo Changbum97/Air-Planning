@@ -7,7 +7,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @ToString
-public class CommentDeleteRequest2 {
+public class CommentDeleteRequest {
     private Long targetCommentId;
     private Long postId;
 }

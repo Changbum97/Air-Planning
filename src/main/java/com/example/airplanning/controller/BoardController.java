@@ -3,8 +3,7 @@ package com.example.airplanning.controller;
 import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
-import com.example.airplanning.domain.dto.comment.CommentDto;
-import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
+import com.example.airplanning.domain.dto.comment.CommentResponse;
 import com.example.airplanning.domain.dto.planner.PlannerDetailResponse;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Region;
@@ -113,12 +112,6 @@ public class BoardController {
 
         BoardDto boardDto = boardService.detail(boardId, addView);
         model.addAttribute("board", boardDto);
-
-        Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
-        Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
-        model.addAttribute("commentPage", commentPage);
-        model.addAttribute("commentCreateRequest", new CommentCreateRequest());
-        model.addAttribute("commentSize", commentSize.getTotalElements());
 
         if (principal != null) {
             model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
@@ -329,13 +322,6 @@ public class BoardController {
         } else {
             model.addAttribute("checkLike", false);
         }
-
-        Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
-        Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
-        model.addAttribute("commentPage", commentPage);
-        model.addAttribute("commentCreateRequest", new CommentCreateRequest());
-        model.addAttribute("commentSize", commentSize.getTotalElements());
-
         return "boards/portfolioDetail";
     }
 

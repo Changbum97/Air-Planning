@@ -1,13 +1,10 @@
 package com.example.airplanning.domain.entity;
 
-import com.example.airplanning.domain.dto.comment.CommentUpdateRequest;
 import com.example.airplanning.domain.enum_class.CommentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

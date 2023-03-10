@@ -1,15 +1,11 @@
 package com.example.airplanning.service;
 
-import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
-import com.example.airplanning.domain.dto.comment.CommentDto;
-import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
-import com.example.airplanning.domain.dto.comment.CommentUpdateRequest;
-import com.example.airplanning.domain.dto.myPage.MyPageCommentResponse;
+import com.example.airplanning.domain.dto.comment.*;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Comment;
 import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.domain.entity.User;
-import com.example.airplanning.domain.enum_class.CommentType;
+import com.example.airplanning.domain.enum_class.AlarmType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.BoardRepository;
@@ -18,14 +14,10 @@ import com.example.airplanning.repository.ReviewRepository;
 import com.example.airplanning.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.descriptor.web.ApplicationParameter;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,122 +25,144 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
 
-    public CommentDto create (Long postId, Long userId, CommentCreateRequest request) {
-        log.info("서비스에도 정상적으로 요청이..");
-        log.info(request.getCommentType());
-        log.info(request.getContent());
-        // 댓글을 단 유저 존재 유무 확인
+    private final AlarmService alarmService;
+
+    public CommentResponse createComment(CommentCreateRequest request, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUNDED));
 
-        Comment savedComment = null;
-        // Board 혹은 Review 가 존재하는 지 확인
-        if (request.getCommentType().equals(CommentType.BOARD_COMMENT.name())) {
-            Board board = boardRepository.findById(postId)
-                    .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-            savedComment = commentRepository.save(request.toBoardCommentEntity(user, board));
+        CommentResponse response = null;
+
+        if (request.getCommentType().equals("board")){
+            Board board = boardRepository.findById(request.getPostId())
+                    .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
+            Comment savedComment = commentRepository.save(request.toBoardCommentEntity(user, board));
+            response = CommentResponse.of(savedComment);
+            alarmService.send(board.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId(), board.getTitle());
         } else {
-            Review review = reviewRepository.findById(postId)
-                    .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
-            savedComment = commentRepository.save(request.toReviewCommentEntity(user, review));
+            Review review = reviewRepository.findById(request.getPostId())
+                    .orElseThrow(()->new AppException(ErrorCode.REVIEW_NOT_FOUND));
+            Comment savedComment = commentRepository.save(request.toReviewCommentEntity(user, review));
+            response = CommentResponse.of(savedComment);
+            alarmService.send(review.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId(), review.getTitle());
         }
 
-        return CommentDto.of(savedComment);
-    }
-
-    public CommentDto createCoComment (Long postId, Long parentCommentId, Long userId, CommentCreateRequest request) {
-        // user 존재 유무 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-
-        // parent comment 존재 유무 확인
-        Comment comment = commentRepository.findById(parentCommentId)
-                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
-
-        Comment savedCoComment = null;
-
-        // 코멘트 타입에 따른 post 존재 유무 확인
-        if (request.getCommentType().equals(CommentType.BOARD_COMMENT.name())) {
-            Board board = boardRepository.findById(postId)
-                    .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-            savedCoComment = commentRepository.save(request.toBoardCoCommentEntity(user, board, comment));
-        } else {
-            Review review = reviewRepository.findById(postId)
-                    .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
-            savedCoComment = commentRepository.save(request.toReviewCoCommentEntity(user, review, comment));
-        }
-
-        return CommentDto.ofCo(savedCoComment);
-    }
-
-    public CommentDto read (Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
-
-        return CommentDto.of(comment);
+        return response;
     }
 
     @Transactional
-    public CommentDto update (Long commentId, CommentUpdateRequest request, Long userId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+    public CommentResponse updateComment(CommentUpdateRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUNDED));
 
-        userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-
-        if (comment.getUser().getId() == userId) {
-            comment.update(request.getContent());
-            Comment updatedComment = commentRepository.save(comment);
-
-            return CommentDto.of(updatedComment);
+        if (request.getCommentType().equals("board")) {
+            boardRepository.findById(request.getPostId())
+                    .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
         } else {
-            throw  new AppException(ErrorCode.INVALID_PERMISSION);
+            reviewRepository.findById(request.getPostId())
+                    .orElseThrow(()->new AppException(ErrorCode.REVIEW_NOT_FOUND));
         }
+
+        Comment targetComment = commentRepository.findById(request.getTargetCommentId())
+                .orElseThrow(()->new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+        Comment updatedComment = null;
+
+        if (user.getId() == targetComment.getUser().getId()) {
+            targetComment.update(request.getContent());
+            updatedComment = commentRepository.save(targetComment);
+        } else {
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        return CommentResponse.of(updatedComment);
     }
     @Transactional
-    public String delete (Long commentId, Long userId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+    public Long deleteComment(CommentDeleteRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUNDED));
 
-        userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+        Comment targetComment = commentRepository.findById(request.getTargetCommentId())
+                .orElseThrow(()->new AppException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if (comment.getUser().getId() == userId) {
-            commentRepository.delete(comment);
-            return "댓글이 삭제되었습니다.";
+        Long parentId = -1L;
+
+        if (targetComment.getParent() != null) {
+            parentId = targetComment.getParent().getId();
+        }
+
+        if (user.getId() == targetComment.getUser().getId() || user.getRole().toString().equals("ADMIN")) {
+            if (targetComment.getChildren().isEmpty()) {
+                commentRepository.delete(targetComment);
+            } else {
+                targetComment.deleteUpdate();
+                commentRepository.save(targetComment);
+            }
         } else {
-            throw  new AppException(ErrorCode.INVALID_PERMISSION);
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        System.out.println(parentId);
+        return parentId;
+    }
+
+    public void deleteParent(Long parentId) {
+        if (parentId != -1L) {
+            Comment parentComment = commentRepository.findById(parentId)
+                    .orElseThrow(()-> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+            if (parentComment.getChildren().isEmpty() && parentComment.getDeletedAt() != null) {
+                System.out.println("지운다.");
+                commentRepository.delete(parentComment);
+            }
         }
     }
 
-    public Page<CommentDto> readPage(Long postId, String commentType, Pageable pageable) {
+    public CommentResponse createCoComment(CoCommentCreateRequest request, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        Comment parentComment = commentRepository.findById(request.getParentId())
+                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+        Comment Coco = null;
+
+        if (request.getCommentType().equals("board")) {
+            Board board = boardRepository.findById(request.getPostId())
+                    .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
+            Coco = commentRepository.save(request.toBoardCoCommentEntity(user, board, parentComment));
+            // 알람 발송
+            alarmService.send(board.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId(), board.getTitle());
+            alarmService.send(parentComment.getUser(), AlarmType.COMMENT_ALARM, "/boards/"+board.getId(), board.getTitle());
+        } else {
+            Review review = reviewRepository.findById(request.getPostId())
+                    .orElseThrow(()->new AppException(ErrorCode.REVIEW_NOT_FOUND));
+            Coco = commentRepository.save(request.toReviewCoCommentEntity(user, review, parentComment));
+            // 알람 발송
+            alarmService.send(review.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId(), review.getTitle());
+            alarmService.send(parentComment.getUser(), AlarmType.COMMENT_ALARM, "/reviews/"+review.getId(), review.getTitle());
+        }
+
+        return CommentResponse.ofCoco(Coco);
+    }
+
+    public Page<CommentResponse> readComment(Long postId, String postType, Pageable pageable) {
         Page<Comment> commentPage = null;
 
-        if (commentType.equals(CommentType.BOARD_COMMENT.name())) {
+        if (postType.contains("board")) {
             Board board = boardRepository.findById(postId)
-                    .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-            commentPage = commentRepository.findAllByBoard(board, pageable);
+                    .orElseThrow(()->new AppException(ErrorCode.BOARD_NOT_FOUND));
+            commentPage = commentRepository.findByBoardAndParentIsNull(board, pageable);
         } else {
             Review review = reviewRepository.findById(postId)
-                    .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
-            commentPage = commentRepository.findAllByReview(review, pageable);
+                    .orElseThrow(()->new AppException(ErrorCode.REVIEW_NOT_FOUND));
+            commentPage = commentRepository.findByReviewAndParentIsNull(review, pageable);
         }
 
-        return new PageImpl<>(commentPage.stream()
-                .map(Comment ->CommentDto.of(Comment))
-                .collect(Collectors.toList()));
-    }
-
-    public Page<CommentDtoWithCoCo> readBoardParentCommentOnly (Long boardId, Pageable pageable) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-        Page<Comment> commentPage = commentRepository.findByBoardAndParentIsNull(board, pageable);
-        return new PageImpl<>(commentPage.stream()
-                .map(Comment ->CommentDtoWithCoCo.of(Comment))
-                .collect(Collectors.toList()));
+        return commentPage.map(comment -> CommentResponse.of(comment));
     }
 }
