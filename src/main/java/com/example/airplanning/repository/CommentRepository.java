@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
+
     Page<Comment> findAllByUser(User user, Pageable pageable);
-    Page<Comment> findAllByBoard(Board board, Pageable pageable);
-    Page<Comment> findAllByReview(Review review, Pageable pageable);
     Page<Comment> findByBoardAndParentIsNull(Board board, Pageable pageable);
+    Page<Comment> findByReviewAndParentIsNull(Review review, Pageable pageable);
 }

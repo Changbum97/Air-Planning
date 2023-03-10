@@ -173,14 +173,14 @@
     function getCommentPage(pageNum) {
         $.ajax({
             method: "GET",
-            url: "/comments/" + [[${review.id}]] + "/readReviewComment?page=" + pageNum,
+            url: "/api/comments/" + [[${review.id}]] + "/review?page=" + pageNum,
             dataType: "json",
             async: false,
             success: function (d) {
                 console.log(d)
-                totalData = d.totalElements;
+                totalData = d.result.totalElements;
                 console.log(totalData)
-                dataList = d.content;
+                dataList = d.result.content;
                 console.log(dataList)
             }
         });
@@ -376,7 +376,7 @@
         } else {
             $.ajax({
                 type: 'post',
-                url: '/comments/create',
+                url: '/api/comments',
                 data: {
                     "content": content,
                     "postId": reviewId,
@@ -410,8 +410,8 @@
         } else {
             if (confirm("수정 하시겠습니까?") == true) {
                 $.ajax({
-                    type: 'post',
-                    url: '/comments/update',
+                    type: 'PUT',
+                    url: '/api/comments',
                     data: {
                         "targetCommentId": targetCommentId,
                         "postId": reviewId,
@@ -442,8 +442,8 @@
         const reviewId = [[${review.Id}]]
         if (confirm("삭제 하시겠습니까?") == true) {
             $.ajax({
-                type: 'Post',
-                url: "/comments/delete",
+                type: 'DELETE',
+                url: "/api/comments",
                 data: {
                     "targetCommentId": targetCommentId,
                     "postId": reviewId
@@ -476,7 +476,7 @@
         } else {
             $.ajax({
                 type: 'post',
-                url: "/comments/createcoco",
+                url: "/api/comments/coco",
                 data: {
                     "parentId": parentId,
                     "postId": reviewId,
@@ -508,8 +508,8 @@
         } else {
             if (confirm("수정 하시겠습니까?") == true) {
                 $.ajax({
-                    type: 'post',
-                    url: '/comments/update',
+                    type: 'PUT',
+                    url: '/api/comments',
                     data: {
                         "targetCommentId": targetCommentId,
                         "postId": reviewId,
