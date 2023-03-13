@@ -89,14 +89,14 @@
 
         $.ajax({
             method: 'POST',
-            url: '/api/admin/rankchange',
+            url: '/api/admin/rank-change',
             data: {
                 "nickname" : nickname,
                 "boardId" : boardId,
                 "role" : role
             },
             success: function (d) {
-                alert(d.nickname+"의 등급이 "+d.role+"로 변경되었습니다.")
+                alert(d.nickname+"의 등급이 "+d.result.role+"로 변경되었습니다.")
                 location.href="/boards/report/list";
             }
 
