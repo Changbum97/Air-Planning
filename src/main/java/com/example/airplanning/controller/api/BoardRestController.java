@@ -6,9 +6,10 @@ import com.example.airplanning.domain.dto.board.BoardDto;
 import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.enum_class.Category;
-import com.example.airplanning.exception.AppException;
-import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.BoardService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -30,6 +30,30 @@ import java.security.Principal;
 public class BoardRestController {
 
     private final BoardService boardService;
+
+    @GetMapping("/{category}/list")
+    @ApiOperation(value = "게시판 리스트 조회", notes = "게시판 리스트를 조회합니다. 누구나 조회 가능하며, 제목과 작성자로 검색 할 수 있습니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "category", value = "게시판 카테고리, FREE, RANK_UP, REPORT, PORTFOLIO 중 하나를 선택", defaultValue = "free"),
+            @ApiImplicitParam(name = "searchType", value = "검색 조건, TITLE, NICKNAME 중 하나를 입력", defaultValue = "TITLE"),
+            @ApiImplicitParam(name = "keyword", value = "검색어", defaultValue = "None")})
+    public Response<?> listBoard(@ApiIgnore @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+                                 @PathVariable Category category,
+                                 @RequestParam(required = false) String searchType,
+                                 @RequestParam(required = false) String keyword) {
+
+        if (searchType != null) searchType = searchType.toUpperCase();
+
+        Page<BoardListResponse> boardPage;
+
+        if (category.equals(Category.PORTFOLIO)) {
+            boardPage = boardService.portfolioList(pageable, searchType, keyword, null, 998L);
+            return Response.success(boardPage);
+        } else {
+            boardPage = boardService.boardList(pageable, searchType, keyword, category);
+            return Response.success(boardPage);
+        }
+    }
 
     // 삭제
     @DeleteMapping("/{boardId}")
