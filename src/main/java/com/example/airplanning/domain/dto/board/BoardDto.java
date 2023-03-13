@@ -39,7 +39,7 @@ public class BoardDto {
                 .image(board.getImage())
                 .createdAt(board.getCreatedAt())
                 .category(board.getCategory())
-                .likeCnt(board.getLikes().size())
+                .likeCnt(board.getLikes() == null ? 0 : board.getLikes().size())
                 .views(board.getViews())
                 .userImage(board.getUser().getImage())
                 .build();

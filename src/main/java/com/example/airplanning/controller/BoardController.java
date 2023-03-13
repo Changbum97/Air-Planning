@@ -47,9 +47,9 @@ public class BoardController {
     private final LikeService likeService;
     private final RegionService regionService;
 
-    // 게시판 리스트
+    // 게시판 리스트 페이지
     @GetMapping("/{category}/list")
-    public String listBoard(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+    public String listBoardPage(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                             Model model, @PathVariable String category,
                             @RequestParam(required = false) String searchType,
                             @RequestParam(required = false) String keyword,
@@ -110,9 +110,9 @@ public class BoardController {
     @GetMapping("/{category}/write")
     public String writeBoardPage(@PathVariable String category, Model model, Principal principal) {
 
-        if (category.equals("rankup")) {
-            model.addAttribute("rankUpCreateRequest", new RankUpCreateRequest());
+        model.addAttribute("boardCreateRequest", new BoardCreateRequest());
 
+        if (category.equals("rankup")) {
             List<Region> regions = regionService.findAll();
             HashSet<String> region1List = new HashSet<>();
             for (Region region : regions) {
@@ -124,7 +124,6 @@ public class BoardController {
             return "boards/rankUpWrite";
 
         } else {
-            model.addAttribute("boardCreateRequest", new BoardCreateRequest());
             if (category.equals("free")) {
                 return "boards/freeWrite";
             } else if (category.equals("report")) {
@@ -138,25 +137,6 @@ public class BoardController {
                 return "error/redirect";
             }
         }
-
-    }
-
-    @ResponseBody
-    @PostMapping("/write")
-    public String writeBoard(@RequestPart(value = "request") BoardCreateRequest req,
-                             @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
-
-        try {
-            boardService.writeWithFile(req, file, principal.getName(), Category.FREE);
-        } catch (AppException e) {
-            if  (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
-                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/write";
-            }
-        } catch (Exception e) {
-            return "error*/";
-        }
-
-        return "글이 등록되었습니다.*/boards/list";
 
     }
 
@@ -240,15 +220,6 @@ public class BoardController {
     }
 
 
-
-    @ResponseBody
-    @PostMapping("/rankup/write")
-    public String rankUpWrite(@RequestPart(value = "request") RankUpCreateRequest createRequest,
-                              @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
-        boardService.rankUpWrite(createRequest, file, principal.getName());
-        return "등급업 신청 성공";
-    }
-
     // 플래너신청조회
    // @GetMapping("/rankup/{boardId}")
     public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model,
@@ -284,7 +255,7 @@ public class BoardController {
         return "";
     }
 
-    @ResponseBody
+    /*@ResponseBody
     @PostMapping("/portfolio/write")
     public String portfolioWrite(@RequestPart(value = "request") BoardCreateRequest req,
                                  @RequestPart(value = "file", required = false) MultipartFile file, Principal principal) throws IOException {
@@ -295,14 +266,14 @@ public class BoardController {
             boardId = boardService.writeWithFile(req, file, principal.getName(),Category.PORTFOLIO);
         } catch (AppException e) {
             if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
-                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/portfolio/write";
+                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요./boards/portfolio/write";
             }
         } catch (Exception e) {
-            return "error*/";
+            return "error/";
         }
 
-        return "글이 등록되었습니다.*/boards/portfolio/" + boardId;
-    }
+        return "글이 등록되었습니다./boards/portfolio/" + boardId;
+    }*/
 
     //포토폴리오 상세
     //@GetMapping("/portfolio/{boardId}")
@@ -406,14 +377,7 @@ public class BoardController {
         return likeService.changeLike(boardId, principal.getName(), LikeType.BOARD_LIKE);
     }
 
-    @PostMapping("/report/write")
-    @ResponseBody
-    public Long reportWrite(@RequestPart(value = "request") ReportCreateRequest reportCreateRequest,
-                            @RequestPart(value = "file",required = false) MultipartFile file, Principal principal) throws IOException {
-        System.out.println(reportCreateRequest.getTitle() + reportCreateRequest.getContent());
-        Board board = boardService.reportWrite(reportCreateRequest, file, principal.getName());
-        return board.getId();
-    }
+
 
 
 

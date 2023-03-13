@@ -14,8 +14,9 @@ import lombok.*;
 public class BoardCreateRequest {
     private String title;
     private String content;
-
     private Category category;
+    private Integer amount;
+    private Long regionId;
 
     public Board toEntity(User user){
         return Board.builder()
@@ -35,8 +36,7 @@ public class BoardCreateRequest {
                 .content(this.content)
                 .image(image)
                 .category(category)
-                .image(image)
-                .region(category == Category.PORTFOLIO ? user.getPlanner().getRegion() : null)
+                .region(category.equals(Category.PORTFOLIO) ? user.getPlanner().getRegion() : null)
                 .views(0)
                 .build();
     }

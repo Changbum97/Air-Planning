@@ -75,37 +75,6 @@ public class BoardService {
         return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
     }
 
-    @Transactional
-    public void rankUpWrite(RankUpCreateRequest rankUpCreateRequest, MultipartFile file, String userName) throws IOException {
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-
-        String changedFile = null;
-
-        if (file != null) {
-            changedFile = uploadFile(file);
-        }
-
-        Region region = regionRepository.findById(rankUpCreateRequest.getRegionId()).get();
-
-        Board board = Board.builder()
-                .user(user)
-                .category(Category.RANK_UP)
-                .title(rankUpCreateRequest.getTitle())
-                .content(rankUpCreateRequest.getContent())
-                .image(changedFile)
-                .region(region)
-                .amount(rankUpCreateRequest.getAmount())
-                .build();
-
-        boardRepository.save(board);
-
-        List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
-        for (User admin : admins) {
-            alarmService.send(admin, AlarmType.REQUEST_CHANGE_ROLE_ALARM, "/boards/rankup/"+board.getId(), board.getTitle());
-        }
-    }
-
 
     // 플래너신청조회
     public RankUpDetailResponse rankUpDetail(Long boardId) {
@@ -198,7 +167,7 @@ public class BoardService {
 
     //포토폴리오 작성 + 자유게시판 작성
     @Transactional
-    public Long writeWithFile(BoardCreateRequest req, MultipartFile file, String username, Category category) throws IOException {
+    public BoardDto writeWithFile(BoardCreateRequest req, MultipartFile file, String username, Category category) throws IOException {
 
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
@@ -209,10 +178,92 @@ public class BoardService {
             changedFile = uploadFile(file);
         }
 
-        Board board = req.toEntity(user, changedFile, category);
+        Board savedBoard = null;
+
+        if (category.equals(Category.RANK_UP)) {
+            Region region = regionRepository.findById(req.getRegionId()).get();
+
+            Board board = Board.builder().user(user).category(Category.RANK_UP).title(req.getTitle())
+                    .content(req.getContent()).image(changedFile).region(region).amount(req.getAmount()).build();
+
+            savedBoard = boardRepository.save(board);
+        } else {
+            savedBoard = boardRepository.save(req.toEntity(user, changedFile, category));
+        }
+
+        // 신고 게시판, 등업 게시판에 글이 추가되면 ADMIN에게 알람 전송
+        if (category.equals(Category.REPORT) || category.equals(Category.RANK_UP)) {
+            List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
+            for (User admin : admins) {
+                if (category.equals(Category.REPORT)) {
+                    alarmService.send(admin, AlarmType.REPORT_CREATED, "/boards/report/"+savedBoard.getId(), savedBoard.getTitle());
+                } else {
+                    alarmService.send(admin, AlarmType.REQUEST_CHANGE_ROLE_ALARM, "/boards/rankup/"+savedBoard.getId(), savedBoard.getTitle());
+                }
+            }
+        }
+
+        return BoardDto.of(savedBoard);
+    }
+
+    @Transactional
+    public void rankUpWrite(RankUpCreateRequest rankUpCreateRequest, MultipartFile file, String userName) throws IOException {
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        String changedFile = null;
+
+        if (file != null) {
+            changedFile = uploadFile(file);
+        }
+
+        Region region = regionRepository.findById(rankUpCreateRequest.getRegionId()).get();
+
+        Board board = Board.builder()
+                .user(user)
+                .category(Category.RANK_UP)
+                .title(rankUpCreateRequest.getTitle())
+                .content(rankUpCreateRequest.getContent())
+                .image(changedFile)
+                .region(region)
+                .amount(rankUpCreateRequest.getAmount())
+                .build();
+
         boardRepository.save(board);
 
-        return board.getId();
+        List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
+        for (User admin : admins) {
+            alarmService.send(admin, AlarmType.REQUEST_CHANGE_ROLE_ALARM, "/boards/rankup/"+board.getId(), board.getTitle());
+        }
+    }
+
+    // 유저 신고 작성
+    public Board reportWrite(ReportCreateRequest reportCreateRequest, MultipartFile file, String userName) throws IOException {
+
+        User user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        String changedFile = null;
+
+        if (file != null) {
+            changedFile = uploadFile(file);
+        }
+
+        Board board = boardRepository.save(reportCreateRequest.toEntity(user, changedFile));
+
+        List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
+        for (User admin : admins) {
+            alarmService.send(admin, AlarmType.REPORT_CREATED, "/boards/report/"+board.getId(), board.getTitle());
+        }
+
+
+        return Board.builder()
+                .id(board.getId())
+                .category(Category.REPORT)
+                .title(reportCreateRequest.getTitle())
+                .content(reportCreateRequest.getContent())
+                .build();
+
     }
 
     //포토폴리오 수정
@@ -372,34 +423,7 @@ public class BoardService {
         return id;
     }
 
-    // 유저 신고 작성
-    public Board reportWrite(ReportCreateRequest reportCreateRequest, MultipartFile file, String userName) throws IOException {
 
-        User user = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
-
-        String changedFile = null;
-
-        if (file != null) {
-            changedFile = uploadFile(file);
-        }
-
-        Board board = boardRepository.save(reportCreateRequest.toEntity(user, changedFile));
-
-        List<User> admins = userRepository.findAllByRole(UserRole.ADMIN);
-        for (User admin : admins) {
-            alarmService.send(admin, AlarmType.REPORT_CREATED, "/boards/report/"+board.getId(), board.getTitle());
-        }
-
-
-        return Board.builder()
-                .id(board.getId())
-                .category(Category.REPORT)
-                .title(reportCreateRequest.getTitle())
-                .content(reportCreateRequest.getContent())
-                .build();
-
-    }
 
     // 유저 신고 상세 조회
     public BoardDto reportDetail(Long id) {

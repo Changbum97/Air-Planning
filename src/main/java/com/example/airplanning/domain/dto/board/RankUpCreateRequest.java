@@ -18,15 +18,6 @@ public class RankUpCreateRequest {
 
     private Long regionId;
 
-    public Board toEntity(User user){
-        return Board.builder()
-                .user(user)
-                .title(this.title)
-                .content(this.content)
-                .category(Category.RANK_UP)
-                .views(0)
-                .build();
-    }
 
     public Board toEntity(User user, String image, Category category){
         return Board.builder()
@@ -35,7 +26,6 @@ public class RankUpCreateRequest {
                 .content(this.content)
                 .image(image)
                 .category(category)
-                .image(image)
                 .views(0)
                 .build();
     }

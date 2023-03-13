@@ -10,7 +10,7 @@
                 <div align="center">
                     <h2>플래너 신청</h2><br/>
                 </div>
-                <form class="form-group" th:object="${rankUpCreateRequest}" id="rankUpCreateRequest">
+                <form class="form-group" th:object="${boardCreateRequest}" id="boardCreateRequest">
                     <br/>
                     <div>
                         <input type="text" placeholder="제목을 입력해주세요" th:field="*{title}">
@@ -108,12 +108,19 @@
 
         $.ajax({
             type:'POST',
-            url:'/boards/rankup/write',
+            url:'/api/boards/rankup',
             data: formData,
             contentType: false, // 필수 : x-www-form-urlencoded로 파싱되는 것을 방지
             processData: false,  // 필수: contentType을 false로 줬을 때 QueryString 자동 설정됨. 해제
-            success: function (){
-                location.href ="/boards/rankup/list";
+            success: function (message) {
+                if (message.resultCode == "SUCCESS") {
+                    alert("플래너 신청이 되었습니다.");
+                    location.href = '/boards/rankup/' + message.result.id;
+                } else {
+                    alert(message.result);
+                    location.href = '/boards/rankup/write';
+                }
+                console.log(message)
             }
         });
     }

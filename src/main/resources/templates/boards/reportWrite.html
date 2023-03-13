@@ -97,12 +97,19 @@
 
     $.ajax({
       type:'POST',
-      url:'/boards/report/write',
+      url:'/api/boards/report',
       data: formData,
       contentType: false, // 필수 : x-www-form-urlencoded로 파싱되는 것을 방지
       processData: false,  // 필수: contentType을 false로 줬을 때 QueryString 자동 설정됨. 해제
-      success: function (data){
-        location.href = "/boards/report/list"
+      success: function (message) {
+        if (message.resultCode == "SUCCESS") {
+          alert("신고가 접수 되었습니다.");
+          location.href = '/boards/report/' + message.result.id;
+        } else {
+          alert(message.result);
+          location.href = '/boards/report/write';
+        }
+        console.log(message)
       }
     });
 

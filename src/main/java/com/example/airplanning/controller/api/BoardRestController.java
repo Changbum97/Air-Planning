@@ -6,6 +6,8 @@ import com.example.airplanning.domain.dto.board.BoardDto;
 import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.enum_class.Category;
+import com.example.airplanning.exception.AppException;
+import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.BoardService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
@@ -31,6 +34,7 @@ public class BoardRestController {
 
     private final BoardService boardService;
 
+    // 게시판 리스트
     @GetMapping("/{category}/list")
     @ApiOperation(value = "게시판 리스트 조회", notes = "게시판 리스트를 조회합니다. 누구나 조회 가능하며, 제목과 작성자로 검색 할 수 있습니다.")
     @ApiImplicitParams({
@@ -53,6 +57,33 @@ public class BoardRestController {
             boardPage = boardService.boardList(pageable, searchType, keyword, category);
             return Response.success(boardPage);
         }
+    }
+
+    // 게시판 글 작성
+    @PostMapping("/{category}")
+    public Response<?> writeBoard(@PathVariable String category, Principal principal,
+                                  @RequestPart(value = "request") BoardCreateRequest req,
+                                  @RequestPart(value = "file",required = false) MultipartFile file) throws IOException {
+
+        category = category.toLowerCase();
+        Category enumCategory = null;
+
+        if (category.equals("free")) enumCategory = Category.FREE;
+        else if (category.equals("report")) enumCategory = Category.REPORT;
+        else if (category.equals("rankup")) enumCategory = Category.RANK_UP;
+        else if (category.equals("portfolio")) enumCategory = Category.PORTFOLIO;
+        else {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+
+        try {
+            return Response.success(boardService.writeWithFile(req, file, principal.getName(), enumCategory));
+        } catch (AppException e) {
+            if  (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
+                return Response.error("파일 업로드 과정 중 오류가 발생했습니다. 다시 시도해 주세요.");
+            }
+        }
+        return Response.error("에러 발생");
     }
 
     // 삭제
