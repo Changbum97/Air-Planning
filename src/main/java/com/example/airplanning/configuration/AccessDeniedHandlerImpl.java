@@ -18,7 +18,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 
         if (requestUri.contains("/boards/portfolio/write")) {
             request.setAttribute("msg", "플래너 등급 유저만 작성 가능합니다.");
-            request.setAttribute("nextPage", "/");
+            request.setAttribute("nextPage", "/boards/portfolio/list");
             request.getRequestDispatcher("/error/redirect").forward(request, response);
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

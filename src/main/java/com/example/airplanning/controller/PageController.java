@@ -13,7 +13,7 @@ public class PageController {
 
     @GetMapping("/board/list")
     public String boardList() {
-        return "boards/list";
+        return "freeList";
     }
 
     @GetMapping("/users/planner")

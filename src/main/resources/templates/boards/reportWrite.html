@@ -10,7 +10,7 @@
       <div align="center">
         <h2>신고게시판</h2><br/>
       </div>
-      <form class="form-group" th:object="${reportCreateRequest}" id="reportCreateRequest">
+      <form class="form-group" th:object="${boardCreateRequest}" id="boardCreateRequest">
         <br/>
         <div>
           <input th:field="*{title}" type="text" placeholder="신고 대상의 닉네임을 입력해 주세요" style="width: 80%" oninput="searchUser()">

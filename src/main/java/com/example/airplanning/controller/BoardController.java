@@ -92,7 +92,7 @@ public class BoardController {
             model.addAttribute("boardSearchRequest", new BoardSearchRequest(searchType, keyword));
 
             if (enumCategory.equals(Category.FREE)) {
-                return "boards/list";
+                return "boards/freeList";
             } else if (enumCategory.equals(Category.REPORT)) {
                 return "boards/reportList";
             } else if (enumCategory.equals(Category.RANK_UP)) {
@@ -106,10 +106,39 @@ public class BoardController {
         return "/";
     }
 
-    @GetMapping("/write")
-    public String writeBoardPage(Model model) {
-        model.addAttribute(new BoardCreateRequest());
-        return "boards/write";
+    // 게시판 글 작성 페이지
+    @GetMapping("/{category}/write")
+    public String writeBoardPage(@PathVariable String category, Model model, Principal principal) {
+
+        if (category.equals("rankup")) {
+            model.addAttribute("rankUpCreateRequest", new RankUpCreateRequest());
+
+            List<Region> regions = regionService.findAll();
+            HashSet<String> region1List = new HashSet<>();
+            for (Region region : regions) {
+                region1List.add(region.getRegion1());
+            }
+
+            model.addAttribute("region1List", region1List);
+            model.addAttribute("regions", regions);
+            return "boards/rankUpWrite";
+
+        } else {
+            model.addAttribute("boardCreateRequest", new BoardCreateRequest());
+            if (category.equals("free")) {
+                return "boards/freeWrite";
+            } else if (category.equals("report")) {
+                return "boards/reportWrite";
+            } else if (category.equals("portfolio")) {
+                model.addAttribute("planner", plannerService.findByUser(principal.getName()));
+                return "boards/portfolioWrite";
+            } else {
+                model.addAttribute("msg", "잘못된 접근입니다.");
+                model.addAttribute("nextUrl", "/");
+                return "error/redirect";
+            }
+        }
+
     }
 
     @ResponseBody
@@ -210,21 +239,7 @@ public class BoardController {
         return "boards/modify";
     }
 
-    // 플래너등급신청
-    @GetMapping("/rankup/write")
-    public String rankUpWrite(Model model) {
-        model.addAttribute(new RankUpCreateRequest());
 
-        List<Region> regions = regionService.findAll();
-        HashSet<String> region1List = new HashSet<>();
-        for (Region region : regions) {
-            region1List.add(region.getRegion1());
-        }
-
-        model.addAttribute("region1List", region1List);
-        model.addAttribute("regions", regions);
-        return "boards/rankUpWrite";
-    }
 
     @ResponseBody
     @PostMapping("/rankup/write")
@@ -267,17 +282,6 @@ public class BoardController {
         log.info("delete");
 
         return "";
-    }
-
-    // 포트폴리오 작성
-    @GetMapping("/portfolio/write")
-    public String portfolioWrite(Model model, Principal principal) {
-
-        PlannerDetailResponse response = plannerService.findByUser(principal.getName());
-
-        model.addAttribute(new BoardCreateRequest());
-        model.addAttribute("planner", response);
-        return "boards/portfolioWrite";
     }
 
     @ResponseBody
@@ -400,13 +404,6 @@ public class BoardController {
     @ResponseBody
     public String changeLike(@PathVariable Long boardId, Principal principal) {
         return likeService.changeLike(boardId, principal.getName(), LikeType.BOARD_LIKE);
-    }
-
-    // 유저 신고 작성
-    @GetMapping("/report/write")
-    public String reportWritePage(Model model) {
-        model.addAttribute(new ReportCreateRequest());
-        return "boards/reportWrite";
     }
 
     @PostMapping("/report/write")
