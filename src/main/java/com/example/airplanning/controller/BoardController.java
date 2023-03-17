@@ -2,10 +2,6 @@ package com.example.airplanning.controller;
 
 import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.board.*;
-import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
-import com.example.airplanning.domain.dto.comment.CommentDto;
-import com.example.airplanning.domain.dto.comment.CommentDtoWithCoCo;
-import com.example.airplanning.domain.dto.planner.PlannerDetailResponse;
 import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Region;
 import com.example.airplanning.domain.enum_class.Category;
@@ -140,51 +136,90 @@ public class BoardController {
 
     }
 
-    @GetMapping("/{boardId}")
-    public String detailBoard(@PathVariable Long boardId, Model model, Principal principal,
-                              @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-                              HttpServletRequest request, HttpServletResponse response){
+    // 게시판 글 조회 페이지
+    @GetMapping("/{category}/{boardId}")
+    public String detailBoard(@PathVariable Long boardId, @PathVariable String category, Model model, Principal principal,
+                              HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetail userDetail){
 
-        Cookie oldCookie = null;
-        Cookie[] cookies = request.getCookies();
-        Boolean addView = true;
-        if(cookies != null) {
-            for(Cookie cookie : cookies) {
-                if(cookie.getName().equals("boardView")) {
-                    oldCookie = cookie;
-                    break;
+        Category enumCategory;
+        if (category.equals("free")) enumCategory = Category.FREE;
+        else if (category.equals("report")) enumCategory = Category.REPORT;
+        else if (category.equals("rankup")) enumCategory = Category.RANK_UP;
+        else if (category.equals("portfolio")) enumCategory = Category.PORTFOLIO;
+        else {
+            model.addAttribute("msg", "잘못된 접근입니다.");
+            model.addAttribute("nextUrl", "/");
+            return "error/redirect";
+        }
+
+        if (enumCategory.equals(Category.FREE) || enumCategory.equals(Category.PORTFOLIO)) {
+
+            // 조회수 관련 로직
+            Cookie oldCookie = null;
+            Cookie[] cookies = request.getCookies();
+            Boolean addView = true;
+            if(cookies != null) {
+                for(Cookie cookie : cookies) {
+                    if(cookie.getName().equals("boardView")) {
+                        oldCookie = cookie;
+                        break;
+                    }
                 }
             }
-        }
-        if(oldCookie != null && oldCookie.getValue().equals(boardId.toString())) {
+            if(oldCookie != null && oldCookie.getValue().equals(boardId.toString())) {
                 addView = false;
-        } else {
-            Cookie newCookie = new Cookie("boardView", boardId.toString());
-            newCookie.setMaxAge(60 * 60);   // 한 시간
-            response.addCookie(newCookie);
-        }
-
-        BoardDto boardDto = boardService.detail(boardId, addView);
-        model.addAttribute("board", boardDto);
-
-        Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
-        Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
-        model.addAttribute("commentPage", commentPage);
-        model.addAttribute("commentCreateRequest", new CommentCreateRequest());
-        model.addAttribute("commentSize", commentSize.getTotalElements());
-
-        if (principal != null) {
-            model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
-
-            // 로그인 유저가 글 작성자라면 수정, 삭제 버튼 출력
-            if(principal.getName().equals(boardDto.getUserName())) {
-                model.addAttribute("isWriter", true);
+            } else {
+                Cookie newCookie = new Cookie("boardView", boardId.toString());
+                newCookie.setMaxAge(60 * 60);   // 한 시간
+                response.addCookie(newCookie);
             }
+
+            BoardDto boardDto = boardService.detail(boardId, addView, enumCategory);
+            model.addAttribute("board", boardDto);
+
+            // 댓글 관련 => ajax를 통해 화면에서 불러옴
+
+            if (enumCategory.equals(Category.FREE)) {
+                // 좋아요 관련
+                if (principal != null) {
+                    model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
+
+                    // 로그인 유저가 글 작성자라면 수정, 삭제 버튼 출력
+                    if(principal.getName().equals(boardDto.getUserName())) {
+                        model.addAttribute("isWriter", true);
+                    }
+                } else {
+                    model.addAttribute("checkLike", false);
+                }
+
+                return "boards/freeDetail";
+            } else {
+                model.addAttribute("planner", plannerService.findByUser(boardDto.getUserName()));
+                return "boards/portfolioDetail";
+            }
+
         } else {
-            model.addAttribute("checkLike", false);
+
+            BoardDto boardDto = boardService.detail(boardId, false, enumCategory);
+
+            // 작성자 본인이거나 ADMIN이면 출력
+            if (principal.getName().equals(boardDto.getUserName()) || userDetail.getRole().equals("ADMIN")) {
+                model.addAttribute("board", boardDto);
+                if (enumCategory.equals(Category.REPORT)) {
+                    return "boards/reportDetail";
+                }
+
+                model.addAttribute("userName", principal.getName());
+                model.addAttribute("role", userDetail.getRole());
+                return "boards/rankUpDetail";
+            } else {
+                model.addAttribute("msg", "작성자만 조회 가능합니다.");
+                model.addAttribute("nextPage", "/boards/" + category + "/list");
+                return "error/redirect";
+            }
         }
-        return "boards/detail";
     }
+
 
     @ResponseBody
     @PostMapping("/{boardId}/modify")
@@ -220,16 +255,7 @@ public class BoardController {
     }
 
 
-    // 플래너신청조회
-   // @GetMapping("/rankup/{boardId}")
-    public String rankUpDetail(@PathVariable Long boardId, Principal principal, Model model,
-                               @AuthenticationPrincipal UserDetail userDetail){
-        RankUpDetailResponse rankUpDetailResponse = boardService.rankUpDetail(boardId);
-        model.addAttribute("board", rankUpDetailResponse);
-        model.addAttribute("userName", principal.getName());
-        model.addAttribute("role", userDetail.getRole());
-        return "boards/rankUpDetail";
-    }
+
 
     @GetMapping("/rankup/update/{boardId}")
     public String rankUpdate(@PathVariable Long boardId, Model model){
@@ -275,58 +301,10 @@ public class BoardController {
         return "글이 등록되었습니다./boards/portfolio/" + boardId;
     }*/
 
-    //포토폴리오 상세
-    //@GetMapping("/portfolio/{boardId}")
-    public String portfolioDetail(@PathVariable Long boardId, Model model, Principal principal,
-                                  @ApiIgnore @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
-                                  HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 
-        Cookie oldCookie = null;
-        Cookie[] cookies = httpServletRequest.getCookies();
-        Boolean addView = true;
-        if(cookies != null) {
-            for(Cookie cookie : cookies) {
-                if(cookie.getName().equals("portfolioView")) {
-                    oldCookie = cookie;
-                    break;
-                }
-            }
-        }
-        if(oldCookie != null && oldCookie.getValue().equals(boardId.toString())) {
-            addView = false;
-        } else {
-            Cookie newCookie = new Cookie("portfolioView", boardId.toString());
-            newCookie.setMaxAge(60 * 60);   // 한 시간
-            httpServletResponse.addCookie(newCookie);
-        }
-
-        BoardDto boardDto = boardService.portfolioDetail(boardId, addView);
-        PlannerDetailResponse response = plannerService.findByUser(boardDto.getUserName());
-
-        model.addAttribute("planner", response);
-        model.addAttribute("board", boardDto);
-
-        if (principal != null) {
-            model.addAttribute("checkLike", likeService.checkLike(boardId, principal.getName()));
-            // 로그인 유저가 글 작성자라면 수정, 삭제 버튼 출력
-            if(principal.getName().equals(boardDto.getUserName())) {
-                model.addAttribute("isWriter", true);
-            }
-        } else {
-            model.addAttribute("checkLike", false);
-        }
-
-        Page<CommentDtoWithCoCo> commentPage = commentService.readBoardParentCommentOnly(boardId, pageable);
-        Page<CommentDto> commentSize = commentService.readPage(boardId, "BOARD_COMMENT", pageable);
-        model.addAttribute("commentPage", commentPage);
-        model.addAttribute("commentCreateRequest", new CommentCreateRequest());
-        model.addAttribute("commentSize", commentSize.getTotalElements());
-
-        return "boards/portfolioDetail";
-    }
 
     //포토폴리오 게시글 수정
-    @GetMapping("portfolio/{boardId}/modify")
+    /*@GetMapping("portfolio/{boardId}/modify")
     public String portfolioModify(@PathVariable Long boardId, Model model, Principal principal) {
 
         PlannerDetailResponse response = plannerService.findByUser(principal.getName());
@@ -334,7 +312,7 @@ public class BoardController {
         model.addAttribute("planner", response);
         model.addAttribute(new BoardModifyRequest(boardDto.getTitle(), boardDto.getContent(), boardDto.getImage()));
         return "boards/portfolioModify";
-    }
+    }*/
 
     @ResponseBody
     @PostMapping("portfolio/{boardId}/modify")
@@ -377,18 +355,6 @@ public class BoardController {
         return likeService.changeLike(boardId, principal.getName(), LikeType.BOARD_LIKE);
     }
 
-
-
-
-
-    // 유저 신고 상세 조회
-    //@GetMapping("/report/{boardId}")
-    public String reportDetail(@PathVariable Long boardId, Model model, Principal principal) {
-        BoardDto boardDto = boardService.reportDetail(boardId);
-        model.addAttribute("board", boardDto);
-        model.addAttribute("userName", principal.getName());
-        return "boards/reportDetail";
-    }
 
 
 

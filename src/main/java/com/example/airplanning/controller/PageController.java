@@ -8,7 +8,7 @@ public class PageController {
 
     @GetMapping("/boards/detail")
     public String boardDetail() {
-        return "boards/detail";
+        return "freeDetail";
     }
 
     @GetMapping("/board/list")

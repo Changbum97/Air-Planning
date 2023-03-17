@@ -26,6 +26,10 @@ public class BoardDto {
     private Integer views;      // 조회수
     private String userImage;   // 작성자 프로필
 
+    // Rank Up Detail
+    private String region;      // 자신있는 지역
+    private Integer amount;     // 플랜 가격
+
     @Enumerated(EnumType.STRING)
     private Category category;
 
@@ -42,6 +46,8 @@ public class BoardDto {
                 .likeCnt(board.getLikes() == null ? 0 : board.getLikes().size())
                 .views(board.getViews())
                 .userImage(board.getUser().getImage())
+                .region(board.getRegion() == null ? "" : board.getRegion().getRegion1() + " " + board.getRegion().getRegion2())
+                .amount(board.getAmount())
                 .build();
     }
 

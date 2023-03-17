@@ -104,11 +104,11 @@ public class BoardRestController {
     }
 
     // 플래너 신청 조회
-    @GetMapping("/rankUp/{boardId}")
+    /*@GetMapping("/rankUp/{boardId}")
     @Operation(summary = "플래너 신청 조회")
     public Response<RankUpDetailResponse> rankUpDetail(@PathVariable Long boardId){
         return Response.success( boardService.rankUpDetail(boardId));
-    }
+    }*/
 
     // 유저 신고 작성
     @PostMapping("/reportWrite/{boardId}")
@@ -118,13 +118,13 @@ public class BoardRestController {
         return Response.success(new BoardResponse("신고가 완료되었습니다.", board.getId()));
     }
     
-    
+
     // 유저 신고 상세 조회
-    @GetMapping("/reportDetail/{boardId}")
+    /*@GetMapping("/reportDetail/{boardId}")
     public Response<BoardDto> reportDetail(@PathVariable Long boardId) {
         BoardDto boardDto =  boardService.reportDetail(boardId);
         return Response.success(boardDto);
-    }
+    }*/
 
 
     // 유저 신고 수정

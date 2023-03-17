@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,10 +56,10 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardDto detail(Long id, Boolean addView) {
+    public BoardDto detail(Long id, Boolean addView, Category category) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
 
-        if (!board.getCategory().name().equals("FREE")) {
+        if (!board.getCategory().equals(category)) {
             throw new AppException(ErrorCode.BOARD_NOT_FOUND);
         }
 
@@ -73,14 +72,6 @@ public class BoardService {
 
     public Board view(Long id){
         return boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-    }
-
-
-    // 플래너신청조회
-    public RankUpDetailResponse rankUpDetail(Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-        return RankUpDetailResponse.of(board);
     }
     
     // 삭제
@@ -307,22 +298,6 @@ public class BoardService {
 
     }
 
-    // 포토폴리오 상세 조회
-    @Transactional
-    public BoardDto portfolioDetail(Long boardId, Boolean addView) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-
-        if (!board.getCategory().name().equals("PORTFOLIO")) {
-            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
-        }
-
-        if(addView) {
-            board.addViews();
-        }
-        return BoardDto.of(board);
-    }
-
     //기존 이미지 삭제
     public void deleteFile(String filePath) {
         //앞의 defaultUrl을 제외한 파일이름만 추출
@@ -421,17 +396,6 @@ public class BoardService {
             alarmService.send(board.getUser(), AlarmType.REFUSED_PLANNER, "/", board.getTitle());
         }
         return id;
-    }
-
-
-
-    // 유저 신고 상세 조회
-    public BoardDto reportDetail(Long id) {
-        Board board = boardRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
-        if (!board.getCategory().name().equals("REPORT")) {
-            throw new AppException(ErrorCode.BOARD_NOT_FOUND);
-        }
-        return BoardDto.of(board);
     }
 
 
