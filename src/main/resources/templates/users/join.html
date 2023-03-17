@@ -100,12 +100,13 @@
 
     $.ajax({
       type: 'GET',
-      url: '/users/check-userName',
+      url: '/api/users/check-username',
       data: {
-        userName: userName
+        username: userName
       },
       success: function (duplicated) {
-        if (duplicated == true) {
+        console.log(duplicated)
+        if (duplicated.result == true) {
           hide('userName-null')
           hide('userName-pass')
           show('userName-fail')
@@ -143,12 +144,12 @@
 
     $.ajax({
       type: 'GET',
-      url: '/users/check-nickname',
+      url: '/api/users/check-nickname',
       data: {
         nickname: nickname
       },
       success: function (duplicated) {
-        if (duplicated == true) {
+        if (duplicated.result == true) {
           hide('nickname-null')
           hide('nickname-pass')
           show('nickname-fail')
@@ -185,12 +186,12 @@
 
     $.ajax({
       type: 'GET',
-      url: '/users/check-email',
+      url: '/api/users/check-email',
       data: {
         email: email
       },
       success: function (duplicated) {
-        if (duplicated == true) {
+        if (duplicated.result == true) {
           hide('email-null')
           hide('email-pass')
           show('email-fail')
@@ -211,12 +212,12 @@
     let email = $("#email").val();
     $.ajax({
       type: 'GET',
-      url: '/users/ecert/send',
+      url: '/api/users/send-auth-email',
       data: {
         email: email
       },
       success:function (message) {
-        alert(message)
+        alert(message.result)
       }
     });
 
@@ -231,12 +232,12 @@
 
     $.ajax({
       type: 'GET',
-      url: '/users/ecert/check',
+      url: '/api/users/check-auth-email',
       data: {
         code: code
       },
       success:function (auth) {
-        if (auth == true) {
+        if (auth.result == true) {
           show('email-check-pass')
           hide('email-check-fail')
           emailAuthPass = true
@@ -295,10 +296,10 @@
   function join() {
     $.ajax({
       type: 'POST',
-      url: '/users/join',
+      url: '/api/users/join',
       data: $('#userJoinRequest').serialize(),
       success: function (message) {
-        alert(message)
+        alert("회원가입 성공")
         location.href="/users/login"
       }
     });
