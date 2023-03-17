@@ -1,6 +1,7 @@
 package com.example.airplanning.controller.api;
 
 
+import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.board.BoardDto;
 import com.example.airplanning.domain.dto.board.*;
@@ -19,10 +20,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -66,7 +72,7 @@ public class BoardRestController {
                                   @RequestPart(value = "file",required = false) MultipartFile file) throws IOException {
 
         category = category.toLowerCase();
-        Category enumCategory = null;
+        Category enumCategory;
 
         if (category.equals("free")) enumCategory = Category.FREE;
         else if (category.equals("report")) enumCategory = Category.REPORT;
@@ -84,6 +90,24 @@ public class BoardRestController {
             }
         }
         return Response.error("에러 발생");
+    }
+
+    @GetMapping("/{category}/{boardId}")
+    @ApiOperation(value = "게시판 글 조회", notes = "게시판 글 하나를 조회합니다. 자유게시판과 포트폴리오 게시판의 글에는 누구나 조회 가능하지만, 신고 게시판과 등업 게시판은 작성자와 ADMIN만 조회 가능합니다.")
+    @ApiImplicitParams({@ApiImplicitParam(name = "category", value = "게시판 카테고리, FREE, RANK_UP, REPORT, PORTFOLIO 중 하나를 선택", defaultValue = "FREE")})
+    public Response<?> detailBoard(@PathVariable Long boardId, @PathVariable Category category,
+                                   @ApiIgnore Principal principal, @ApiIgnore @AuthenticationPrincipal UserDetail userDetail){
+
+        BoardDto boardDto = boardService.detail(boardId, false, category);
+
+        if (category.equals(Category.REPORT) || category.equals(Category.RANK_UP)) {
+            // 작성자 본인이거나 ADMIN이 아니면 에러 발생
+            if (principal.getName().equals(boardDto.getUserName()) || userDetail.getRole().equals("ADMIN")) {
+                throw new AppException(ErrorCode.INVALID_REQUEST);
+            }
+        }
+
+        return Response.success(boardDto);
     }
 
     // 삭제
