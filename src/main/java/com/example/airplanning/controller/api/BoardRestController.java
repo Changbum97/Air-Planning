@@ -115,6 +115,9 @@ public class BoardRestController {
                                    @RequestPart(value = "request") BoardUpdateRequest req,
                                    @RequestPart(value = "file",required = false) MultipartFile file,
                                    Principal principal) {
+        log.info("=================================");
+        log.info("Board Rest Controller: {}", category);
+        log.info("=================================");
         category = category.toLowerCase();
         Category enumCategory;
 
@@ -127,7 +130,7 @@ public class BoardRestController {
         }
 
         try {
-            boardService.modify(req, file, principal.getName(), boardId);
+            boardService.modify(req, file, principal.getName(), boardId, enumCategory);
         } catch (AppException e) {
             if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
                 return Response.error("파일 업로드 과정 중 오류가 발생했습니다. 다시 시도해 주세요.");

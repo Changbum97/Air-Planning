@@ -258,7 +258,7 @@ public class BoardService {
 
     //포토폴리오 수정
     @Transactional
-    public void modify(BoardUpdateRequest req, MultipartFile file, String username, Long boardId) throws IOException {
+    public void modify(BoardUpdateRequest req, MultipartFile file, String username, Long boardId, Category category) throws IOException {
 
         //AccessDeniedHandler에서 막혔을 듯
         User user = userRepository.findByUserName(username)
@@ -292,7 +292,17 @@ public class BoardService {
             }
         }
 
-        board.modify(req.getTitle(), req.getContent(), changedFile);
+        if (category.equals(Category.RANK_UP)) {
+            log.info("===============");
+            log.info("AMount : {}", req.getAmount());
+            log.info("RegionId : {}", req.getRegionId());
+            log.info("Region : {}", regionRepository.findById(req.getRegionId()).get());
+            log.info("===============");
+            board.modifyRankUp(req.getTitle(), req.getContent(),
+                    regionRepository.findById(req.getRegionId()).get(), req.getAmount(), changedFile);
+        } else {
+            board.modify(req.getTitle(), req.getContent(), changedFile);
+        }
         boardRepository.save(board);
 
     }

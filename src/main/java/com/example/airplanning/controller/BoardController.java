@@ -265,15 +265,6 @@ public class BoardController {
 
 
 
-
-    @PostMapping("/rankup/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, @RequestPart(value = "request") BoardUpdateRequest boardUpdateRequest,
-                             @RequestPart(value = "file",required = false) MultipartFile file, Principal principal, Model model) throws IOException {
-        boardService.rankUpdate(boardUpdateRequest, file, principal.getName(), boardId);
-        model.addAttribute("boardId", boardId);
-        return "redirect:/boards/rankup/{boardId}";
-    }
-
     @ResponseBody
     @GetMapping("/rankup/delete/{boardId}")
     public String rankDelete(@PathVariable Long boardId, Principal principal){
@@ -307,30 +298,6 @@ public class BoardController {
 
 
 
-    @ResponseBody
-    @PostMapping("portfolio/{boardId}/modify")
-    public String portfolioModify(@PathVariable Long boardId, @RequestPart(value = "request") BoardUpdateRequest req,
-                                  @RequestPart(value = "file",required = false) MultipartFile file,  Principal principal, Model model) throws IOException {
-
-        log.info(req.getImage());
-
-        try {
-            boardService.modify(req, file, principal.getName(), boardId);
-        } catch (AppException e) {
-            if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
-                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/portfolio/" + boardId;
-            } else if (e.getErrorCode().equals(ErrorCode.BOARD_NOT_FOUND)) {
-                return "게시글이 존재하지 않습니다.*/";
-            } else if (e.getErrorCode().equals(ErrorCode.INVALID_PERMISSION)) { //작성자 수정자 불일치 (혹시 버튼이 아닌 url로 접근시 제한)
-                return "작성자만 수정이 가능합니다.*/boards/portfolio/" + boardId;
-            }
-        } catch (Exception e) { //알수 없는 error
-            return "error*/";
-        }
-
-        return "글 수정을 완료했습니다.*/boards/portfolio/" + boardId;
-    }
-
     //포토폴리오 게시글 삭제
     @ResponseBody
     @GetMapping("portfolio/{boardId}/delete")
@@ -347,18 +314,5 @@ public class BoardController {
     public String changeLike(@PathVariable Long boardId, Principal principal) {
         return likeService.changeLike(boardId, principal.getName(), LikeType.BOARD_LIKE);
     }
-
-
-
-    @PostMapping("/report/{boardId}/modify")
-    @ResponseBody
-    public String reportModify(@PathVariable Long boardId,@RequestPart(value = "request") ReportModifyRequest reportModifyRequest,
-                               @RequestPart(value = "file",required = false) MultipartFile file, Principal principal, Model model) throws IOException {
-        System.out.println("신고 수정요청이 들어왔다@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        boardService.reportModify(reportModifyRequest, file, principal.getName(), boardId);
-        model.addAttribute("boardId", boardId);
-        return boardId+"";
-    }
-
 
 }

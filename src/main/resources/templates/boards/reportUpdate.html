@@ -32,7 +32,7 @@
         </div>
         <br/>
         <div align="center" class="py-1">
-          <button class="btn btn1" type="button" onclick="edit()">저장</button>
+          <button class="btn btn1" type="button" onclick="update_board()">저장</button>
         </div>
         <br/>
       </form>
@@ -108,7 +108,7 @@
 
     });
 
-    function edit(){
+    function update_board(){
       let boardId = [[${boardId}]];
 
       let requestData = {
@@ -141,7 +141,7 @@
       });
     }
 
-  </script>-->
+  </script>
 
 </body>
 </html>
