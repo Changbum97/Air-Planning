@@ -80,6 +80,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/plans/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/plans").authenticated()
                 .antMatchers("/chat/**").authenticated()
+                .antMatchers("/swagger-ui/**","/swagger-resources/**","/v3/api-docs").permitAll()
                 .anyRequest().permitAll()
                 .and()
                 .exceptionHandling()
