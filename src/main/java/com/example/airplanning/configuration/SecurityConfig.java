@@ -80,6 +80,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/plans/write").authenticated()
                 .antMatchers(HttpMethod.POST, "/plans").authenticated()
                 .antMatchers("/chat/**").authenticated()
+                .antMatchers("/swagger-ui/**","/swagger-resources/**","/v3/api-docs").permitAll()
                 .anyRequest().permitAll()
                 .and()
                 .exceptionHandling()
@@ -89,7 +90,7 @@ public class SecurityConfig {
                 // 폼 로그인 시작
                 .formLogin()
                 .loginPage("/users/login")      // 커스텀한 로그인 페이지 사용 가능. 생략시 스프링에서 제공하는 페이지로 감
-                .failureUrl("/api/login2") //실패 시 이동 페이지
+                .failureUrl("/users/login-fail") //실패 시 이동 페이지
                 .usernameParameter("userName")  // html 에서 "userName"란 파라메터 이름을 사용해야 함
                 .passwordParameter("password")  // html 에서 "password"란 파라메터 이름을 사용해야 함
                 .successHandler(                // 로그인 성공시, 세션 유지시간 3600초,  리다이렉트는 홈 화면으로 설정
