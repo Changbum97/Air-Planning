@@ -10,7 +10,7 @@
                     <h2>포트폴리오</h2><br/>
                 </div>
 
-                <form class="form-group" th:object="${boardModifyRequest}" id="boardModifyRequest">
+                <form class="form-group" th:object="${boardUpdateRequest}" id="boardUpdateRequest">
                     <br/>
                     <div>
                         <input id = "title" type="text" th:field="*{title}">
@@ -47,7 +47,7 @@
 
     window.onload = function() {
 
-        let filepath = [[${boardModifyRequest.image}]];
+        let filepath = [[${boardUpdateRequest.image}]];
 
         if (filepath != null && originFile != "changed") {
             let filename = filepath.substring(96);

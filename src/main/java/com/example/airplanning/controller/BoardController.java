@@ -20,7 +20,6 @@ import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +37,6 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-    private final CommentService commentService;
     private final PlannerService plannerService;
     private final LikeService likeService;
     private final RegionService regionService;
@@ -205,13 +203,13 @@ public class BoardController {
             // 작성자 본인이거나 ADMIN이면 출력
             if (principal.getName().equals(boardDto.getUserName()) || userDetail.getRole().equals("ADMIN")) {
                 model.addAttribute("board", boardDto);
+                model.addAttribute("userName", principal.getName());
+
                 if (enumCategory.equals(Category.REPORT)) {
                     return "boards/reportDetail";
+                } else {
+                    return "boards/rankUpDetail";
                 }
-
-                model.addAttribute("userName", principal.getName());
-                model.addAttribute("role", userDetail.getRole());
-                return "boards/rankUpDetail";
             } else {
                 model.addAttribute("msg", "작성자만 조회 가능합니다.");
                 model.addAttribute("nextPage", "/boards/" + category + "/list");
@@ -220,54 +218,58 @@ public class BoardController {
         }
     }
 
-
-    @ResponseBody
-    @PostMapping("/{boardId}/modify")
-    public String modifyBoard(@PathVariable Long boardId, @RequestPart(value = "request") BoardModifyRequest req,
-                              @RequestPart(value = "file",required = false) MultipartFile file,  Principal principal) {
-        try {
-            boardService.modify(req, file, principal.getName(), boardId);
-        } catch (AppException e) {
-            if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
-                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요.*/boards/" + boardId;
-            } else if (e.getErrorCode().equals(ErrorCode.BOARD_NOT_FOUND)) {
-                return "게시글이 존재하지 않습니다.*/";
-            } else if (e.getErrorCode().equals(ErrorCode.INVALID_PERMISSION)) { //작성자 수정자 불일치 (혹시 버튼이 아닌 url로 접근시 제한)
-                return "작성자만 수정이 가능합니다.*/boards/" + boardId;
-            }
-        } catch (Exception e){ //알수 없는 error
-            return "error*/";
-        }
-
-        return "글 수정을 완료했습니다.*/boards/" + boardId;
-    }
-
-    @GetMapping("/{boardId}/modify")
-    public String modifyBoardPage(@PathVariable Long boardId, Model model, Principal principal){
-        Board board = boardService.view(boardId);
-        if (!board.getUser().getUserName().equals(principal.getName())) {
-            model.addAttribute("msg", "작성자만 수정가능합니다.");
-            model.addAttribute("nextPage", "/boards/" + boardId);
+    // 게시판 글 수정 페이지
+    @GetMapping("/{category}/{boardId}/update")
+    public String updateBoardPage(@PathVariable String category, @PathVariable Long boardId, Model model, Principal principal){
+        Category enumCategory;
+        if (category.equals("free")) enumCategory = Category.FREE;
+        else if (category.equals("report")) enumCategory = Category.REPORT;
+        else if (category.equals("rankup")) enumCategory = Category.RANK_UP;
+        else if (category.equals("portfolio")) enumCategory = Category.PORTFOLIO;
+        else {
+            model.addAttribute("msg", "잘못된 접근입니다.");
+            model.addAttribute("nextUrl", "/");
             return "error/redirect";
         }
-        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
-        return "boards/modify";
+
+        BoardDto boardDto = boardService.detail(boardId, false, enumCategory);
+        model.addAttribute(new BoardUpdateRequest(boardDto.getTitle(), boardDto.getContent(), boardDto.getImage()));
+
+        if (enumCategory.equals(Category.FREE)) return "boards/freeUpdate";
+        else if (enumCategory.equals(Category.REPORT)) return "boards/reportUpdate";
+        else if (enumCategory.equals(Category.RANK_UP)) {
+            List<Region> regions = regionService.findAll();
+            HashSet<String> region1List = new HashSet<>();
+            for (Region region : regions) {
+                region1List.add(region.getRegion1());
+            }
+
+            model.addAttribute("region1List", region1List);
+            model.addAttribute("regions", regions);
+            return "boards/rankUpUpdate";
+        }
+        else if (enumCategory.equals(Category.PORTFOLIO)) {
+            model.addAttribute("planner", plannerService.findByUser(principal.getName()));
+            return "boards/portfolioUpdate";
+        }
+
+        return "/";
     }
 
 
 
 
-    @GetMapping("/rankup/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, Model model){
-        Board board = boardService.update(boardId);
-        model.addAttribute(new BoardModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
-        return "boards/rankUpdate";
-    }
+
+
+
+
+
+
 
     @PostMapping("/rankup/update/{boardId}")
-    public String rankUpdate(@PathVariable Long boardId, @RequestPart(value = "request") BoardModifyRequest boardModifyRequest,
+    public String rankUpdate(@PathVariable Long boardId, @RequestPart(value = "request") BoardUpdateRequest boardUpdateRequest,
                              @RequestPart(value = "file",required = false) MultipartFile file, Principal principal, Model model) throws IOException {
-        boardService.rankUpdate(boardModifyRequest, file, principal.getName(), boardId);
+        boardService.rankUpdate(boardUpdateRequest, file, principal.getName(), boardId);
         model.addAttribute("boardId", boardId);
         return "redirect:/boards/rankup/{boardId}";
     }
@@ -303,20 +305,11 @@ public class BoardController {
 
 
 
-    //포토폴리오 게시글 수정
-    /*@GetMapping("portfolio/{boardId}/modify")
-    public String portfolioModify(@PathVariable Long boardId, Model model, Principal principal) {
 
-        PlannerDetailResponse response = plannerService.findByUser(principal.getName());
-        BoardDto boardDto = boardService.portfolioDetail(boardId, false);
-        model.addAttribute("planner", response);
-        model.addAttribute(new BoardModifyRequest(boardDto.getTitle(), boardDto.getContent(), boardDto.getImage()));
-        return "boards/portfolioModify";
-    }*/
 
     @ResponseBody
     @PostMapping("portfolio/{boardId}/modify")
-    public String portfolioModify(@PathVariable Long boardId, @RequestPart(value = "request") BoardModifyRequest req,
+    public String portfolioModify(@PathVariable Long boardId, @RequestPart(value = "request") BoardUpdateRequest req,
                                   @RequestPart(value = "file",required = false) MultipartFile file,  Principal principal, Model model) throws IOException {
 
         log.info(req.getImage());
@@ -357,15 +350,6 @@ public class BoardController {
 
 
 
-
-    // 유저 신고 수정
-    @GetMapping("/report/{boardId}/modify")
-    public String reportModifyPage(@PathVariable Long boardId, Model model) {
-        Board board = boardService.reportView(boardId);
-        model.addAttribute(new ReportModifyRequest(board.getTitle(), board.getContent(), board.getImage()));
-        return "boards/reportModify";
-    }
-
     @PostMapping("/report/{boardId}/modify")
     @ResponseBody
     public String reportModify(@PathVariable Long boardId,@RequestPart(value = "request") ReportModifyRequest reportModifyRequest,
@@ -376,13 +360,5 @@ public class BoardController {
         return boardId+"";
     }
 
-
-    // 유저 신고 삭제
-    @ResponseBody
-    @GetMapping("/report/{boardId}/delete")
-    public String reportDelete(@PathVariable Long boardId, Principal principal) {
-        Long reportDelete = boardService.reportDelete(principal.getName(), boardId);
-        return reportDelete+"";
-    }
 
 }

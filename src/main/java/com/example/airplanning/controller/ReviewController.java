@@ -1,8 +1,5 @@
 package com.example.airplanning.controller;
 
-import com.example.airplanning.configuration.login.UserDetail;
-import com.example.airplanning.domain.dto.board.BoardCreateRequest;
-import com.example.airplanning.domain.dto.board.BoardModifyRequest;
 import com.example.airplanning.domain.dto.review.*;
 import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.domain.enum_class.LikeType;
@@ -13,9 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

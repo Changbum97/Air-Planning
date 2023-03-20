@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -259,7 +258,7 @@ public class BoardService {
 
     //포토폴리오 수정
     @Transactional
-    public void modify(BoardModifyRequest req, MultipartFile file, String username, Long boardId) throws IOException {
+    public void modify(BoardUpdateRequest req, MultipartFile file, String username, Long boardId) throws IOException {
 
         //AccessDeniedHandler에서 막혔을 듯
         User user = userRepository.findByUserName(username)
@@ -339,7 +338,7 @@ public class BoardService {
                 orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
     }
 
-    public BoardDto rankUpdate(BoardModifyRequest modifyRequest, MultipartFile file, String userName, Long boardId) throws IOException {
+    public BoardDto rankUpdate(BoardUpdateRequest modifyRequest, MultipartFile file, String userName, Long boardId) throws IOException {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
         Board board = boardRepository.findById(boardId)

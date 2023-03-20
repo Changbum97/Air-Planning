@@ -110,6 +110,45 @@ public class BoardRestController {
         return Response.success(boardDto);
     }
 
+    @PutMapping("/{category}/{boardId}")
+    public Response<?> updateBoard(@PathVariable String category, @PathVariable Long boardId,
+                                   @RequestPart(value = "request") BoardUpdateRequest req,
+                                   @RequestPart(value = "file",required = false) MultipartFile file,
+                                   Principal principal) {
+        category = category.toLowerCase();
+        Category enumCategory;
+
+        if (category.equals("free")) enumCategory = Category.FREE;
+        else if (category.equals("report")) enumCategory = Category.REPORT;
+        else if (category.equals("rankup")) enumCategory = Category.RANK_UP;
+        else if (category.equals("portfolio")) enumCategory = Category.PORTFOLIO;
+        else {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
+
+        try {
+            boardService.modify(req, file, principal.getName(), boardId);
+        } catch (AppException e) {
+            if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
+                return Response.error("파일 업로드 과정 중 오류가 발생했습니다. 다시 시도해 주세요.");
+            } else if (e.getErrorCode().equals(ErrorCode.BOARD_NOT_FOUND)) {
+                return Response.error("게시글이 존재하지 않습니다.");
+            } else if (e.getErrorCode().equals(ErrorCode.INVALID_PERMISSION)) { //작성자 수정자 불일치 (혹시 버튼이 아닌 url로 접근시 제한)
+                return Response.error("작성자만 수정이 가능합니다.");
+            }
+        } catch (Exception e){ //알수 없는 error
+            return Response.error("error");
+        }
+
+        return Response.success("글 수정을 완료했습니다.");
+    }
+
+
+
+
+
+
+
     // 삭제
     @DeleteMapping("/{boardId}")
     public Response<String> delete(@PathVariable Long boardId, Principal principal) {
@@ -150,14 +189,6 @@ public class BoardRestController {
         return Response.success(boardDto);
     }*/
 
-
-    // 유저 신고 수정
-    @PutMapping("/reportModify/{boardId}")
-    public Response<BoardResponse> reportModify(@PathVariable Long boardId, @RequestBody ReportModifyRequest reportModifyRequest, Principal principal) throws IOException {
-        String userName = principal.getName();
-        BoardDto boardDto = boardService.reportModify(reportModifyRequest, null, userName, boardId);
-        return Response.success(new BoardResponse("신고 수정이 완료되었습니다.", boardDto.getId()));
-    }
 
 
     // 유저 신고 삭제

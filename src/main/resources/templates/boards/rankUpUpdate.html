@@ -10,10 +10,25 @@
       <div align="center">
         <h2>플래너 신청</h2><br/>
       </div>
-      <form class="form-group" th:object="${boardModifyRequest}" id="boardModifyRequest">
+      <form class="form-group" th:object="${boardUpdateRequest}" id="boardUpdateRequest">
         <br/>
         <div>
           <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
+        </div>
+        <br/>
+        <div>
+          <label th:for="*{regionId}">자신있는 지역 : </label>
+          <select style="height: 40px;" onchange="change_region1(this)">
+            <option>지역</option>
+            <option th:each="region1 : ${region1List}" th:text="${region1}"></option>
+          </select>
+          <select style="height: 40px;" id="regionId" name="regionId">
+            <option>세부 지역</option>
+          </select>
+        </div>
+        <br/>
+        <div>
+          플랜 가격 : <input type="number" placeholder="플랜 가격을 입력해주세요" th:field="*{amount}" id="amount">
         </div>
         <br/>
         <div>
@@ -45,7 +60,7 @@
 
   window.onload = function() {
 
-    let filepath = [[${boardModifyRequest.image}]];
+    let filepath = [[${boardUpdateRequest.image}]];
 
     if (filepath != null && originFile != "changed") {
       let filename = filepath.substring(96);
@@ -132,6 +147,22 @@
 
       }
     });
+  }
+
+  function change_region1(e) {
+    let region1 = e.value;
+    let regions = [[${regions}]];
+    let target = document.getElementById('regionId');
+
+    target.options.length = 0;
+    regions.forEach(region => {
+      if (region['region1'] == region1) {
+        let opt = document.createElement("option");
+        opt.value = region['id'];
+        opt.innerText = region['region2'];
+        target.appendChild(opt);
+      }
+    })
   }
 </script>
 </body>
