@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.1.0'
+	// Jacoco 플러그인!
+	id 'jacoco'
 }
 
 group = 'com.example'
@@ -68,4 +70,43 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	// 테스트와 jacocoTestReport 플러그인의 연걸 -> 테스트 실행하면 jacocoTestReport도 같이 실행 됨.
+	finalizedBy 'jacocoTestReport'
+}
+
+// jacoco 설정
+jacoco {
+	toolVersion = '0.8.5'
+}
+
+// jacoco 결과를 어떤 형태의 보고서로 받아 볼 것인지 선택
+jacocoTestReport {
+	reports {
+		html.enabled true
+		xml.enabled false
+		csv.enabled false
+	}
+	// TestReport 실행 시 TestCoverageVerification 같이 실행.
+	// 즉, test -> jacocoTestReport -> jacocoTestCoverageVerification 순서로 실행 됨.
+	finalizedBy 'jacocoTestCoverageVerification'
+}
+
+// 테스트 커버리지를 최소 기준 설정!!
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			enabled = true // 활성화 여부
+			element = 'CLASS'  // 클래스 단위로 커버리지 체크
+
+			// 실제 기준 설정
+			limit {
+				counter = 'BRANCH'  // 조건문 등의 분기를 통해 커버리지 파악
+				value = 'COVEREDRATIO'  // 파악한 커버리지를  %로 보여줌
+				minimum = 0.60 // 최소 기준은 60%
+			}
+
+			// jacoco 적용을 제외할 클래스 -> "패키지 레벨의 경로"로 지정해야 함.
+			// excludes = []
+		}
+	}
 }
