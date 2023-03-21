@@ -83,7 +83,7 @@ public class BoardService {
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
 
-        if (!Objects.equals(board.getUser().getUserName(), user.getUserName())){
+        if (!Objects.equals(board.getUser().getUserName(), user.getUserName()) && !user.getRole().equals(UserRole.ADMIN)){
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
@@ -293,11 +293,6 @@ public class BoardService {
         }
 
         if (category.equals(Category.RANK_UP)) {
-            log.info("===============");
-            log.info("AMount : {}", req.getAmount());
-            log.info("RegionId : {}", req.getRegionId());
-            log.info("Region : {}", regionRepository.findById(req.getRegionId()).get());
-            log.info("===============");
             board.modifyRankUp(req.getTitle(), req.getContent(),
                     regionRepository.findById(req.getRegionId()).get(), req.getAmount(), changedFile);
         } else {

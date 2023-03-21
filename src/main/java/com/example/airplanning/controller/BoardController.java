@@ -2,12 +2,9 @@ package com.example.airplanning.controller;
 
 import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.board.*;
-import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Region;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.domain.enum_class.LikeType;
-import com.example.airplanning.exception.AppException;
-import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +16,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
@@ -256,59 +251,7 @@ public class BoardController {
         return "/";
     }
 
-
-
-
-
-
-
-
-
-
-    @ResponseBody
-    @GetMapping("/rankup/delete/{boardId}")
-    public String rankDelete(@PathVariable Long boardId, Principal principal){
-        boardService.rankDelete(boardId, principal.getName());
-        log.info("delete");
-
-        return "";
-    }
-
-    /*@ResponseBody
-    @PostMapping("/portfolio/write")
-    public String portfolioWrite(@RequestPart(value = "request") BoardCreateRequest req,
-                                 @RequestPart(value = "file", required = false) MultipartFile file, Principal principal) throws IOException {
-
-        Long boardId = Long.valueOf(0);
-
-        try {
-            boardId = boardService.writeWithFile(req, file, principal.getName(),Category.PORTFOLIO);
-        } catch (AppException e) {
-            if (e.getErrorCode().equals(ErrorCode.FILE_UPLOAD_ERROR)) { //S3 업로드 오류
-                return "파일 업로드 과정 중 오류가 발생했습니다. 다시 시도 해주세요./boards/portfolio/write";
-            }
-        } catch (Exception e) {
-            return "error/";
-        }
-
-        return "글이 등록되었습니다./boards/portfolio/" + boardId;
-    }*/
-
-
-
-
-
-    //포토폴리오 게시글 삭제
-    @ResponseBody
-    @GetMapping("portfolio/{boardId}/delete")
-    public String portfolioDelete(@PathVariable Long boardId, Principal principal) {
-
-        boardService.delete(principal.getName(), boardId);
-        log.info("delete");
-
-        return "";
-    }
-
+    // 좋아요
     @PostMapping("/{boardId}/like")
     @ResponseBody
     public String changeLike(@PathVariable Long boardId, Principal principal) {
