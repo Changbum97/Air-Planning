@@ -35,7 +35,7 @@ public class BoardController {
     private final LikeService likeService;
     private final RegionService regionService;
 
-    // 게시판 리스트 페이지
+    // 게시판 글 리스트 페이지
     @GetMapping("/{category}/list")
     public String listBoardPage(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
                             Model model, @PathVariable String category,
