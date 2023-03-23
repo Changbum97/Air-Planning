@@ -4,7 +4,6 @@ import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.entity.Region;
 import com.example.airplanning.domain.enum_class.Category;
-import com.example.airplanning.domain.enum_class.LikeType;
 import com.example.airplanning.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -249,13 +248,6 @@ public class BoardController {
         }
 
         return "/";
-    }
-
-    // 좋아요
-    @PostMapping("/{boardId}/like")
-    @ResponseBody
-    public String changeLike(@PathVariable Long boardId, Principal principal) {
-        return likeService.changeLike(boardId, principal.getName(), LikeType.BOARD_LIKE);
     }
 
 }

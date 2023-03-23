@@ -5,11 +5,12 @@ import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.Response;
 import com.example.airplanning.domain.dto.board.BoardDto;
 import com.example.airplanning.domain.dto.board.*;
-import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.enum_class.Category;
+import com.example.airplanning.domain.enum_class.LikeType;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.BoardService;
+import com.example.airplanning.service.LikeService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -36,6 +37,7 @@ import java.security.Principal;
 public class BoardRestController {
 
     private final BoardService boardService;
+    private final LikeService likeService;
 
     @GetMapping("/{category}/list")
     @ApiOperation(value = "게시판 리스트 조회", notes = "게시판 리스트를 조회합니다. 누구나 조회 가능하며, 제목과 작성자로 검색 할 수 있습니다.")
@@ -148,6 +150,12 @@ public class BoardRestController {
             return Response.error("글 삭제 중 에러가 발생하였습니다. 다시 시도해주세요.");
         }
         return Response.success("글 삭제가 완료되었습니다.");
+    }
+
+    // 좋아요
+    @PostMapping("/{boardId}/like")
+    public String changeLike(@PathVariable Long boardId, Principal principal) {
+        return likeService.changeLike(boardId, principal.getName(), LikeType.BOARD_LIKE);
     }
 
 }

@@ -112,7 +112,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '/boards/' + [[${board.id}]] + '/like',
+            url: '/api/boards/' + [[${board.id}]] + '/like',
             success: function (message) {
                 alert(message);
                 location.reload();
