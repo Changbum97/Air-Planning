@@ -141,7 +141,7 @@ public class BoardService {
 
     // 작성
     @Transactional
-    public BoardDto writeWithFile(BoardCreateRequest req, MultipartFile file, String username, Category category) throws IOException {
+    public BoardDto writeWithFile(BoardCreateRequest req, MultipartFile file, String username, Category category) throws IOException, AppException {
 
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
@@ -155,13 +155,18 @@ public class BoardService {
         Board savedBoard = null;
 
         if (category.equals(Category.RANK_UP)) {
-            Region region = regionRepository.findById(req.getRegionId()).get();
+            Region region = regionRepository.findById(req.getRegionId())
+                    .orElseThrow(() -> new AppException(ErrorCode.REGION_NOT_FOUND));
 
             Board board = Board.builder().user(user).category(Category.RANK_UP).title(req.getTitle())
                     .content(req.getContent()).image(changedFile).region(region).amount(req.getAmount()).build();
 
             savedBoard = boardRepository.save(board);
         } else {
+            if (category.equals(Category.REPORT)) {
+                userRepository.findByNickname(req.getTitle())
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+            }
             savedBoard = boardRepository.save(req.toEntity(user, changedFile, category));
         }
 
@@ -182,7 +187,7 @@ public class BoardService {
 
     // 수정
     @Transactional
-    public void modify(BoardUpdateRequest req, MultipartFile file, String username, Long boardId, Category category) throws IOException {
+    public BoardDto modify(BoardUpdateRequest req, MultipartFile file, String username, Long boardId, Category category) throws IOException {
 
         //AccessDeniedHandler에서 막혔을 듯
         User user = userRepository.findByUserName(username)
@@ -217,13 +222,27 @@ public class BoardService {
         }
 
         if (category.equals(Category.RANK_UP)) {
+            Region region = regionRepository.findById(req.getRegionId())
+                    .orElseThrow(() -> new AppException(ErrorCode.REGION_NOT_FOUND));
+
             board.modifyRankUp(req.getTitle(), req.getContent(),
-                    regionRepository.findById(req.getRegionId()).get(), req.getAmount(), changedFile);
+                    region, req.getAmount(), changedFile);
         } else {
+            if (category.equals(Category.REPORT)) {
+                userRepository.findByNickname(req.getTitle())
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
+            }
+
             board.modify(req.getTitle(), req.getContent(), changedFile);
         }
-        boardRepository.save(board);
+        Board savedBoard = boardRepository.save(board);
+        return BoardDto.of(savedBoard);
+    }
 
+    public Category findCategory(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new AppException(ErrorCode.BOARD_NOT_FOUND));
+        return board.getCategory();
     }
 
     // 여기부터 파일 업로드 관련

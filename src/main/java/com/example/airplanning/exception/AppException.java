@@ -18,8 +18,6 @@ public class AppException extends RuntimeException {
 
     @Override
     public String toString() {
-
-        return errorCode.getMessage();
-
+        return message;
     }
 }
