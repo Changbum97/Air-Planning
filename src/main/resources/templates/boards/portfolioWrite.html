@@ -92,15 +92,19 @@
 
         $.ajax({
             type:'POST',
-            url:'/boards/portfolio/write',
+            url:'/api/boards/portfolio',
             data: formData,
             contentType: false, // 필수 : x-www-form-urlencoded로 파싱되는 것을 방지
             processData: false,  // 필수: contentType을 false로 줬을 때 QueryString 자동 설정됨. 해제
             success: function (message) {
-
-                alert(message.split("*")[0])
-                location.href = message.split("*")[1]
-
+                if (message.resultCode == "SUCCESS") {
+                    alert("글이 등록 되었습니다.");
+                    location.href = '/boards/portfolio/' + message.result.id;
+                } else {
+                    alert(message.result);
+                    location.href = '/boards/portfolio/write';
+                }
+                console.log(message)
             }
         });
     }

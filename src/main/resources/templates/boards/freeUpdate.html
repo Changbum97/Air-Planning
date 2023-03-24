@@ -8,9 +8,9 @@
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-6 py-3">
       <div align="center">
-        <h2>플래너 신청</h2><br/>
+        <h2>자유게시판</h2><br/>
       </div>
-      <form class="form-group" th:object="${boardModifyRequest}" id="boardModifyRequest">
+      <form class="form-group" th:object="${boardUpdateRequest}" id="boardUpdateRequest">
         <br/>
         <div>
           <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
@@ -31,13 +31,14 @@
         </div>
         <br/>
         <div align="center" class="py-1">
-          <button type="button" class="btn btn1" onclick="modify_board()">수정</button>
+          <button type="button" class="btn btn1" onclick="update_board()">수정</button>
         </div>
         <br/>
       </form>
     </div>
   </div>
 </div>
+
 <script th:inline="javascript">
 
   let file;
@@ -45,7 +46,7 @@
 
   window.onload = function() {
 
-    let filepath = [[${boardModifyRequest.image}]];
+    let filepath = [[${boardUpdateRequest.image}]];
 
     if (filepath != null && originFile != "changed") {
       let filename = filepath.substring(96);
@@ -106,7 +107,7 @@
 
   });
 
-  function modify_board(){
+  function update_board(){
 
     let boardId = [[${boardId}]];
 
@@ -121,18 +122,26 @@
     formData.append("request", new Blob([JSON.stringify(requestData)], {type: "application/json"}));
 
     $.ajax({
-      type:'POST',
-      url:'/boards/rankup/update/'+boardId,
+      type:'PUT',
+      url:'/api/boards/'+boardId,
       data: formData,
       contentType: false, // 필수 : x-www-form-urlencoded로 파싱되는 것을 방지
       processData: false,  // 필수: contentType을 false로 줬을 때 QueryString 자동 설정됨. 해제
-      success: function (message) {
+      success: function (response) {
 
-        location.href = '/boards/rankup/'+boardId
+        alert(response.result)
 
+        if (response.result.toString().includes("존재")) {
+          location.href = "/boards/free/list";
+        } else if (response.result.toString().includes("수정") || response.result.toString().includes("업로드")) {
+          location.href = "/boards/free/" + boardId;
+        } else {
+          location.href = "/";
+        }
       }
     });
   }
 </script>
+
 </body>
 </html>

@@ -38,15 +38,13 @@
                     </div>
                     <div align="right" class="py-1">
                         <th:block th:if="${#authentication.principal.username} == ${board.userName}">
-                            <a class="btn btn1" th:href="@{/boards/portfolio/{boardId}/modify (boardId=${boardId})}">수정</a>
-                            <button class="btn btn1" type = "button" onclick="delete_board()">삭제</button>
+                            <a class="btn btn1" th:href="@{/boards/portfolio/{boardId}/update (boardId=${boardId})}">수정</a>
+                            <button type="button" class="btn btn1" onclick="delete_board()">삭제</button>
                         </th:block>
                     </div>
                 </div>
             </form>
             <hr/>
-
-
 
             <div id="loginCheck" sec:authentication="principal" hidden/>
             <div sec:authorize="isAuthenticated()" id="userName" sec:authentication="principal.username" hidden/>
@@ -104,13 +102,18 @@
 
         if (confirm("글을 삭제하시겠습니까?")) {
             $.ajax({
-                url: '/boards/portfolio/' + boardId + '/delete',
-                type: "GET",
-                data : {
-                    boardId : boardId
-                },
-                success: function () {
-                    location.href="/boards/portfolio/list"
+                type: 'DELETE',
+                url: '/api/boards/' + boardId ,
+                async: false,
+                success: function (message) {
+                    console.log(message)
+                    if (message.resultCode == "SUCCESS") {
+                        alert(message.result);
+                        location.href = '/boards/portfolio/list';
+                    } else {
+                        alert(message.result);
+                        location.href = '/boards/portfolio/' + boardId;
+                    }
                 }
             });
         }

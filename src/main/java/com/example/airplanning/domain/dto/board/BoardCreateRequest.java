@@ -4,6 +4,7 @@ import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.domain.enum_class.Category;
 import lombok.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 
 @AllArgsConstructor
@@ -14,19 +15,8 @@ import lombok.*;
 public class BoardCreateRequest {
     private String title;
     private String content;
-
-    private Category category;
-
-    public Board toEntity(User user){
-        return Board.builder()
-                .user(user)
-                .title(this.title)
-                .content(this.content)
-                .category(Category.FREE)
-                .region(user.getPlanner().getRegion())
-                .views(0)
-                .build();
-    }
+    private Integer amount;
+    private Long regionId;
 
     public Board toEntity(User user, String image, Category category){
         return Board.builder()
@@ -35,8 +25,7 @@ public class BoardCreateRequest {
                 .content(this.content)
                 .image(image)
                 .category(category)
-                .image(image)
-                .region(category == Category.PORTFOLIO ? user.getPlanner().getRegion() : null)
+                .region(category.equals(Category.PORTFOLIO) ? user.getPlanner().getRegion() : null)
                 .views(0)
                 .build();
     }

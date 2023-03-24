@@ -60,6 +60,15 @@ public class Board extends BaseEntity {
         this.image = image;
     }
 
+    // 등업 수정 + 파일 수정 + 자신있는 지역 수정 + 플랜 가격 수정
+    public void modifyRankUp(String title, String content, Region region, Integer amount, String image){
+        this.title = title;
+        this.content = content;
+        this.region = region;
+        this.amount = amount;
+        this.image = image;
+    }
+
     // 조회수 증가
     public void addViews() {
         this.views ++;

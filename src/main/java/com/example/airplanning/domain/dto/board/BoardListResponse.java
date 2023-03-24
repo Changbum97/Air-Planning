@@ -20,19 +20,19 @@ public class BoardListResponse {
     private String createdAt;   // 등록 날짜
 
     public static BoardListResponse of (Board board){
-        String title = board.getTitle();
-        if(title.length() > 10) {
-            title = title.substring(0, 10) + "...";
+        String tempTitle = board.getTitle();
+        if(tempTitle.length() > 10) {
+            tempTitle = tempTitle.substring(0, 10) + "...";
         }
-        String nickname = board.getUser().getNickname();
-        if(nickname.length() > 10) {
-            nickname = nickname.substring(0, 10) + "...";
+        String tempNickname = board.getUser().getNickname();
+        if(tempNickname.length() > 10) {
+            tempNickname = tempNickname.substring(0, 10) + "...";
         }
 
         return BoardListResponse.builder()
                 .id(board.getId())
-                .nickname(nickname)
-                .title(title)
+                .nickname(tempNickname)
+                .title(tempTitle)
                 .createdAt(board.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .build();
     }
