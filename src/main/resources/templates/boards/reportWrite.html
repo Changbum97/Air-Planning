@@ -136,12 +136,12 @@
 
     $.ajax({
       method: 'GET',
-      url: '/users/check-nickname',
+      url: '/api/users/check-nickname',
       data: {
         nickname: nickname
       },
-      success: function (d) {
-        if (d == true) {
+      success: function (response) {
+        if (response.result == true) {
           hide('nickname-null')
           show('nickname-pass')
           hide('nickname-fail')

@@ -95,6 +95,15 @@
 
     function write_board(){
 
+        if ($("#regionId").val() == "세부 지역") {
+            alert("지역을 선택해주세요.");
+            return;
+        }
+        if ($("#amount").val() == "") {
+            alert("가격을 설정해주세요.");
+            return;
+        }
+
         let requestData = {
             title : $("#title").val(),
             content : $("#content").val(),

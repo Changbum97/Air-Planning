@@ -17,7 +17,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -27,7 +26,6 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.session.SessionInformationExpiredEvent;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,7 +68,6 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/boards/**/update").authenticated()
                 .antMatchers(HttpMethod.POST, "/api/boards/rankup").hasAuthority("USER")
                 .antMatchers(HttpMethod.POST, "/api/boards/portfolio").hasAuthority("PLANNER")
-                .antMatchers(HttpMethod.POST, "/api/boards/**").authenticated()
                 .antMatchers(HttpMethod.PUT, "/api/boards/**").authenticated()
                 .antMatchers(HttpMethod.DELETE, "/api/boards/**").authenticated()
                 .antMatchers(HttpMethod.GET, "/users/mypage").authenticated()

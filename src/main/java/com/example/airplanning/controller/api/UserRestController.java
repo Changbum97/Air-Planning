@@ -53,6 +53,10 @@ public class UserRestController {
     @ApiOperation(value = "닉네임 중복 체크", notes = "닉네임의 중복 여부를 확인합니다.")
     @ApiImplicitParam(name = "nickname", value = "닉네임")
     public Response<Boolean> checkNickname(@RequestParam String nickname) {
+        System.out.println("==================");
+        System.out.println("nickname : " + nickname);
+        System.out.println(userService.checkNickname(nickname));
+        System.out.println("==================");
         return Response.success(userService.checkNickname(nickname));
     }
 

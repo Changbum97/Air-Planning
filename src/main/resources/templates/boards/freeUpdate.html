@@ -129,14 +129,12 @@
       processData: false,  // 필수: contentType을 false로 줬을 때 QueryString 자동 설정됨. 해제
       success: function (response) {
 
-        alert(response.result)
-
-        if (response.result.toString().includes("존재")) {
-          location.href = "/boards/free/list";
-        } else if (response.result.toString().includes("수정") || response.result.toString().includes("업로드")) {
+        if (response.resultCode == "SUCCESS") {
+          alert("글이 수정 되었습니다.");
           location.href = "/boards/free/" + boardId;
         } else {
-          location.href = "/";
+          alert(response.result.toString());
+          location.href = "/boards/free/list";
         }
       }
     });

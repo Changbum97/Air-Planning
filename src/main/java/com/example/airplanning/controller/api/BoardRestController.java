@@ -71,9 +71,12 @@ public class BoardRestController {
     @ApiOperation(value = "게시판 글 작성", notes = "게시판에 글을 작성합니다.<br/>자유게시판 글 등록은 로그인한 유저만 가능합니다.<br/>플래너 신청은 일반 유저만 가능하고 regionId(자신있는 지역), amount(플랜 가격)도 작성해야 합니다.<br/>포트폴리오 등록은 플래너만 가능합니다.<br/>신고 게시판 글 등록에서는 title에 신고 대상의 닉네임을 적어야 합니다.")
     @ApiImplicitParam(name = "category", value = "게시판 카테고리 - free, rankup, portfolio, report 중 하나를 입력", defaultValue = "free")
     public Response<?> writeBoard(@PathVariable String category, @ApiIgnore Principal principal,
-                                  @ApiIgnore @AuthenticationPrincipal UserDetail userDetail,
                                   @RequestPart(value = "request") BoardCreateRequest req,
                                   @RequestPart(value = "file",required = false) MultipartFile file) throws IOException {
+
+        if (principal == null) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION);
+        }
 
         category = category.toLowerCase();
         Category enumCategory;
@@ -151,13 +154,16 @@ public class BoardRestController {
         } catch (Exception e) {
             return Response.error("글 삭제 중 에러가 발생하였습니다. 다시 시도해주세요.");
         }
-        return Response.success("글 삭제가 완료되었습니다.");
+        return Response.success("글이 삭제 되었습니다.");
     }
 
     @PostMapping("/{boardId}/like")
-    @ApiOperation(value = "게시판 글 좋아요", notes = "게시판 글에 좋아요를 추가하거나 취소합니다. 로그인한 유저만 가능합니다.")
+    @ApiOperation(value = "게시판 글 좋아요", notes = "게시판 글에 좋아요를 추가하거나 취소합니다.<br/>자유게시판 글만 가능하고 로그인한 유저만 가능합니다.")
     @ApiImplicitParam(name = "boardId", value = "게시판 글 Id")
     public String changeLike(@PathVariable Long boardId, @ApiIgnore Principal principal) {
+        if (!boardService.findCategory(boardId).equals(Category.FREE)) {
+            throw new AppException(ErrorCode.INVALID_REQUEST);
+        }
         return likeService.changeLike(boardId, principal.getName(), LikeType.BOARD_LIKE);
     }
 

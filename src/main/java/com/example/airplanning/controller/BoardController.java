@@ -2,10 +2,6 @@ package com.example.airplanning.controller;
 
 import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.board.*;
-import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
-import com.example.airplanning.domain.dto.comment.CommentResponse;
-import com.example.airplanning.domain.dto.planner.PlannerDetailResponse;
-import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Region;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.service.*;
@@ -19,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/boards")
 @Slf4j
+@ApiIgnore
 public class BoardController {
 
     private final BoardService boardService;
