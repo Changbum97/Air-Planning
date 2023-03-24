@@ -3,14 +3,13 @@ package com.example.airplanning.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.example.airplanning.domain.dto.review.ReviewCreateRequest;
-import com.example.airplanning.domain.dto.review.ReviewListResponse;
-import com.example.airplanning.domain.dto.review.ReviewUpdateRequest;
+import com.example.airplanning.domain.dto.review.*;
 import com.example.airplanning.domain.entity.Plan;
 import com.example.airplanning.domain.entity.Planner;
 import com.example.airplanning.domain.entity.Review;
 import com.example.airplanning.domain.entity.User;
 import com.example.airplanning.domain.enum_class.AlarmType;
+import com.example.airplanning.domain.enum_class.UserRole;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.repository.PlanRepository;
@@ -67,7 +66,7 @@ public class ReviewService {
 
 
     @Transactional
-    public Long write(ReviewCreateRequest request, MultipartFile file, String userName) throws IOException {
+    public ReviewResponse write(ReviewCreateRequest request, MultipartFile file, String userName) throws IOException {
 
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUNDED));
@@ -95,11 +94,11 @@ public class ReviewService {
         plannerRepository.save(planner);
 
         alarmService.send(plan.getPlanner().getUser(), AlarmType.REVIEW_ALARM, "/reviews/"+savedReview.getId(), savedReview.getTitle());
-        return savedReview.getId();
+        return ReviewResponse.of(savedReview);
     }
 
     @Transactional
-    public Long update(Long reviewId, ReviewUpdateRequest request, MultipartFile file, String userName) throws IOException {
+    public ReviewResponse update(Long reviewId, ReviewUpdateRequest request, MultipartFile file, String userName) throws IOException {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(()-> new AppException(ErrorCode.REVIEW_NOT_FOUND));
 
@@ -136,15 +135,18 @@ public class ReviewService {
                 .orElseThrow(()->new AppException(ErrorCode.PLANNER_NOT_FOUNDED));
 
         planner.plusStar(updatedReview.getStar()-originStar);
-        return updatedReview.getId();
+        return ReviewResponse.of(updatedReview);
     }
 
     @Transactional
-    public void delete(Long reviewId, String userName) {
+    public Long delete(Long reviewId, String userName) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(()-> new AppException(ErrorCode.REVIEW_NOT_FOUND));
 
-        if (!userName.equals(review.getUser().getUserName())) {
+        User requestUser = userRepository.findByUserName(userName)
+                .orElseThrow(()-> new AppException(ErrorCode.USER_NOT_FOUNDED));
+
+        if (!userName.equals(review.getUser().getUserName()) && requestUser.getRole() != UserRole.ADMIN) {
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
@@ -158,6 +160,8 @@ public class ReviewService {
 
         planner.plusStar(-review.getStar());
         planner.minusReviewCnt();
+
+        return review.getId();
     }
 
     //기존 이미지 삭제

@@ -81,13 +81,13 @@
 
     $(document).ready(function () {
 
-      let eventSource = new EventSource("/alarm/sub");
+      let eventSource = new EventSource("/api/alarm/sub");
 
       $.ajax({
         method: "GET",
-        url:"/alarm/getList",
+        url:"/api/alarm/list",
         success: function (d) {
-          AlarmList = d
+          AlarmList = d.result
           if (AlarmList != "") {
             displayAlarm();
           }
@@ -98,7 +98,7 @@
 
         $.ajax({
           method: "GET",
-          url:"/alarm/getList",
+          url:"/api/alarm/list",
           success: function (d) {
             AlarmList = d
             displayAlarm();
@@ -110,7 +110,7 @@
         toastr.options.onclick = function () {
           $.ajax({
             method: "GET",
-            url:"/alarm/check/"+message.id,
+            url:"/api/alarm/check/"+message.id,
             success: function () {
               location.href=message.targetUrl;
               eventSource.close()
@@ -128,7 +128,7 @@
     function alarmCheck(alarmId) {
       $.ajax({
         method: "GET",
-        url:"/alarm/check/"+alarmId,
+        url:"/api/alarm/check/"+alarmId,
         async: false,
         success: function () {
         }

@@ -179,14 +179,14 @@
     function getCommentPage(pageNum) {
         $.ajax({
             method: "GET",
-            url: "/comments/" + [[${board.id}]] + "/readBoardComment?page=" + pageNum,
+            url: "/api/comments/" + [[${board.id}]] + "/board?page=" + pageNum,
             dataType: "json",
             async: false,
             success: function (d) {
                 console.log(d)
-                totalData = d.totalElements;
+                totalData = d.result.totalElements;
                 console.log(totalData)
-                dataList = d.content;
+                dataList = d.result.content;
                 console.log(dataList)
             }
         });
@@ -383,7 +383,7 @@
             $.ajax({
 
                 type: 'post',
-                url: '/comments/create',
+                url: '/api/comments',
                 data: {
                     "content": content,
                     "postId": boardId,
@@ -417,8 +417,8 @@
         } else {
             if (confirm("수정 하시겠습니까?") == true) {
                 $.ajax({
-                    type: 'post',
-                    url: '/comments/update',
+                    type: 'PUT',
+                    url: '/api/comments',
                     data: {
                         "targetCommentId": targetCommentId,
                         "postId": boardId,
@@ -449,8 +449,8 @@
         const boardId = [[${board.Id}]]
         if (confirm("삭제 하시겠습니까?") == true) {
             $.ajax({
-                type: 'Post',
-                url: "/comments/delete",
+                type: 'DELETE',
+                url: "/api/comments",
                 data: {
                     "targetCommentId": targetCommentId,
                     "postId": boardId
@@ -483,7 +483,7 @@
         } else {
             $.ajax({
                 type: 'post',
-                url: "/comments/createcoco",
+                url: "/api/comments/coco",
                 data: {
                     "parentId": parentId,
                     "postId": boardId,
@@ -515,8 +515,8 @@
         } else {
             if (confirm("수정 하시겠습니까?") == true) {
                 $.ajax({
-                    type: 'post',
-                    url: '/comments/update',
+                    type: 'PUT',
+                    url: '/api/comments',
                     data: {
                         "targetCommentId": targetCommentId,
                         "postId": boardId,

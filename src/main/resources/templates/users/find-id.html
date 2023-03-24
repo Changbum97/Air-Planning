@@ -36,11 +36,11 @@
 
     $.ajax({
       type: 'GET',
-      url: '/users/find-id-by-email',
+      url: '/api/users/find-id-by-email',
       data: $('#findByEmailRequest').serialize(),
       success: function (message) {
-        alert(message)
-        if(message == "메일로 아이디를 전송했습니다") {
+        alert(message.result)
+        if(message.result == "메일로 아이디를 전송했습니다.") {
           window.close()
         } else {
           location.href = "/users/find-id"

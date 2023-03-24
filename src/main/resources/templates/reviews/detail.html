@@ -51,7 +51,7 @@
                         <div align="right" class="py-1">
                             <th:block th:if="${review.userName == userName}">
                                 <a class="btn btn1" th:href="@{/reviews/{reviewId}/update (reviewId=${reviewId})}">수정</a>
-                                <!--                            <button class="btn btn1" onclick="delete_review()">삭제</button>-->
+                                <button class="btn btn1" onclick="delete_review()">삭제</button>
                             </th:block>
                         </div>
                     </div>
@@ -93,9 +93,9 @@
 
         $.ajax({
             type: 'POST',
-            url: '/reviews/' + [[${review.id}]] + '/like',
+            url: '/api/reviews/' + [[${review.id}]] + '/like',
             success: function (message) {
-                alert(message);
+                alert(message.result);
                 location.reload();
             }
         });
@@ -144,10 +144,11 @@
 
         if (confirm("정말 삭제하시겠습니까?")) {
             $.ajax({
-                url : '/reviews/'+planId+'/delete',
-                type : "GET",
-                success :  function () {
-                    // location.href="/reviews/list"
+                url : '/api/reviews/'+planId,
+                type : "DELETE",
+                success :  function (message) {
+                    alert(message.result)
+                    location.href="/reviews/list";
                 }
             });
         }
@@ -172,14 +173,14 @@
     function getCommentPage(pageNum) {
         $.ajax({
             method: "GET",
-            url: "/comments/" + [[${review.id}]] + "/readReviewComment?page=" + pageNum,
+            url: "/api/comments/" + [[${review.id}]] + "/review?page=" + pageNum,
             dataType: "json",
             async: false,
             success: function (d) {
                 console.log(d)
-                totalData = d.totalElements;
+                totalData = d.result.totalElements;
                 console.log(totalData)
-                dataList = d.content;
+                dataList = d.result.content;
                 console.log(dataList)
             }
         });
@@ -375,7 +376,7 @@
         } else {
             $.ajax({
                 type: 'post',
-                url: '/comments/create',
+                url: '/api/comments',
                 data: {
                     "content": content,
                     "postId": reviewId,
@@ -409,8 +410,8 @@
         } else {
             if (confirm("수정 하시겠습니까?") == true) {
                 $.ajax({
-                    type: 'post',
-                    url: '/comments/update',
+                    type: 'PUT',
+                    url: '/api/comments',
                     data: {
                         "targetCommentId": targetCommentId,
                         "postId": reviewId,
@@ -441,8 +442,8 @@
         const reviewId = [[${review.Id}]]
         if (confirm("삭제 하시겠습니까?") == true) {
             $.ajax({
-                type: 'Post',
-                url: "/comments/delete",
+                type: 'DELETE',
+                url: "/api/comments",
                 data: {
                     "targetCommentId": targetCommentId,
                     "postId": reviewId
@@ -475,7 +476,7 @@
         } else {
             $.ajax({
                 type: 'post',
-                url: "/comments/createcoco",
+                url: "/api/comments/coco",
                 data: {
                     "parentId": parentId,
                     "postId": reviewId,
@@ -507,8 +508,8 @@
         } else {
             if (confirm("수정 하시겠습니까?") == true) {
                 $.ajax({
-                    type: 'post',
-                    url: '/comments/update',
+                    type: 'PUT',
+                    url: '/api/comments',
                     data: {
                         "targetCommentId": targetCommentId,
                         "postId": reviewId,

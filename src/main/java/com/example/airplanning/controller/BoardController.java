@@ -2,6 +2,10 @@ package com.example.airplanning.controller;
 
 import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.board.*;
+import com.example.airplanning.domain.dto.comment.CommentCreateRequest;
+import com.example.airplanning.domain.dto.comment.CommentResponse;
+import com.example.airplanning.domain.dto.planner.PlannerDetailResponse;
+import com.example.airplanning.domain.entity.Board;
 import com.example.airplanning.domain.entity.Region;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.service.*;
@@ -170,7 +174,6 @@ public class BoardController {
             model.addAttribute("board", boardDto);
 
             // 댓글 관련 => ajax를 통해 화면에서 불러옴
-
             if (enumCategory.equals(Category.FREE)) {
                 // 좋아요 관련
                 if (principal != null) {
