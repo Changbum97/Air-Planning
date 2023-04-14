@@ -38,6 +38,7 @@ dependencies {
 
 	// Security
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.7.5'
+	implementation 'org.springframework.security:spring-security-test'
 
 	// Thymeleaf
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

@@ -1,10 +1,7 @@
 package com.example.airplanning.domain.entity;
 
 import com.example.airplanning.domain.dto.review.ReviewUpdateRequest;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
