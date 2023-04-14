@@ -89,7 +89,7 @@ public class ReviewController {
 
         if (principal != null) {
             model.addAttribute("checkLike", likeService.checkReviewLike(reviewId, principal.getName()));
-
+            model.addAttribute("userName", principal.getName());
             // 로그인 유저가 글 작성자라면 수정, 삭제 버튼 출력
             if(principal.getName().equals(review.getUser().getUserName())) {
                 model.addAttribute("isWriter", true);
@@ -99,7 +99,7 @@ public class ReviewController {
         }
 
         model.addAttribute("review", ReviewDto.of(review));
-        model.addAttribute("userName", principal.getName());
+        model.addAttribute("userName", null);
         return "reviews/detail";
     }
 }

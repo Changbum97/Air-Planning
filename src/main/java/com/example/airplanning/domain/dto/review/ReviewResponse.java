@@ -23,6 +23,7 @@ public class ReviewResponse {
     private String createdAt;
     private String updatedAt;
     private Integer star;
+    private Integer views;
 
 
     public static ReviewResponse of (Review review) {
@@ -35,6 +36,7 @@ public class ReviewResponse {
                 .createdAt(review.getCreatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .updatedAt(review.getUpdatedAt().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm")))
                 .star(review.getStar())
+                .views(review.getViews())
                 .build();
     }
 }
