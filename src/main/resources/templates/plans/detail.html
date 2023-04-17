@@ -76,13 +76,13 @@
 
         if (confirm("정말 삭제하시겠습니까?")) {
             $.ajax({
-                url : '/plans/'+planId+'/delete/',
-                type : "GET",
+                url : '/api/plans/'+planId,
+                type : "DELETE",
                 data : {
                   planId : planId
                 },
                 success :  function () {
-                    location.href="/plans/list"
+                    location.href="/"
                 }
             });
         }
@@ -94,7 +94,7 @@
 
        if (confirm("정말 거절하시겠습니까?")) {
            $.ajax({
-               url : '/plans/'+planId+'/refuse/',
+               url : '/api/plans/'+planId+'/refuse/',
                type : "GET",
                data : {
                    planId : planId
@@ -112,7 +112,7 @@
 
        if (confirm("신청을 수락 하시겠습니까?")) {
            $.ajax({
-               url : '/plans/'+planId+'/accept/',
+               url : '/api/plans/'+planId+'/accept/',
                type : "GET",
                data : {
                    planId : planId

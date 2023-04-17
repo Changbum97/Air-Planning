@@ -7,7 +7,10 @@
 <div class="container px-5">
   <div class="row gx-5 justify-content-center">
     <div class="col-lg-6 py-5">
-      <form class="form-group" th:action="@{/plans/{planId}/update (planId=${planId})}" th:object="${planUpdateRequest}" method="post">
+      <div align="center">
+        <h2>플랜 신청 게시판</h2><br/>
+      </div>
+      <form class="form-group" th:action="@{/plans/{planId}/update (planId=${planId})}" th:object="${planUpdateRequest}">
         <br/>
         <div>
           <input th:field="*{title}" type="text" placeholder="제목을 입력해주세요">
@@ -19,12 +22,36 @@
 
         <br/>
         <div align="center" class="py-1">
-          <input type="submit" class="btn btn1" th:value="저장" />
+          <button type="button" class="btn btn1" onclick="update_plan()">수정</button>
         </div>
         <br/>
       </form>
     </div>
   </div>
 </div>
+
+<script>
+  function update_plan() {
+    let planId = [[${planId}]];
+
+    let updateRequest = {
+      title: $("#title").val(),
+      content: $("#content").val(),
+    };
+
+    $.ajax({
+      type: 'PUT',
+      url: '/api/plans/' + planId,
+      data: JSON.stringify(updateRequest),
+      contentType: "application/json",
+      success: function () {
+        alert("글 수정을 완료했습니다.");
+        location.href = "/plans/" + planId;
+      }
+    });
+  }
+
+</script>
+
 </body>
 </html>

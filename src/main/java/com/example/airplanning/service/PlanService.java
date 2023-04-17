@@ -29,7 +29,7 @@ public class PlanService {
 
     private final AlarmService alarmService;
 
-    public PlanDto create(PlanCreateRequest planCreateRequest, String userName){
+    public PlanResponse create(PlanCreateRequest planCreateRequest, String userName){
 
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(()->new AppException(ErrorCode.INVALID_PERMISSION));
@@ -41,11 +41,11 @@ public class PlanService {
 
         alarmService.send(planner.getUser(), AlarmType.REQUEST_PLAN_ALARM, "/plans/"+plan.getId(), plan.getTitle());
 
-        return PlanDto.of(plan);
+        return PlanResponse.of(plan);
 
     }
 
-    public PlanDto detail(Long id, String userName){
+    public PlanResponse detail(Long id, String userName){
 
         User user = userRepository.findByUserName(userName)
                 .orElseThrow(()-> new AppException(ErrorCode.INVALID_PERMISSION));
@@ -57,7 +57,7 @@ public class PlanService {
             throw new AppException(ErrorCode.INVALID_PERMISSION);
         }
 
-        return PlanDto.of(plan);
+        return PlanResponse.of(plan);
     }
 
     @Transactional
