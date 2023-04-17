@@ -7,6 +7,9 @@
 <div class="container px-5">
     <div class="row gx-5 justify-content-center">
         <div class="col-lg-6 py-5">
+            <div align="center">
+                <h2>플랜 신청 게시판</h2><br/>
+            </div>
             <form class="form-group" th:object="${planCreateRequest}" id="planCreateRequest">
                 <br/>
                 <div>
@@ -29,20 +32,29 @@
 </div>
 
 <script th:inline="javascript">
-    console.log([[${planCreateRequest.plannerId}]])
+    function write_plan() {
 
-    function write_plan(){
+        let requestData = {
+            title : $("#title").val(),
+            content : $("#content").val(),
+            plannerId: [[${plannerId}]]
+        };
+
+
         $.ajax({
-            type:'POST',
-            url:'/plans',
-            data:$('#planCreateRequest').serialize(),
-            success: function (data){
-                console.log(data); //응답 body부분 데이터
-                location.href='/plans/list'
+            type: 'POST',
+            url: '/api/plans',
+            data: JSON.stringify(requestData),
+            contentType: "application/json; charset=utf-8",
+            success: function () {
+                alert("플랜 신청서 작성이 완료되었습니다.");
+                location.href = '/';
             }
         });
     }
+
 </script>
+
 
 </body>
 </html>

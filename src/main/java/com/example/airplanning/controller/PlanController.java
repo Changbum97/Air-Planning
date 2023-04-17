@@ -2,10 +2,7 @@ package com.example.airplanning.controller;
 
 import com.example.airplanning.configuration.login.UserDetail;
 import com.example.airplanning.domain.dto.plan.*;
-import com.example.airplanning.domain.dto.user.UserDto;
 import com.example.airplanning.domain.entity.Plan;
-import com.example.airplanning.domain.entity.User;
-import com.example.airplanning.domain.enum_class.UserRole;
 import com.example.airplanning.service.PlanService;
 import com.example.airplanning.service.PlannerService;
 import lombok.RequiredArgsConstructor;
@@ -41,16 +38,9 @@ public class PlanController {
         return "plans/write";
     }
 
-    @ResponseBody
-    @PostMapping("")
-    public String writePlan(PlanCreateRequest createRequest, Principal principal){
-        PlanDto planDto = planService.create(createRequest, principal.getName());
-        return "redirect:/plans/"+planDto.getId();
-    }
-
     @GetMapping("/{planId}")
     public String detailPlan(@PathVariable Long planId, Principal principal, Model model){
-        PlanDto planDto = planService.detail(planId, principal.getName());
+        PlanResponse planDto = planService.detail(planId, principal.getName());
         model.addAttribute("plan", planDto);
         model.addAttribute("userName", principal.getName());
  /*       log.info(planDto.getUserRole().name());*/
@@ -64,40 +54,11 @@ public class PlanController {
         return "plans/update";
     }
 
-    @PostMapping("/{planId}/update")
-    public String updatePlan(@PathVariable Long planId, PlanUpdateRequest updateRequest, Principal principal, Model model){
-        planService.update(planId, updateRequest, principal.getName());
-        model.addAttribute("planId", planId);
-        /*String url = "redirect:detail?&planId="+planId;*/
-        return "redirect:/plans/{planId}";
-    }
-
-    @ResponseBody
-    @GetMapping("/{planId}/delete")
-    public String deletePlan(@PathVariable Long planId, Principal principal){
-        planService.delete(planId, principal.getName());
-        return "redirect:/plans/list";
-    }
-
     @GetMapping("/list")
     public String listPlan(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable, Model model){
         Page<PlanListResponse> planList = planService.list(pageable);
         model.addAttribute("plan", planList);
         return "plans/list";
-    }
-
-    @ResponseBody
-    @GetMapping("/{planId}/refuse")
-    public String refusePlan(@PathVariable Long planId, Principal principal){
-        planService.refusePlan(planId, principal.getName());
-        return "redirect:/plans/list";
-    }
-
-    @ResponseBody
-    @GetMapping("/{planId}/accept")
-    public String acceptPlan(@PathVariable Long planId, Principal principal){
-        planService.acceptPlan(planId, principal.getName());
-        return "redirect:/plans/list";
     }
 
     @GetMapping("/{planId}/detail")
@@ -109,12 +70,5 @@ public class PlanController {
         return "plans/payment";
     }
 
-    @PostMapping("/{planId}/payment")
-    public String pointPayment(@PathVariable Long planId, Principal principal){
-
-        PlanPaymentRequest paymentRequest = planService.usedPoint(principal.getName(), planId);
-
-        return "redirect:/plans/"+planId;
-    }
 
 }
