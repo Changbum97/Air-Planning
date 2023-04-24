@@ -609,4 +609,18 @@ class ReviewServiceTest {
         assertThat(2, is(result.getViews()));
     }
 
+    @Test
+    @DisplayName("파일 업로드 실패")
+    void fileUpload_fail() {
+        // given
+        MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "test file".getBytes(StandardCharsets.UTF_8));
+
+        // when
+        when(amazonS3.putObject(any(), any(),  any(), any())).thenThrow(AppException.class);
+
+        // then
+        AppException error = assertThrows(AppException.class, () -> reviewService.uploadFile(file));
+        assertThat(error.getErrorCode(), is(error.getErrorCode()));
+    }
+
 }
