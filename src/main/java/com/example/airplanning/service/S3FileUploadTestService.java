@@ -23,7 +23,7 @@ public class S3FileUploadTestService {
     private String bucketName;
 
     private String dir = "/test1";
-    private String defaultUrl = "https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com";
+    private String defaultUrl = "https://airplanning-bucket2.s3.ap-northeast-2.amazonaws.com";
 
     public String uploadFile(MultipartFile file) throws IOException {
 

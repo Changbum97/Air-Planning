@@ -107,7 +107,7 @@ public class UserService {
         String[] bits = filePath.split("/");
         String fileName = bits[bits.length-1];
         //S3에서 delete
-        if (!filePath.equals("https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com/default.jpeg")) {
+        if (!filePath.equals("https://airplanning-bucket2.s3.ap-northeast-2.amazonaws.com/default.jpeg")) {
             amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
         }
     }
@@ -115,7 +115,7 @@ public class UserService {
     //이미지 변경
     public String uploadFile(MultipartFile file, String filePath) throws IOException {
 
-        String defaultUrl = "https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com/";
+        String defaultUrl = "https://airplanning-bucket2.s3.ap-northeast-2.amazonaws.com/";
         String fileName = generateFileName(file);
 
         try {

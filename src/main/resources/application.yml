@@ -108,7 +108,7 @@ cloud:
     stack:
       auto: false
     s3:
-      bucket: airplanning-bucket
+      bucket: airplanning-bucket2
 
 logging:
   level:
