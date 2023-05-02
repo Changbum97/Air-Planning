@@ -176,7 +176,7 @@ public class ReviewService {
     //파일 업로드
     public String uploadFile(MultipartFile file) throws IOException {
 
-        String defaultUrl = "https://airplanning-bucket.s3.ap-northeast-2.amazonaws.com/";
+        String defaultUrl = "https://airplanning-bucket2.s3.ap-northeast-2.amazonaws.com/";
         String fileName = generateFileName(file);
 
         try {
