@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Slf4j
@@ -101,9 +102,6 @@ public class BoardService {
     // 포트폴리오 리스트
     public Page<BoardListResponse> portfolioList(Pageable pageable, String searchType, String keyword, String region1, Long regionId){
         Page<Board> board;
-
-        System.out.println(region1);
-        System.out.println(regionId);
 
         if(searchType == null) {
             // 검색 X
@@ -256,14 +254,14 @@ public class BoardService {
     }
 
     // 파일 업로드
-    public String uploadFile(MultipartFile file) throws IOException {
+    public String uploadFile(MultipartFile file) {
 
         String defaultUrl = "https://airplanning-bucket2.s3.ap-northeast-2.amazonaws.com/";
         String fileName = generateFileName(file);
 
         try {
             amazonS3.putObject(bucketName, fileName, file.getInputStream(), getObjectMetadata(file));
-        } catch (AppException e) {
+        } catch (Exception e) {
             throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
         }
         
