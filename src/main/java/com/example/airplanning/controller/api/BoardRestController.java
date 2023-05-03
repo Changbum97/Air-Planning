@@ -7,7 +7,6 @@ import com.example.airplanning.domain.dto.board.BoardDto;
 import com.example.airplanning.domain.dto.board.*;
 import com.example.airplanning.domain.enum_class.Category;
 import com.example.airplanning.domain.enum_class.LikeType;
-import com.example.airplanning.domain.enum_class.UserRole;
 import com.example.airplanning.exception.AppException;
 import com.example.airplanning.exception.ErrorCode;
 import com.example.airplanning.service.BoardService;
@@ -72,11 +71,7 @@ public class BoardRestController {
     @ApiImplicitParam(name = "category", value = "게시판 카테고리 - free, rankup, portfolio, report 중 하나를 입력", defaultValue = "free")
     public Response<?> writeBoard(@PathVariable String category, @ApiIgnore Principal principal,
                                   @RequestPart(value = "request") BoardCreateRequest req,
-                                  @RequestPart(value = "file",required = false) MultipartFile file) throws IOException {
-
-        if (principal == null) {
-            throw new AppException(ErrorCode.INVALID_PERMISSION);
-        }
+                                  @RequestPart(value = "file",required = false) MultipartFile file) {
 
         category = category.toLowerCase();
         Category enumCategory;

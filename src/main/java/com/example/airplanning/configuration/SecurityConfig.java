@@ -66,6 +66,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/boards/rankup/write").hasAuthority("USER")
                 .antMatchers(HttpMethod.GET, "/boards/**/write").authenticated()
                 .antMatchers(HttpMethod.GET, "/boards/**/update").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/boards/**").authenticated()
                 .antMatchers(HttpMethod.POST, "/api/boards/rankup").hasAuthority("USER")
                 .antMatchers(HttpMethod.POST, "/api/boards/portfolio").hasAuthority("PLANNER")
                 .antMatchers(HttpMethod.PUT, "/api/boards/**").authenticated()
