@@ -71,7 +71,7 @@ spring:
             user-name-attribute: id
   # Redis 설정
   redis:
-    host: ec2-3-39-131-153.ap-northeast-2.compute.amazonaws.com
+    host: ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com
     port: 6379
     password: password
 
