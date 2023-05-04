@@ -124,7 +124,9 @@ public class UserService {
             throw new AppException(ErrorCode.FILE_UPLOAD_ERROR);
         }
 
-        deleteFile(filePath);
+        if (filePath != null) {
+            deleteFile(filePath);
+        }
         return defaultUrl + fileName;
 
     }
