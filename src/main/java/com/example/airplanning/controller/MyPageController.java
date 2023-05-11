@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequestMapping("/users/mypage")
 @RequiredArgsConstructor
 @Slf4j
+@ApiIgnore
 public class MyPageController {
 
     private final MyPageService myPageService;
