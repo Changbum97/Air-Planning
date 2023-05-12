@@ -26,7 +26,7 @@ public class SwaggerConfig {
                 .title("4조 air planning")
                 .description("4조의 air planning api")
                 .license("로그인")
-                .licenseUrl("http://ec2-3-39-131-153.ap-northeast-2.compute.amazonaws.com:8081/users/login")
+                .licenseUrl("http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/users/login")
                 .version("1.0")
                 .build();
     }
