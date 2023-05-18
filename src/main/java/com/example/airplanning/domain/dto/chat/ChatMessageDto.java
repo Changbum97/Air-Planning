@@ -2,10 +2,7 @@ package com.example.airplanning.domain.dto.chat;
 
 import com.example.airplanning.domain.entity.ChatMessage;
 import com.example.airplanning.domain.entity.ChatRoom;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ChatMessageDto {
 
     private Long id;

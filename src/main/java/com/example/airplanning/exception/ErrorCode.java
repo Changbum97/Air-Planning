@@ -24,7 +24,7 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 댓글이 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰가 없습니다."),
     CHAT_ROOM_NOT_FOUNDED(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다."),
-    CHAT_MESSAGE_NOT_FOUNDED(HttpStatus.NOT_FOUND, "메지를 찾을 수 없습니다."),
+    CHAT_MESSAGE_NOT_FOUNDED(HttpStatus.NOT_FOUND, "메세지를 찾을 수 없습니다."),
 
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "DB에러"),
     FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 업로드 에러"),
