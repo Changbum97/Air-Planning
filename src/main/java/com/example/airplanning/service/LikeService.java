@@ -77,7 +77,7 @@ public class LikeService {
                 likeRepository.delete(optLike.get());
                 return "좋아요가 취소되었습니다.";
             }
-        } else if(likeType.equals(LikeType.REVIEW_LIKE)) {
+        } else {
             Optional<Like> optLike = likeRepository.findByReviewIdAndUserId(id, user.getId());
 
             // 좋아요가 없으면 좋아요 추가, 있으면 좋아요 삭제
@@ -94,6 +94,5 @@ public class LikeService {
                 return "좋아요가 취소되었습니다.";
             }
         }
-        return "실패";
     }
 }
