@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -84,20 +83,14 @@ public class ChatService {
             // 입장이라면 본인이 작성하지 않은 글 중 읽지 않은 글들을 불러와 읽었다고 수정
             List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomIdAndWriterIdNotAndIsRead(dto.getRoomId(), dto.getWriterId(), false);
             for (ChatMessage beforeChatMessage :chatMessages) {
-                if(beforeChatMessage.getIsRead() == true) {
-                    break;
-                } else {
-                    beforeChatMessage.read();
-                    chatMessageRepository.save(beforeChatMessage);
-                }
+                beforeChatMessage.read();
+                chatMessageRepository.save(beforeChatMessage);
             }
         } else {
             // 읽었다는 메세지라면 타겟 메세지만 읽었다고 수정 후 전송
             ChatMessage targetChatMessage = chatMessageRepository.findById(dto.getTargetMessageId()).get();
             targetChatMessage.read();
             chatMessageRepository.save(targetChatMessage);
-            log.info("READ");
-
         }
         template.convertAndSend("/sub/chat/room" + dto.getRoomId(), dto);
 
@@ -141,10 +134,6 @@ public class ChatService {
 
         savedChatRoom.update(chatMessageRepository.save(chatMessage).getId());
         return savedChatRoom.getId();
-    }
-
-    public Page<ChatRoom> findMyRooms(Long loginUserId, Pageable pageable) {
-        return chatRoomRepository.findByUser1IdOrUser2Id(loginUserId, loginUserId, pageable);
     }
 
     public List<ChatRoomDto> findMyRooms(String userName, Pageable pageable) {
