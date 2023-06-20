@@ -1,6 +1,6 @@
 # 한글 깨지는 현상 방지
 server:
-  port: 8081
+  port: 8085
   servlet:
     encoding:
       force-response: true
@@ -44,7 +44,6 @@ spring:
             client-name: Naver
             authorization-grant-type: authorization_code
             redirect-uri: http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/naver
-#            redirect-uri: http://localhost:8081/login/oauth2/code/naver
           # 소셜 로그인 Kakao
           kakao:
             client-id: 3dee652d714c0a8597499ec61dca7af2
@@ -53,7 +52,6 @@ spring:
             client-name: Kakao
             authorization-grant-type: authorization_code
             redirect-uri: http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/login/oauth2/code/kakao
-#            redirect-uri: http://localhost:8081/login/oauth2/code/kakao
             client-authentication-method: POST
         # 소셜 로그인 Provider 설정 ( Naver, Kakao )
         provider:
