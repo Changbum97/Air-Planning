@@ -37,15 +37,15 @@ spring:
             scope: name, email
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8085/login/oauth2/code/naver
+            # redirect-uri: http://localhost:8085/login/oauth2/code/naver
 
           # 소셜 로그인 Kakao
           kakao:
             scope: profile_nickname, profile_image, account_email, birthday
             client-name: Kakao
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8085/login/oauth2/code/kakao
             client-authentication-method: POST
+            # redirect-uri: http://localhost:8085/login/oauth2/code/kakao
 
         # 소셜 로그인 Provider 설정
         provider:
