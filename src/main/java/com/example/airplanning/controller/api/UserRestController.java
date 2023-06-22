@@ -80,10 +80,11 @@ public class UserRestController {
     @GetMapping("/check-auth-email")
     @ApiOperation(value = "이메일 인증 코드 확인", notes = "이메일의 인증 코드를 확인합니다.")
     @ApiImplicitParam(name = "code", value = "인증코드")
-    public Response<Boolean> checkAuthEmail(@RequestParam String code) {
-        System.out.println(code);
-        if (emailService.getData(code) == null) return Response.success(false);
-        else return Response.success(true);
+    public Response<Boolean> checkAuthEmail(@ApiIgnore Principal principal, @RequestParam String code) {
+        UserDto dto = userService.findUser(principal.getName());
+
+        if (emailService.getData(dto.getEmail() + "_auth").equals(code)) return Response.success(true);
+        else return Response.success(false);
     }
 
     // 이메일로 아이디 찾기

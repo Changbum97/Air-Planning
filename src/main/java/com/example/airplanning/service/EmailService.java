@@ -3,6 +3,7 @@ package com.example.airplanning.service;
 import com.example.airplanning.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.MailException;
@@ -10,8 +11,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.util.Random;
 
@@ -24,85 +27,56 @@ public class EmailService {
     private final StringRedisTemplate redisTemplate;
     private final UserService userService;
 
-    public static final String ePw = createKey();
+    @Value("${AdminMail.id}")
+    private final String mailId;
 
-    // 회원 가입 인증 메시지
-    private MimeMessage createMessage(String to) throws Exception {
+    /**
+     * 메세지 생성 메서드
+     * type = 1 => 회원가입 인증 메세지
+     * type = 2 => 아이디 찾기 메세지
+     * type = 3 => 비밀번호 찾기 메세지
+     */
+    private MimeMessage createMessage(String email, String userName, String ePw, int type) throws Exception {
         MimeMessage message = mailSender.createMimeMessage();
 
-        message.addRecipients(Message.RecipientType.TO, to);
-        message.setSubject("Air Planning 회원가입 이메일 인증");
+        message.addRecipients(Message.RecipientType.TO, email);
+        if (type == 1) message.setSubject("Air Planning 회원가입 이메일 인증");
+        else if (type == 2) message.setSubject("Air Planning 아이디 찾기");
+        else message.setSubject("Air Planning 비밀번호 찾기 이메일 인증");
 
         String msgg = "";
         msgg += "<div style='margin:100px;'>";
         msgg += "<h1> 안녕하세요 Air Planning 입니다. </h1>";
         msgg += "<br>";
-        msgg += "<p>아래 코드를 회원가입 창으로 돌아가 입력해주세요<p>";
-        msgg += "<br>";
+        
+        if (type == 1) msgg += "<p>아래 코드를 회원가입 창으로 돌아가 입력해주세요<p>";
+        else if (type == 2) msgg += "<p>아래의 아이디를 확인해주세요<p>";
+        else msgg += "<p>새로운 비밀번호로 로그인 해주세요<p>";
+        
         msgg += "<p>감사합니다!<p>";
         msgg += "<br>";
         msgg += "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        msgg += "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
+        
+        if (type == 1) msgg += "<h3 style='color:blue;'>회원가입 인증 코드입니다.</h3>";
+        else if (type == 2) msgg += "<h3 style='color:blue;'>회원님의 Air Planning 아이디 입니다.</h3>";
+        else msgg += "<h3 style='color:blue;'>새로운 비밀번호 입니다.</h3>";
+        
         msgg += "<div style='font-size:130%'>";
-        msgg += "CODE : <strong>";
-        msgg += ePw + "</strong><div><br/> ";
+        
+        if (type == 1) {
+            msgg += "CODE : <strong>";
+            msgg += ePw + "</strong><div><br/> ";
+        } else if (type == 2) {
+            msgg += "아이디 : <strong>";
+            msgg += userName + "</strong><div><br/> ";
+        } else {
+            msgg += "비밀번호 : <strong>";
+            msgg += ePw + "</strong><div><br/> ";
+        }
+        
         msgg += "</div>";
         message.setText(msgg, "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("skdlfma123@gmail.com", "Air Planning"));//보내는 사람
-
-        return message;
-    }
-
-    // 아이디 찾기 메시지
-    private MimeMessage foundIdMessage(String to, String userName) throws Exception {
-        MimeMessage message = mailSender.createMimeMessage();
-
-        message.addRecipients(Message.RecipientType.TO, to);
-        message.setSubject("Air Planning 아이디 찾기");
-
-        String msgg = "";
-        msgg += "<div style='margin:100px;'>";
-        msgg += "<h1> 안녕하세요 Air Planning 입니다. </h1>";
-        msgg += "<br>";
-        msgg += "<p>아래의 아이디를 확인해주세요<p>";
-        msgg += "<br>";
-        msgg += "<p>감사합니다!<p>";
-        msgg += "<br>";
-        msgg += "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        msgg += "<h3 style='color:blue;'>회원님의 Air Planning 아이디 입니다.</h3>";
-        msgg += "<div style='font-size:130%'>";
-        msgg += "아이디 : <strong>";
-        msgg += userName + "</strong><div><br/> ";
-        msgg += "</div>";
-        message.setText(msgg, "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("skdlfma123@gmail.com", "Air Planning"));//보내는 사람
-
-        return message;
-    }
-
-    // 비밀번호 찾기 메시지
-    private MimeMessage foundPasswordMessage(String to) throws Exception {
-        MimeMessage message = mailSender.createMimeMessage();
-
-        message.addRecipients(Message.RecipientType.TO, to);
-        message.setSubject("Air Planning 비밀번호 찾기 이메일 인증");
-
-        String msgg = "";
-        msgg += "<div style='margin:100px;'>";
-        msgg += "<h1> 안녕하세요 Air Planning 입니다. </h1>";
-        msgg += "<br>";
-        msgg += "<p>새로운 비밀번호로 로그인 해주세요<p>";
-        msgg += "<br>";
-        msgg += "<p>감사합니다!<p>";
-        msgg += "<br>";
-        msgg += "<div align='center' style='border:1px solid black; font-family:verdana';>";
-        msgg += "<h3 style='color:blue;'>새로운 비밀번호 입니다.</h3>";
-        msgg += "<div style='font-size:130%'>";
-        msgg += "비밀번호 : <strong>";
-        msgg += ePw + "</strong><div><br/> ";
-        msgg += "</div>";
-        message.setText(msgg, "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("skdlfma123@gmail.com", "Air Planning"));//보내는 사람
+        message.setFrom(new InternetAddress(mailId, "Air Planning"));//보내는 사람
 
         return message;
     }
@@ -129,20 +103,21 @@ public class EmailService {
                     break;
             }
         }
+        
         return key.toString();
     }
 
     // 회원가입 인증 메시지 발송
-    public String sendLoginAuthMessage(String to) throws Exception {
-        log.info("email : {} ", to);
-        MimeMessage message = createMessage(to);
+    public String sendLoginAuthMessage(String email) throws Exception {
+        String ePw = createKey();
+        MimeMessage message = createMessage(email, null, ePw, 1);
         try {//예외처리
             mailSender.send(message);
         } catch (MailException es) {
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
-        setDataExpire(ePw, to, 60 * 5L);
+        setDataExpire(email + "_auth", ePw, 60 * 5L);
         return "인증 메일이 발송되었습니다.";
     }
 
@@ -150,7 +125,7 @@ public class EmailService {
     public String sendFoundIdMessage(String email) throws Exception {
         String result = "메일로 아이디를 전송했습니다.";
         String userName = userService.findIdByEmail(email);
-        MimeMessage message = foundIdMessage(email, userName);
+        MimeMessage message = createMessage(email, userName, null, 2);
         try {    //예외처리
             mailSender.send(message);
         } catch (MailException es) {
@@ -171,9 +146,11 @@ public class EmailService {
         if (!userName.equals(foundUserName)) {
             result = "아이디에 해당하는 이메일이 없습니다.";
         } else {
+            String ePw = createKey();
+
             String newPassword = ePw;
             userService.changePassword(foundUserName, newPassword);
-            MimeMessage message = foundPasswordMessage(email);
+            MimeMessage message = createMessage(email, null, ePw, 3);
 
             try {    //예외처리
                 mailSender.send(message);
@@ -185,7 +162,6 @@ public class EmailService {
             } catch (Exception e) {
                 result = "메일 전송에 실패하였습니다.";
             }
-            setDataExpire(ePw, email, 60 * 5L);
         }
 
         return result;
@@ -198,18 +174,10 @@ public class EmailService {
         return valueOperations.get(key);
     }
 
-    public void setData(String key, String value) {
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(key, value);
-    }
-
     public void setDataExpire(String key, String value, long duration) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         Duration expireDuration = Duration.ofSeconds(duration);
         valueOperations.set(key, value, expireDuration);
     }
 
-    public void deleteData(String key) {
-        redisTemplate.delete(key);
-    }
 }
