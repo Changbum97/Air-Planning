@@ -250,13 +250,13 @@ public class BoardService {
         String[] bits = filePath.split("/");
         String fileName = bits[bits.length-1];
         //S3에서 delete
-        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+        amazonS3.deleteObject(bucketName, fileName);
     }
 
     // 파일 업로드
     public String uploadFile(MultipartFile file) {
 
-        String defaultUrl = "https://airplanning-bucket2.s3.ap-northeast-2.amazonaws.com/";
+        String defaultUrl = "https://air-planning.s3.ap-northeast-2.amazonaws.com/";
         String fileName = generateFileName(file);
 
         try {

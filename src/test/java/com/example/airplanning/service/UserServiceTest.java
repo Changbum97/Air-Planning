@@ -186,7 +186,7 @@ class UserServiceTest {
         // given
         MockMultipartFile file = new MockMultipartFile("file", "image2", "jpg", "test file".getBytes(StandardCharsets.UTF_8));
         // when
-        when(userRepository.findByUserName("user")).thenReturn(Optional.of(User.builder().password("pwd1").nickname("nickname1").image("https://airplanning-bucket2.s3.ap-northeast-2.amazonaws.com/default.jpeg").build()));
+        when(userRepository.findByUserName("user")).thenReturn(Optional.of(User.builder().password("pwd1").nickname("nickname1").image("https://air-planning.s3.ap-northeast-2.amazonaws.com/default.jpeg").build()));
         // then
         userService.editUserInfo("pwd2", "nickname2", file, "user");
         verify(userRepository).save(any());

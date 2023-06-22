@@ -63,7 +63,7 @@
     let filepath = [[${boardUpdateRequest.image}]];
 
     if (filepath != null && originFile != "changed") {
-      let filename = filepath.substring(96);
+      let filename = filepath.substring(90);
       document.getElementById("origin-file").style.display = 'block';
       document.getElementById("file-name").innerHTML = filename;
     }

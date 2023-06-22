@@ -89,6 +89,7 @@ spring.servlet.multipart.max-request-size: 10MB
 cloud:
   aws:
     s3:
+      bucket: ${CLOUD_AWS_S3_BUCKET}
     credentials:
       accessKey: ${CLOUD_AWS_CREDENTIALS_ACCESS-KEY}
       secretKey: ${CLOUD_AWS_CREDENTIALS_SECRET-KEY}

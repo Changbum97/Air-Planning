@@ -147,6 +147,7 @@ public class BoardRestController {
         try {
             boardService.delete(principal.getName(), boardId);
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.error("글 삭제 중 에러가 발생하였습니다. 다시 시도해주세요.");
         }
         return Response.success("글이 삭제 되었습니다.");
