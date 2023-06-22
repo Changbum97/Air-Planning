@@ -11,10 +11,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.util.Random;
 
@@ -28,7 +26,7 @@ public class EmailService {
     private final UserService userService;
 
     @Value("${AdminMail.id}")
-    private final String mailId;
+    private String mailId;
 
     /**
      * 메세지 생성 메서드

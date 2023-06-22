@@ -79,6 +79,7 @@ mail:
 
 # admin 구글 계정
 AdminMail:
+  id: ${ADMINMAIL_ID}
 
 # multipart 설정
 spring.servlet.multipart.max-file-size: 10MB
