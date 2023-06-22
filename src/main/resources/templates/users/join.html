@@ -227,6 +227,7 @@
 
   function auth_email() {
     let code = $("#code").val();
+    let email = $("#email").val();
     emailAuthPass = false
     join_btn_disable()
 
@@ -234,7 +235,8 @@
       type: 'GET',
       url: '/api/users/check-auth-email',
       data: {
-        code: code
+        code: code,
+        email: email
       },
       success:function (auth) {
         if (auth.result == true) {
