@@ -49,7 +49,7 @@
     let planId = [[${planId}]];
     let amount = [[${paymentRequest.amount}]];
 
-    if ([[${userPoint}]] < amount) { // 현재 유저의 포인트가 결제 금액보다 작은 경우
+    if ([[${paymentRequest.point}]] < amount) { // 현재 유저의 포인트가 결제 금액보다 작은 경우
       if (confirm("포인트가 부족합니다. 충전하시겠습니까?")) {
         location.href = "/points/charging"; // 포인트 충전 페이지로 이동
       }

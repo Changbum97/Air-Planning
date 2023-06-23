@@ -43,7 +43,6 @@ public class PlanController {
         PlanResponse planDto = planService.detail(planId, principal.getName());
         model.addAttribute("plan", planDto);
         model.addAttribute("userName", principal.getName());
- /*       log.info(planDto.getUserRole().name());*/
         return "plans/detail";
     }
 
