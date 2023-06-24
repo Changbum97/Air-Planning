@@ -7,7 +7,7 @@
 <div align = "center"> <a href="http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/">바로가기</a> </div>
 
 
-[📌 서비스 UI](http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/) <br>
+[📌 서비스 UI](http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/) <br>
 [📌 노션 프로젝트 페이지](https://descriptive-soda-58f.notion.site/4-Air-Planning-99a0eaa0d3584b969cffc3128a83e0a5) <br>
 [📌 Swagger-ui](http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/swagger-ui/)
 
