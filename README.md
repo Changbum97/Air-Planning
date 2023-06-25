@@ -4,7 +4,7 @@
 
 # <div align = "center"> AirPlanning ✈️</div>
 #### <div align = "center"> <h4> 여행 플래너가 1:1 맞춤으로 계획을 세워주는 SNS입니다. </div>
-<div align = "center"> <a href="http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/">바로가기</a> </div>
+<div align = "center"> <a href="http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/">바로가기</a> </div>
 
 
 [📌 서비스 UI](http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/) <br>
