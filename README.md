@@ -1,4 +1,4 @@
-### Teamproject
+### Team Project
 <img src="src/main/resources/images/commitType.png" height="200"/>
 <img src="src/main/resources/images/commit.png" height="200"/>
 
