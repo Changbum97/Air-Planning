@@ -1,6 +1,4 @@
 ### Team Project
-<img src="src/main/resources/images/commitType.png" height="200"/>
-<img src="src/main/resources/images/commit.png" height="200"/>
 
 # <div align = "center"> AirPlanning ✈️</div>
 #### <div align = "center"> <h4> 여행 플래너가 1:1 맞춤으로 계획을 세워주는 SNS입니다. </div>
@@ -9,14 +7,7 @@
 
 [📌 서비스 UI](http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/) <br>
 [📌 노션 프로젝트 페이지](https://descriptive-soda-58f.notion.site/4-Air-Planning-99a0eaa0d3584b969cffc3128a83e0a5) <br>
-[📌 Swagger-ui](http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/swagger-ui/)
-
-## Index
-- [프로젝트의 목적 및 용도](목적과용도)
-- [개발환경](#개발환경)
-- [ERD](#erd)
-- [Swagger](#-swagger-)
-- [API EndPoint](#-api-endpoint-)
+[📌 Swagger-ui](http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/swagger-ui/)
 
 ### 🚩 프로젝트의 목적 및 용도
 
@@ -25,13 +16,13 @@
 - 어떤 문제를 해결할 수 있는가? <br>
   - 문제1. 여행사를 통한 경우 짜여져 있는 플랜으로 개인 맞춘 상세한 플랜 조절이 불가능하다.
   - 문제2. 과거 방문 경험에 의해 여행지를 선택 할 경우 과거와 비슷한 경험에 머무를 가능성이 높다.
-  - 문제3. 인터넷사이트/모바일 앱을 통해 정보를 획득하는 경우 홍보게시물을 추려내기 어렵다. <br>
+  - 문제3. 인터넷 사이트/모바일 앱을 통해 정보를 획득하는 경우 홍보 게시물을 추려내기 어렵다. <br>
 
   -> Air-Planning은 사용자가 등록되어있는 포트폴리오를 확인후 플래너를 선택할 수 있고, 플래너와 1:1 채팅을 통해 개인의 취향과 요청사항에 맞추어 플랜 조율이 가능하므로 새로운 여행지에서 취향에 맞는 다양한 경험을 통해 여행의 만족도를 높여 위의 대표적인 문제가 되었던 사례들을 해결할 수 있을 것으로 예상된다.
 - 왜 이 프로젝트가 유용한가? <br>
   - 1.성별, 연령에 관계없이 누구나 이용가능하다.
   - 2.다양한 지역의 정보를 얻을 수 있다.
-  - 3.관광, 휴양, 음식 역사 등 다양한 테마의 플랜을 계획할 수 있다.
+  - 3.관광, 휴양, 음식, 역사 등 다양한 테마의 플랜을 계획할 수 있다.
   
   -> 누구나 사용자가 될 수 있고, 전문가가 아니더라도 누구나 플래너가 될 수 있기 때문에 다양하고 개성있는 계획이 많이 나올 수 있을 것이다. 누구나 가능하기에 추후 여행이 아닌 다른 분야의 플래너로 확장&개발될 수 있는 가능성도 있다.
 - 어떤 사람들이 이 프로젝트를 사용하면 좋은가 <br>
@@ -51,21 +42,21 @@
 <img src="src/main/resources/images/ERD.png"/>
 
 ### 💻 Swagger
-http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/swagger-ui/
+http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/
 
 ### ☑️ 체크리스트
-✅ Gitlab CI/CD 구축 및 Swagger 추가
+✅ Github CI/CD 구축 및 Swagger 추가
 
-    - AWS
+    - AWS EC2, Docker, Github Actions
 
 ✅ 회원가입 / 로그인
 
     - 회원가입
         - 사용자는 다양한 서비스를 위해 회원 가입을 한다.
-        - 회원가입을 위해서는 본인인증(이메일, 휴대폰)이 필요하다.
+        - 회원가입을 위해서는 본인인증(이메일)이 필요하다.
     - 로그인
-        - Spring Security의 Form Login을 활용하여 구현한다.
-        - 소셜(구글, 네이버, 카카오) 로그인을 지원한다.
+        - Spring Security의 Form Login(Session)을 활용하여 구현한다.
+        - 소셜(네이버, 카카오) 로그인을 지원한다.
 
 ✅ 포스트 작성 / 상세조회 / 수정 / 삭제
 
@@ -73,12 +64,12 @@ http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/swagger-ui/
         - 등록된 회원만이 게시글 작성이 가능하다.
         - 등급(플래너, 일반)에 따라 작성 가능 포스트가 구분된다.
         - 로그인한 모든 사용자는 플래너 신청이 가능하다.
-        - 플래너 등급은 모든 포스트작성이 가능하다.
+        - 플래너 등급은 모든 포스트 작성이 가능하다.
         - 일반 등급은 등급 승인 이후 포트폴리오 등록이 가능하다.
         - 리뷰게시판은 플랜신청 기록이 있을 경우 가능하다.
         - 게시글에 필요한 파일을 첨부 할 수 있다.
     - 포스트 상세조회
-        - 게시글은 테마별로 구분된다. (자유, 신고, 리뷰, 플래너등급신청, 플래너포트폴리오)
+        - 게시글은 테마별로 구분된다. (자유, 신고, 리뷰, 플래너 등급 신청, 플래너 포트폴리오)
         - 등급신청 게시판은 작성자와 관리자만 열람가능하다.
         - 로그인한 사용자는 등급신청 이외의 모든 포스트의 열람이 가능하다.
         - 게시글의 조회 수가 표시된다.
@@ -86,7 +77,7 @@ http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/swagger-ui/
     - 포스트 수정 / 삭제
         - 작성자에게 권한이 있다.
 
-✅ 게시판별 주요기능
+✅ 게시판 별 주요 기능
 
     - 자유
         - 회원가입이 완료된 모든 사용자는 게시글을 작성 할 수 있다.
@@ -127,6 +118,7 @@ http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/swagger-ui/
         - 활성화 된 좋아요는 재클릭 시 취소가 가능하다.
     - 조회수
         - 게시글을 조회할 때 마다 조회수가 1씩 증가한다.
+        - 중복 방지를 위해 다른 게시글 조회 후 다시 조회 해야 조회수가 다시 증가한다.
 
 ✅ 별점
 
@@ -186,3 +178,6 @@ http://ec2-13-124-105-0.ap-northeast-2.compute.amazonaws.com:8081/swagger-ui/
     - 결제 내역을 확인 할 수 있다.
     - 플랜 신청시 충전 포인트를 통해 결제 진행이 가능하다.
     - 잔여 포인트를 확인 할 수 있다.
+
+<img src="src/main/resources/images/commitType.png" height="200"/>
+<img src="src/main/resources/images/commit.png" height="200"/>
