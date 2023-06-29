@@ -179,5 +179,10 @@ http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/
     - 플랜 신청시 충전 포인트를 통해 결제 진행이 가능하다.
     - 잔여 포인트를 확인 할 수 있다.
 
+### Branch 생성 규칙
+
 <img src="src/main/resources/images/commitType.png" height="200"/>
+
+### Commit 순서
+
 <img src="src/main/resources/images/commit.png" height="200"/>
