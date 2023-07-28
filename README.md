@@ -2,12 +2,12 @@
 
 # <div align = "center"> AirPlanning ✈️</div>
 #### <div align = "center"> <h4> 여행 플래너가 1:1 맞춤으로 계획을 세워주는 SNS입니다. </div>
-<div align = "center"> <a href="http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/">바로가기</a> </div>
+<div align = "center"> <a href="http://ec2-52-79-213-143.ap-northeast-2.compute.amazonaws.com:8085/">바로가기</a> </div>
 
 
-[📌 서비스 UI](http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/) <br>
+[📌 서비스 UI](http://ec2-52-79-213-143.ap-northeast-2.compute.amazonaws.com:8085/) <br>
 [📌 노션 프로젝트 페이지](https://descriptive-soda-58f.notion.site/4-Air-Planning-99a0eaa0d3584b969cffc3128a83e0a5) <br>
-[📌 Swagger-ui](http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/swagger-ui/)
+[📌 Swagger-ui](http://ec2-52-79-213-143.ap-northeast-2.compute.amazonaws.com:8085/swagger-ui/)
 
 ### 🚩 프로젝트의 목적 및 용도
 
@@ -42,7 +42,7 @@
 <img src="src/main/resources/images/ERD.png"/>
 
 ### 💻 Swagger
-http://ec2-52-79-82-151.ap-northeast-2.compute.amazonaws.com:8085/
+http://ec2-52-79-213-143.ap-northeast-2.compute.amazonaws.com:8085/swagger-ui/
 
 ### ☑️ 체크리스트
 ✅ Github CI/CD 구축 및 Swagger 추가
